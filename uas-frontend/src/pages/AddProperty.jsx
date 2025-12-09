@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { addProperty } from "../services/api"; // ← IMPORT API
 
 export default function AddProperty() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     title: "",
     location: "",
@@ -24,21 +27,27 @@ export default function AddProperty() {
     });
   };
 
-  // Submit form
-  const handleSubmit = (e) => {
+  // Submit to backend API
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("DATA PROPERTY:", form);
-    alert("Property berhasil ditambahkan!");
+
+    try {
+      await addProperty(form); // ⬅️ KIRIM DATA KE BACKEND
+
+      alert("Property berhasil ditambahkan!");
+
+      navigate("/dashboard"); // Redirect ke dashboard setelah sukses
+    } catch (error) {
+      console.error(error);
+      alert("Gagal menambahkan property!");
+    }
   };
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Add New Property</h1>
-        <Link
-          to="/dashboard"
-          className="text-blue-600 hover:underline"
-        >
+        <Link to="/dashboard" className="text-blue-600 hover:underline">
           ← Back to Dashboard
         </Link>
       </div>
@@ -55,6 +64,7 @@ export default function AddProperty() {
               name="image"
               onChange={handleChange}
               className="w-full border p-3 rounded-lg bg-gray-50"
+              required
             />
           </div>
 
@@ -103,7 +113,6 @@ export default function AddProperty() {
 
           {/* TYPE & SPECS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Property Type */}
             <div>
               <label className="block font-medium mb-2">Property Type</label>
               <select
@@ -118,7 +127,6 @@ export default function AddProperty() {
               </select>
             </div>
 
-            {/* Bedrooms */}
             <div>
               <label className="block font-medium mb-2">Bedrooms</label>
               <input
@@ -132,7 +140,6 @@ export default function AddProperty() {
               />
             </div>
 
-            {/* Bathrooms */}
             <div>
               <label className="block font-medium mb-2">Bathrooms</label>
               <input
