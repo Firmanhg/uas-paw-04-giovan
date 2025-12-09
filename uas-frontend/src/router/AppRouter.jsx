@@ -1,23 +1,18 @@
 import { Routes, Route } from "react-router-dom";
 
-// Public Pages
+// Pages
 import Home from "../pages/Home";
 import Listing from "../pages/Listing";
 import Detail from "../pages/Detail";
-import Favorite from "../pages/Favorite";
-
-// Auth
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-
-// Agent Pages
+import Favorite from "../pages/Favorite";
 import AgentProfile from "../pages/AgentProfile";
+import Chat from "../pages/Chat";
 import AgentDashboard from "../pages/AgentDashboard";
 import AddProperty from "../pages/AddProperty";
 import EditProperty from "../pages/EditProperty";
-
-// Chat
-import Chat from "../pages/Chat";
+import Compare from "../pages/Compare";
 
 export default function AppRouter() {
   return (
@@ -29,18 +24,21 @@ export default function AppRouter() {
       <Route path="/property/:id" element={<Detail />} />
       <Route path="/favorite" element={<Favorite />} />
 
-      {/* AUTH */}
+      {/* NEW FEATURE → COMPARE PAGE */}
+      <Route path="/compare" element={<Compare />} />
+
+      {/* AUTH PAGES */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* AGENT ROUTES */}
-      <Route path="/agent/profile/:id" element={<AgentProfile />} />
-      <Route path="/agent/dashboard" element={<AgentDashboard />} />
-      <Route path="/agent/add-property" element={<AddProperty />} />
-      <Route path="/agent/edit-property/:id" element={<EditProperty />} />
+      {/* AGENT PAGES */}
+      <Route path="/agent/:id" element={<AgentProfile />} />
+      <Route path="/chat/:id" element={<Chat />} />
 
-      {/* CHAT SYSTEM */}
-      <Route path="/chat/:agentId" element={<Chat />} />
+      {/* DASHBOARD & PROPERTY MANAGEMENT */}
+      <Route path="/dashboard" element={<AgentDashboard />} />
+      <Route path="/add-property" element={<AddProperty />} />
+      <Route path="/edit-property/:id" element={<EditProperty />} />
 
     </Routes>
   );
