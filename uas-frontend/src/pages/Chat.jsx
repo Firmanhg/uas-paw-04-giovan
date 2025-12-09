@@ -1,139 +1,177 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { Send, PlusCircle, MoreVertical, MapPin, User } from "lucide-react";
 
 export default function Chat() {
-  const { id } = useParams();
+  const [message, setMessage] = useState("");
 
-  // Dummy chat list
-  const chatList = [
-    { id: 1, name: "Jane Doe", last: "Silakan, rumah masih tersedia ya!" },
-    { id: 2, name: "Agus Wijaya", last: "Besok bisa survey lokasi?" },
-    { id: 3, name: "Property Agent", last: "Tentu, kapan ingin dijadwalkan?" },
+  // DUMMY DATA CHAT
+  const chats = [
+    {
+      id: 1,
+      sender: "me",
+      text: "Selamat siang, Pak Budi. Saya lihat iklan rumah di Menteng. Apakah properti tersebut masih tersedia untuk dibeli?",
+      time: "14:00",
+    },
+    {
+      id: 2,
+      sender: "agent",
+      text: "Selamat siang, Betul, Pak. Properti di Menteng masih tersedia. Ada yang bisa saya bantu jelaskan lebih lanjut?",
+      time: "14:02",
+    },
+    {
+      id: 3,
+      sender: "me",
+      text: "Baik, terima kasih. Boleh tahu detail spesifikasi rumahnya? Seperti luas tanah, bangunan, dan jumlah kamar tidur?",
+      time: "14:05",
+    },
+    {
+      id: 4,
+      sender: "agent",
+      text: "Tentu, Pak. Luas tanah 300 m2, luas bangunan 250 m2, ada 4 kamar tidur dan 3 kamar mandi. Sertifikat Hak Milik (SHM).",
+      time: "14:06",
+    },
+    {
+      id: 5,
+      sender: "me",
+      text: "Oke, informasinya sangat membantu. Apakah saya bisa menjadwalkan kunjungan untuk melihat langsung kondisi rumahnya?",
+      time: "14:08",
+    },
   ];
 
-  // Dummy property data on right panel
-  const property = {
-    id: 99,
-    title: "Modern House in South Jakarta",
-    price: 2500000000,
-    location: "Jakarta Selatan",
-    img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80",
-  };
-
-  // Dummy chat messages
-  const [messages, setMessages] = useState([
-    { from: "agent", text: "Selamat siang, ada yang bisa saya bantu?" },
-    { from: "user", text: "Rumah ini masih tersedia, kak?" },
-    { from: "agent", text: "Iya, masih tersedia ya!" },
-  ]);
-
-  const [input, setInput] = useState("");
-
-  const sendMessage = () => {
-    if (!input.trim()) return;
-    setMessages([...messages, { from: "user", text: input }]);
-    setInput("");
+  const handleSend = (e) => {
+    e?.preventDefault?.();
+    if (!message.trim()) return;
+    // for now just clear input — you can extend to add to chats state or call API
+    setMessage("");
   };
 
   return (
-    <div className="w-full min-h-screen grid grid-cols-1 md:grid-cols-4">
+    <div className="bg-white min-h-screen pt-6 pb-10 font-sans text-slate-800">
+      <div className="max-w-7xl mx-auto px-6">
+        <h1 className="text-2xl font-bold text-slate-500 mb-6">Chat Agent</h1>
 
-      {/* SIDEBAR CHAT LIST */}
-      <div className="border-r bg-white p-4 md:col-span-1 overflow-y-auto h-screen">
-        <h2 className="text-xl font-bold mb-4">Chats</h2>
-
-        <div className="space-y-3">
-          {chatList.map((c) => (
-            <div
-              key={c.id}
-              className="p-3 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer"
-            >
-              <p className="font-semibold">{c.name}</p>
-              <p className="text-sm text-gray-600 truncate">{c.last}</p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* --- KOLOM KIRI: CHAT AREA --- */}
+          <div className="lg:col-span-2 flex flex-col h-[700px] border border-gray-200 rounded-xl shadow-sm bg-white overflow-hidden">
+            {/* 1. Chat Header */}
+            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-white">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <img
+                    src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=100"
+                    className="w-10 h-10 rounded-full object-cover"
+                    alt="Agent"
+                  />
+                  {/* Status Indicator */}
+                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900">Budi Santoso</h3>
+                  <p className="text-xs text-green-600 font-medium">Online</p>
+                </div>
+              </div>
+              <button className="text-gray-400 hover:text-gray-600">
+                <MoreVertical size={20} />
+              </button>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* MAIN CHAT ROOM */}
-      <div className="md:col-span-2 flex flex-col h-screen bg-gray-50">
+            {/* 2. Chat Messages List */}
+            <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50 space-y-6">
+              {/* Date Separator */}
+              <div className="flex justify-center">
+                <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">Hari ini</span>
+              </div>
 
-        {/* HEADER */}
-        <div className="p-4 border-b bg-white flex items-center gap-3">
-          <img
-            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80"
-            className="w-10 h-10 rounded-full"
-          />
-          <div>
-            <p className="font-semibold">Jane Doe</p>
-            <p className="text-xs text-green-500">Online</p>
+              {chats.map((chat) => (
+                <div
+                  key={chat.id}
+                  className={`flex flex-col max-w-[80%] ${chat.sender === "me" ? "self-end items-end" : "self-start items-start"}`}
+                >
+                  <div
+                    className={`p-4 rounded-2xl text-sm leading-relaxed shadow-sm
+                      ${chat.sender === "me"
+                        ? "bg-slate-800 text-white rounded-tr-none"
+                        : "bg-white border border-gray-200 text-slate-700 rounded-tl-none"
+                      }`}
+                  >
+                    {chat.text}
+                  </div>
+                  <span className="text-[10px] text-gray-400 mt-1 px-1">
+                    {chat.time}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* 3. Input Area */}
+            <form onSubmit={handleSend} className="p-4 bg-white border-t border-gray-100">
+              <div className="flex items-center gap-3">
+                <button type="button" className="text-gray-400 hover:text-slate-800 transition">
+                  <PlusCircle size={24} />
+                </button>
+                <input
+                  type="text"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Ketik pesan Anda..."
+                  className="flex-1 bg-gray-100 border-none rounded-full px-5 py-3 focus:outline-none focus:ring-2 focus:ring-slate-200 text-sm"
+                />
+                <button
+                  type="submit"
+                  className="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-6 py-2.5 rounded-full text-sm font-semibold transition"
+                >
+                  <Send size={16} />
+                  Kirim
+                </button>
+              </div>
+            </form>
           </div>
-        </div>
 
-        {/* CHAT MESSAGES */}
-        <div className="flex-1 p-4 overflow-y-auto space-y-4">
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`flex ${
-                msg.from === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
-              <div
-                className={`px-4 py-2 rounded-xl max-w-xs ${
-                  msg.from === "user"
-                    ? "bg-blue-600 text-white rounded-br-none"
-                    : "bg-white shadow rounded-bl-none"
-                }`}
-              >
-                {msg.text}
+          {/* --- KOLOM KANAN: SIDEBAR INFO --- */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* 1. Detail Properti Card */}
+            <div className="border border-gray-200 rounded-xl p-5 shadow-sm bg-white">
+              <h3 className="font-bold text-slate-900 mb-4">Detail Properti</h3>
+
+              <div className="rounded-lg overflow-hidden h-40 mb-4 relative">
+                <img
+                  src="https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=600"
+                  className="w-full h-full object-cover"
+                  alt="Rumah Menteng"
+                />
+                <span className="absolute bottom-2 left-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded">
+                  Dijual
+                </span>
+              </div>
+
+              <h4 className="font-bold text-slate-900">Rumah di Menteng</h4>
+              <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                <MapPin size={12} /> Jakarta Pusat, DKI Jakarta
+              </p>
+              <p className="text-slate-900 font-bold text-lg mt-3">Rp 15.000.000.000</p>
+            </div>
+
+            {/* 2. Informasi Agen Card */}
+            <div className="border border-gray-200 rounded-xl p-5 shadow-sm bg-white text-center">
+              <h3 className="font-bold text-slate-900 mb-4 text-left">Informasi Agen</h3>
+
+              <div className="flex flex-col items-center">
+                <img
+                  src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150"
+                  className="w-20 h-20 rounded-full object-cover mb-3 ring-4 ring-gray-50"
+                  alt="Agent Profile"
+                />
+                <h4 className="font-bold text-lg text-slate-900">Budi Santoso</h4>
+                <p className="text-sm text-gray-500 mb-5">Agen Properti</p>
+
+                <button className="w-full bg-gray-100 hover:bg-gray-200 text-slate-800 py-2.5 rounded-lg text-sm font-semibold transition">
+                  Lihat Profil
+                </button>
               </div>
             </div>
-          ))}
+          </div>
         </div>
-
-        {/* MESSAGE INPUT */}
-        <div className="p-4 border-t bg-white flex items-center gap-3">
-          <input
-            type="text"
-            placeholder="Type a message..."
-            className="flex-1 border p-3 rounded-lg"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          />
-
-          <button
-            onClick={sendMessage}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            Send
-          </button>
-        </div>
-      </div>
-
-      {/* PROPERTY INFO PANEL */}
-      <div className="hidden md:block border-l bg-white p-6 md:col-span-1 h-screen overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4">Property Info</h2>
-
-        <img
-          src={property.img}
-          className="w-full h-40 object-cover rounded-lg"
-        />
-
-        <h3 className="mt-4 font-semibold text-lg">{property.title}</h3>
-        <p className="text-gray-500">{property.location}</p>
-
-        <p className="text-blue-600 font-bold mt-2">
-          Rp {property.price.toLocaleString("id-ID")}
-        </p>
-
-        <Link
-          to={`/property/${property.id}`}
-          className="mt-4 inline-block text-blue-600 hover:underline"
-        >
-          View Property →
-        </Link>
       </div>
     </div>
   );

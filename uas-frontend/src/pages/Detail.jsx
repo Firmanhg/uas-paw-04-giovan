@@ -118,7 +118,7 @@ Each of the four bedrooms is a private sanctuary. Step outside to your private o
                 <div><h4 className="font-bold text-lg text-slate-900">{agent.name}</h4><p className="text-sm text-gray-500">{agent.company}</p></div>
               </div>
               <div className="mt-8 space-y-3">
-                <button className="w-full bg-slate-800 hover:bg-slate-900 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition"><MessageCircle size={18} /> Chat With Agent</button>
+                <Link to="/chat/1" className="w-full bg-slate-800 hover:bg-slate-900 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition"><MessageCircle size={18} /> Chat With Agent</Link>
                 <button className="w-full border border-gray-300 text-slate-800 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-gray-50 transition"><Phone size={18} /> {agent.phone}</button>
               </div>
             </div>
@@ -131,7 +131,11 @@ Each of the four bedrooms is a private sanctuary. Step outside to your private o
           <h2 className="text-2xl font-bold text-slate-900 mb-6">Similar Properties</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             {similar.map((p) => (
-              <Link key={p.id} to={`/property/${p.id}`} className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition group">
+              <Link
+                key={p.id}
+                to={`/property/${p.id}`}
+                className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition group"
+              >
                 <div className="h-44 overflow-hidden bg-gray-200">
                    <img src={p.img} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt={p.title} />
                 </div>
