@@ -1,11 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+<<<<<<< HEAD
 import { Heart, Bath, BedDouble, Square, Search, ChevronLeft, ChevronRight } from "lucide-react";
+=======
+import { Heart, Bath, BedDouble, Square } from "lucide-react";
+>>>>>>> e307693a71e6524113810a7f3d0b8c9d550b9e34
 
 export default function Listing() {
   const [sort, setSort] = useState("newest");
 
+<<<<<<< HEAD
   // Dummy Property Data (Disesuaikan dengan gambar)
+=======
+>>>>>>> e307693a71e6524113810a7f3d0b8c9d550b9e34
   const properties = [
     {
       id: 1,
@@ -20,9 +27,15 @@ export default function Listing() {
     },
     {
       id: 2,
+<<<<<<< HEAD
       title: "Spacious Apartment with City View",
       price: "Rp 25.000.000 / bln",
       img: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80",
+=======
+      title: "Spacious Apartment with City",
+      price: 25000000,
+      img: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?q=80",
+>>>>>>> e307693a71e6524113810a7f3d0b8c9d550b9e34
       location: "Sudirman, Jakarta Pusat",
       beds: 2,
       baths: 2,
@@ -76,10 +89,15 @@ export default function Listing() {
   ];
 
   return (
+<<<<<<< HEAD
     <div className="bg-white pb-20 pt-8 font-sans text-slate-800">
 
       {/* MAIN CONTAINER */}
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-4 gap-10">
+=======
+    <div className="bg-white pb-20 pt-6">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
+>>>>>>> e307693a71e6524113810a7f3d0b8c9d550b9e34
 
         {/* SIDEBAR FILTER */}
         <aside className="lg:col-span-1 bg-white border border-gray-200 rounded-xl p-6 h-fit shadow-sm sticky top-24">
@@ -90,28 +108,32 @@ export default function Listing() {
 
           <div className="space-y-5">
 
+<<<<<<< HEAD
             {/* LOCATION SEARCH */}
             <div className="relative">
               <Search className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+=======
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Location
+              </label>
+>>>>>>> e307693a71e6524113810a7f3d0b8c9d550b9e34
               <input
                 className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-200 focus:border-slate-400 outline-none transition"
                 placeholder="Search by location..."
               />
             </div>
 
-            {/* MIN PRICE */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">Minimum Price</label>
               <input type="text" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-200 outline-none" placeholder="Rp 0" />
             </div>
 
-            {/* MAX PRICE */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">Maximum Price</label>
               <input type="text" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-200 outline-none" placeholder="Rp 10B" />
             </div>
 
-            {/* PROPERTY TYPE */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">Property Type</label>
               <select className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-200 outline-none bg-white">
@@ -121,7 +143,6 @@ export default function Listing() {
               </select>
             </div>
 
-            {/* BEDROOMS */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">Bedrooms</label>
               <select className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-200 outline-none bg-white">
@@ -201,25 +222,59 @@ export default function Listing() {
                   </button>
                 </div>
 
+<<<<<<< HEAD
                 {/* CARD DETAILS */}
                 <div className="p-5">
                   <h3 className="font-bold text-lg text-slate-900 mb-1 truncate">{p.title}</h3>
                   <p className="text-gray-500 text-sm mb-3 truncate">{p.location}</p>
+=======
+                <div className="p-4">
+                  <h3 className="font-semibold text-lg text-slate-900">
+                    {p.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm">{p.location}</p>
+>>>>>>> e307693a71e6524113810a7f3d0b8c9d550b9e34
 
                   <p className="text-slate-900 font-bold text-xl mb-4">
                     {p.price}
                   </p>
 
+<<<<<<< HEAD
                   {/* Detail Kamar, Mandi, Luas */}
                   <div className="flex items-center gap-4 text-sm text-gray-500 mb-5 pb-4 border-b border-gray-100">
                     <div className="flex items-center gap-1.5"><BedDouble size={18} className="text-slate-400" /> <span className="font-medium text-slate-700">{p.beds}</span></div>
                     <div className="flex items-center gap-1.5"><Bath size={18} className="text-slate-400" /> <span className="font-medium text-slate-700">{p.baths}</span></div>
                     <div className="flex items-center gap-1.5"><Square size={18} className="text-slate-400" /> <span className="font-medium text-slate-700">{p.area} m²</span></div>
+=======
+                  {/* SPECS (Fully aligned & clean) */}
+                  <div className="flex justify-between items-center mt-4 text-sm text-gray-600">
+
+                    <div className="flex items-center gap-2 min-w-[55px]">
+                      <BedDouble size={16} className="text-slate-700" />
+                      <span>{p.beds}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 min-w-[55px]">
+                      <Bath size={16} className="text-slate-700" />
+                      <span>{p.baths}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 min-w-[70px]">
+                      <Square size={16} className="text-slate-700" />
+                      <span>{p.area} m²</span>
+                    </div>
+
+>>>>>>> e307693a71e6524113810a7f3d0b8c9d550b9e34
                   </div>
 
+                  {/* VIEW DETAILS BUTTON */}
                   <Link
                     to={`/property/${p.id}`}
+<<<<<<< HEAD
                     className="w-full block text-center py-2.5 border border-gray-300 rounded-lg text-slate-800 font-semibold hover:bg-gray-50 transition"
+=======
+                    className="w-full mt-4 block text-center py-2 border border-gray-300 rounded-lg text-slate-800 hover:bg-gray-50 transition"
+>>>>>>> e307693a71e6524113810a7f3d0b8c9d550b9e34
                   >
                     View Details
                   </Link>
@@ -238,6 +293,7 @@ export default function Listing() {
             <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-slate-800 font-medium">10</button>
             <button className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-slate-800"><ChevronRight size={20}/></button>
           </div>
+
         </div>
       </div>
     </div>
