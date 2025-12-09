@@ -1,39 +1,60 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { getPropertyById, updateProperty } from "../services/api"; // ⬅️ IMPORT API
 
 export default function EditProperty() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
-  // Dummy existing data (nanti bisa diganti call API)
-  const propertyFromServer = {
-    title: "Modern House in South Jakarta",
-    location: "Jakarta Selatan",
-    price: 2500000000,
-    type: "Rumah",
-    beds: 3,
-    baths: 2,
-    area: 220,
-    description:
-      "Rumah modern minimalis dengan 3 kamar tidur dan lokasi strategis.",
-    image: null,
-  };
+  const [form, setForm] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const [form, setForm] = useState(propertyFromServer);
+  // Load data from API
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await getPropertyById(id); // GET API
+        setForm(res.data);                    // isi form
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+        alert("Gagal mengambil data properti");
+      }
+    };
 
-  // Update form on change
+    load();
+  }, [id]);
+
+  if (loading || !form) {
+    return (
+      <p className="p-6 text-center text-gray-600 text-lg">
+        Loading property...
+      </p>
+    );
+  }
+
+  // Update form state
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+
     setForm({
       ...form,
       [name]: files ? files[0] : value,
     });
   };
 
-  // Submit update
-  const handleSubmit = (e) => {
+  // Submit update to API
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("UPDATED PROPERTY:", form);
-    alert("Property berhasil diperbarui!");
+
+    try {
+      await updateProperty(id, form); // PUT /properties/:id API
+      alert("Property berhasil diperbarui!");
+      navigate("/dashboard"); // redirect ke dashboard
+    } catch (error) {
+      console.error(error);
+      alert("Gagal update property!");
+    }
   };
 
   return (
@@ -49,7 +70,7 @@ export default function EditProperty() {
       {/* Form Card */}
       <div className="bg-white p-8 rounded-xl shadow-lg">
         <form onSubmit={handleSubmit} className="space-y-8">
-
+          
           {/* IMAGE UPLOAD */}
           <div>
             <label className="block font-medium mb-2">Change Image</label>
@@ -59,6 +80,15 @@ export default function EditProperty() {
               onChange={handleChange}
               className="w-full border p-3 rounded-lg bg-gray-50"
             />
+
+            {/* If existing image exists */}
+            {form.image && typeof form.image === "string" && (
+              <img
+                src={form.image}
+                alt="Current Property"
+                className="mt-3 w-40 h-28 object-cover rounded-lg border"
+              />
+            )}
           </div>
 
           {/* TITLE */}
