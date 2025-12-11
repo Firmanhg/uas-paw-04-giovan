@@ -68,7 +68,7 @@ export default function Home() {
             Find your next home with ease and confidence.
           </p>
 
-          {/* SEARCH BAR (Mirip Gambar) */}
+          {/* SEARCH BAR */}
           <div className="bg-white p-2 rounded-lg shadow-xl flex flex-col md:flex-row items-center gap-2 w-full max-w-3xl">
             
             {/* Input Lokasi */}

@@ -11,12 +11,12 @@ export default function Register() {
       {/* LEFT SIDE - IMAGE */}
       <div className="hidden md:block relative h-screen sticky top-0">
         <img 
-            // GAMBAR TERBARU: Modern Architecture House (High Quality)
+            // GAMBAR  Modern Architecture House 
             src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop" 
             alt="Modern House Architecture"
             className="w-full h-full object-cover"
         />
-        {/* Overlay tipis agar lebih elegan */}
+        {/* Overlay*/}
         <div className="absolute inset-0 bg-black/10"></div>
       </div>
 
