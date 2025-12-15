@@ -1,6 +1,9 @@
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
+/* ================= COMPONENTS ================= */
+import ProtectedRoute from "../components/ProtectedRoute";
+
 /* ================= PUBLIC ================= */
 import Home from "../pages/Home";
 import Listing from "../pages/Listing";
@@ -81,28 +84,58 @@ export default function AppRouter() {
       <Route path="/register" element={<Register />} />
 
       {/* ================= BUYER CHAT ================= */}
-      <Route path="/chat/:agentId" element={<Chat />} />
+      <Route path="/chat/:agentId" element={
+        <ProtectedRoute>
+          <Chat />
+        </ProtectedRoute>
+      } />
 
       {/* ================= AGENT CHAT ================= */}
-      <Route path="/agent/chat/:buyerId" element={<ChatAgent />} />
+      <Route path="/agent/chat/:buyerId" element={
+        <ProtectedRoute requireAgent={true}>
+          <ChatAgent />
+        </ProtectedRoute>
+      } />
 
-      {/* ================= AGENT AREA ================= */}
-      <Route path="/agent/dashboard" element={<AgentDashboard />} />
-      <Route path="/dashboard" element={<AgentDashboard />} />
-      <Route path="/my-properties" element={<MyProperties />} />
-      <Route path="/add-property" element={<AddProperty />} />
-      <Route path="/edit-property/:id" element={<EditProperty />} />
+      {/* ================= AGENT AREA (PROTECTED) ================= */}
+      <Route path="/agent/dashboard" element={
+        <ProtectedRoute requireAgent={true}>
+          <AgentDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/dashboard" element={
+        <ProtectedRoute requireAgent={true}>
+          <AgentDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/my-properties" element={
+        <ProtectedRoute requireAgent={true}>
+          <MyProperties />
+        </ProtectedRoute>
+      } />
+      <Route path="/add-property" element={
+        <ProtectedRoute requireAgent={true}>
+          <AddProperty />
+        </ProtectedRoute>
+      } />
+      <Route path="/edit-property/:id" element={
+        <ProtectedRoute requireAgent={true}>
+          <EditProperty />
+        </ProtectedRoute>
+      } />
       <Route path="/agent/:id" element={<AgentProfile />} />
 
-      {/* ================= SETTINGS ================= */}
+      {/* ================= SETTINGS (PROTECTED) ================= */}
       <Route
         path="/settings"
         element={
-          <Settings
-            user={currentUser}
-            setUser={setCurrentUser}
-            onLogout={handleLogout}
-          />
+          <ProtectedRoute requireAgent={true}>
+            <Settings
+              user={currentUser}
+              setUser={setCurrentUser}
+              onLogout={handleLogout}
+            />
+          </ProtectedRoute>
         }
       />
 

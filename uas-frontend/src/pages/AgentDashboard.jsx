@@ -1,9 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getAgentStats, getAgentInquiries } from "../services/agentService";
-import { getCurrentUser } from "../services/authService";
+import { getCurrentUser, logout } from "../services/authService";
 
 export default function AgentDashboard() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     total_properties: 0,
     active_listings: 0,
@@ -66,6 +67,18 @@ export default function AgentDashboard() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (err) {
+      console.error('Logout failed:', err);
+      // Force logout even if API fails
+      localStorage.removeItem('userRole');
+      navigate('/login');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -120,8 +133,14 @@ export default function AgentDashboard() {
         {/* Bottom Menu */}
         <div className="p-4 space-y-2 border-t border-gray-100">
           <NavItem icon={<HelpIcon />} label="Help" />
-          {/* Logout diarahkan ke Login */}
-          <NavItem to="/login" icon={<LogoutIcon />} label="Logout" />
+          {/* Logout button */}
+          <button 
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left text-gray-600 hover:bg-gray-100 transition"
+          >
+            <LogoutIcon />
+            <span>Logout</span>
+          </button>
         </div>
       </aside>
 
