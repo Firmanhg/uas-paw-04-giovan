@@ -15,11 +15,12 @@ import AddProperty from "../pages/AddProperty";
 import EditProperty from "../pages/EditProperty";
 import Compare from "../pages/Compare";
 import Settings from "../pages/Settings";
+import MyProperties from "../pages/MyProperties"; // 👈 1. IMPORT INI DITAMBAHKAN
 
 export default function AppRouter() {
   const navigate = useNavigate();
 
-  // --- 1. DATA DUMMY USER (Agar halaman Settings tidak error) ---
+  // --- 1. DATA DUMMY USER ---
   const [currentUser, setCurrentUser] = useState({
     name: "John Appleseed",
     email: "j.appleseed@realty.com",
@@ -28,7 +29,6 @@ export default function AppRouter() {
 
   // --- 2. FUNGSI LOGOUT ---
   const handleLogout = () => {
-    // Di sini nanti logika hapus token/session
     alert("You have logged out!");
     navigate("/login");
   };
@@ -55,16 +55,20 @@ export default function AppRouter() {
 
       {/* DASHBOARD & PROPERTY MANAGEMENT */}
       <Route path="/dashboard" element={<AgentDashboard />} />
+      
+      {/* 👇 2. ROUTE BARU UNTUK MY PROPERTIES */}
+      <Route path="/my-properties" element={<MyProperties />} />
+      
       <Route path="/add-property" element={<AddProperty />} />
       <Route path="/edit-property/:id" element={<EditProperty />} />
 
-      {/* 👇 3. ROUTE SETTINGS (Diupdate dengan Props) */}
+      {/* ROUTE SETTINGS */}
       <Route 
         path="/settings" 
         element={
           <Settings 
             user={currentUser} 
-            setUser={setCurrentUser} // Supaya bisa update nama/email
+            setUser={setCurrentUser} 
             onLogout={handleLogout} 
           />
         } 
