@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 // Pages
 import Home from "../pages/Home";
@@ -13,8 +14,25 @@ import AgentDashboard from "../pages/AgentDashboard";
 import AddProperty from "../pages/AddProperty";
 import EditProperty from "../pages/EditProperty";
 import Compare from "../pages/Compare";
+import Settings from "../pages/Settings";
 
 export default function AppRouter() {
+  const navigate = useNavigate();
+
+  // --- 1. DATA DUMMY USER (Agar halaman Settings tidak error) ---
+  const [currentUser, setCurrentUser] = useState({
+    name: "John Appleseed",
+    email: "j.appleseed@realty.com",
+    phone: "+1 (555) 123-4567",
+  });
+
+  // --- 2. FUNGSI LOGOUT ---
+  const handleLogout = () => {
+    // Di sini nanti logika hapus token/session
+    alert("You have logged out!");
+    navigate("/login");
+  };
+
   return (
     <Routes>
 
@@ -39,6 +57,18 @@ export default function AppRouter() {
       <Route path="/dashboard" element={<AgentDashboard />} />
       <Route path="/add-property" element={<AddProperty />} />
       <Route path="/edit-property/:id" element={<EditProperty />} />
+
+      {/* 👇 3. ROUTE SETTINGS (Diupdate dengan Props) */}
+      <Route 
+        path="/settings" 
+        element={
+          <Settings 
+            user={currentUser} 
+            setUser={setCurrentUser} // Supaya bisa update nama/email
+            onLogout={handleLogout} 
+          />
+        } 
+      />
 
     </Routes>
   );
