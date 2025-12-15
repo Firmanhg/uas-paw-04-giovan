@@ -1,16 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { getCurrentUser } from "../services/authService";
 
-export default function Settings({ user, onLogout }) {
-  // State untuk data form (Default value diambil dari props user atau dummy)
+export default function Settings({ onLogout }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  // State untuk data form
   const [formData, setFormData] = useState({
-    name: user?.name || "John Doe",
-    email: user?.email || "j.doe@realestate.com",
-    phone: user?.phone || "+1 (555) 123-4567",
+    name: "",
+    email: "",
+    phone: "",
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const fetchUser = async () => {
+    try {
+      const response = await getCurrentUser();
+      if (response.success) {
+        setUser(response.user);
+        setFormData({
+          name: response.user.name || '',
+          email: response.user.email || '',
+          phone: response.user.phone || '',
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: '',
+        });
+      }
+    } catch (err) {
+      console.error('Failed to fetch user:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,11 +53,11 @@ export default function Settings({ user, onLogout }) {
         {/* Profile / Brand Header */}
         <div className="p-6 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">
-            J
+            {user?.name?.charAt(0).toUpperCase() || 'A'}
           </div>
           <div>
-            <h3 className="text-sm font-bold text-gray-900">John Appleseed</h3>
-            <p className="text-xs text-gray-500">Realty Inc.</p>
+            <h3 className="text-sm font-bold text-gray-900">{user?.name || 'Agent'}</h3>
+            <p className="text-xs text-gray-500">Real Estate Agent</p>
           </div>
         </div>
 

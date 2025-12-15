@@ -1,37 +1,38 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getCurrentUser } from "../services/authService";
+import { getAgentProperties } from "../services/agentService";
 
 export default function MyProperties() {
-  // Dummy Data Properti
-  const [properties, setProperties] = useState([
-    {
-      id: 1,
-      title: "Modern Villa in South Jakarta",
-      price: 2500000000,
-      location: "Jakarta Selatan",
-      type: "Sale",
-      status: "Published",
-      image: "https://images.unsplash.com/photo-1600596542815-2a4d9f0152ba?q=80&w=200&auto=format&fit=crop",
-    },
-    {
-      id: 2,
-      title: "Luxury Apartment SCBD",
-      price: 3500000000,
-      location: "SCBD Jakarta",
-      type: "Rent",
-      status: "Draft",
-      image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=200&auto=format&fit=crop",
-    },
-    {
-      id: 3,
-      title: "Cozy Family House",
-      price: 1200000000,
-      location: "Depok",
-      type: "Sale",
-      status: "Published",
-      image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b91d?q=80&w=200&auto=format&fit=crop",
-    },
-  ]);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [properties, setProperties] = useState([]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      // Get current user
+      const userResponse = await getCurrentUser();
+      if (userResponse.success) {
+        setUser(userResponse.user);
+      }
+
+      // Get agent properties
+      const propertiesResponse = await getAgentProperties();
+      if (propertiesResponse.success) {
+        setProperties(propertiesResponse.properties);
+      }
+    } catch (err) {
+      console.error('Failed to fetch data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this property?")) {
@@ -44,10 +45,12 @@ export default function MyProperties() {
       {/* --- SIDEBAR --- */}
       <aside className="w-64 bg-white border-r border-gray-200 flex flex-col hidden md:flex">
         <div className="p-6 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">J</div>
+          <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">
+            {user?.name?.charAt(0).toUpperCase() || 'A'}
+          </div>
           <div>
-            <h3 className="text-sm font-bold text-gray-900">John Appleseed</h3>
-            <p className="text-xs text-gray-500">Realty Inc.</p>
+            <h3 className="text-sm font-bold text-gray-900">{user?.name || 'Agent'}</h3>
+            <p className="text-xs text-gray-500">Real Estate Agent</p>
           </div>
         </div>
 

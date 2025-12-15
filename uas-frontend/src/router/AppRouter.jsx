@@ -87,6 +87,7 @@ export default function AppRouter() {
       <Route path="/agent/chat/:buyerId" element={<ChatAgent />} />
 
       {/* ================= AGENT AREA ================= */}
+      <Route path="/agent/dashboard" element={<AgentDashboard />} />
       <Route path="/dashboard" element={<AgentDashboard />} />
       <Route path="/my-properties" element={<MyProperties />} />
       <Route path="/add-property" element={<AddProperty />} />
