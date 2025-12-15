@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { Menu, X } from "lucide-react"; // Pastikan sudah install: npm install lucide-react
+import { Menu, X, Home } from "lucide-react"; // ✅ Tambahkan import 'Home'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,12 +12,8 @@ export default function Navbar() {
         {/* LOGO */}
         <Link to="/" className="flex items-center gap-2 group">
           <div className="text-slate-800 group-hover:text-slate-600 transition">
-             {/* Icon SVG: Hand holding House */}
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 21h18"/>
-                <path d="M5 21V7l8-4 8 4v14"/>
-                <path d="M9 10a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"/>
-            </svg>
+            {/* ✅ ICON DIGANTI MENGGUNAKAN LUCIDE (Sama seperti Login) */}
+            <Home size={28} strokeWidth={2.5} />
           </div>
           <span className="text-xl font-bold text-slate-900 group-hover:text-slate-700 transition">
             PropertiKu
