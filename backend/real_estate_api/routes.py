@@ -14,6 +14,11 @@ def includeme(config):
     config.add_route('logout', '/api/logout')
     config.add_route('me', '/api/me')
     
+    # Agent Dashboard routes
+    config.add_route('agent_stats', '/api/agent/stats')
+    config.add_route('agent_properties', '/api/agent/properties')
+    config.add_route('agent_inquiries', '/api/agent/inquiries')
+    
     # API routes
     config.add_route('users', '/api/users')  
     config.add_route('properties', '/api/properties')  

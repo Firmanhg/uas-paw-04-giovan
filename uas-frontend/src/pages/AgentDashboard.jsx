@@ -1,51 +1,99 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAgentStats, getAgentInquiries } from "../services/agentService";
+import { getCurrentUser } from "../services/authService";
 
 export default function AgentDashboard() {
-  // Data dummy untuk Inquiries
-  const [inquiries] = useState([
-    {
-      id: 1,
-      name: "Jane Doe",
-      email: "jane.doe@example.com",
-      property: "Modern Villa on Hilltop",
-      date: "Today, 11:34 AM",
-    },
-    {
-      id: 2,
-      name: "John Smith",
-      email: "j.smith@email.com",
-      property: "Downtown Loft Apartment",
-      date: "Yesterday, 8:15 PM",
-    },
-    {
-      id: 3,
-      name: "Emily White",
-      email: "emily.w@mail.net",
-      property: "Cozy Suburban Home",
-      date: "May 28, 2024",
-    },
-    {
-      id: 4,
-      name: "Michael Brown",
-      email: "mbrown@web.com",
-      property: "Seaside Cottage with View",
-      date: "May 27, 2024",
-    },
-  ]);
+  const [stats, setStats] = useState({
+    total_properties: 0,
+    active_listings: 0,
+    total_inquiries: 0,
+    properties_trend: '+0 this month',
+    inquiries_trend: '+0% this month',
+    listings_trend: '0 from last week'
+  });
+  const [inquiries, setInquiries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Get current user info
+      const userResponse = await getCurrentUser();
+      if (userResponse.success) {
+        setUser(userResponse.user);
+      }
+
+      // Fetch stats
+      const statsResponse = await getAgentStats();
+      if (statsResponse.success) {
+        setStats(statsResponse.stats);
+      }
+
+      // Fetch inquiries
+      const inquiriesResponse = await getAgentInquiries();
+      if (inquiriesResponse.success) {
+        setInquiries(inquiriesResponse.inquiries);
+      }
+    } catch (err) {
+      setError('Failed to load dashboard data');
+      console.error('Dashboard error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) {
+      return `Today, ${date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+    } else if (diffDays === 1) {
+      return `Yesterday, ${date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+    } else {
+      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex min-h-screen bg-gray-50 font-sans text-gray-800">
+    <div className="flex min-h-screen bg-gray-50 font-sans text-gray-800">{error && (
+        <div className="fixed top-4 right-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          {error}
+        </div>
+      )}
+
       {/* --- SIDEBAR --- */}
       <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex md:flex-col">
         {/* Profile / Brand Header */}
         <div className="p-6 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">
-            J
+            {user?.name?.charAt(0) || 'A'}
           </div>
           <div>
-            <h3 className="text-sm font-bold text-gray-900">John Appleseed</h3>
-            <p className="text-xs text-gray-500">Realty Inc.</p>
+            <h3 className="text-sm font-bold text-gray-900">{user?.name || 'Agent'}</h3>
+            <p className="text-xs text-gray-500">Real Estate Agent</p>
           </div>
         </div>
 
@@ -83,40 +131,43 @@ export default function AgentDashboard() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-extrabold text-gray-900">
-              Welcome back, Olivia!
+              Welcome back, {user?.name || 'Agent'}!
             </h1>
             <p className="text-gray-500 mt-1">
               Here's a summary of your activity.
             </p>
           </div>
-          <button className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition">
+          <Link 
+            to="/my-properties"
+            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition"
+          >
             View All Properties
-          </button>
+          </Link>
         </div>
 
         {/* STATS CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           <StatCard
             title="Total Properties Listed"
-            value="128"
-            trend="+5 this month"
+            value={stats.total_properties}
+            trend={stats.properties_trend}
             trendColor="text-green-500"
             icon={<BuildingIconFilled />}
             iconColor="text-blue-500 bg-blue-50"
           />
           <StatCard
             title="Total Inquiries Received"
-            value="542"
-            trend="+12% this month"
+            value={stats.total_inquiries}
+            trend={stats.inquiries_trend}
             trendColor="text-green-500"
             icon={<PhoneIcon />}
             iconColor="text-blue-500 bg-blue-50"
           />
           <StatCard
             title="Active Listings"
-            value="96"
-            trend="-2 from last week"
-            trendColor="text-red-500"
+            value={stats.active_listings}
+            trend={stats.listings_trend}
+            trendColor={stats.active_listings >= stats.total_properties ? "text-green-500" : "text-gray-500"}
             icon={<EyeIcon />}
             iconColor="text-blue-500 bg-blue-50"
           />
@@ -142,31 +193,38 @@ export default function AgentDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {inquiries.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 transition">
-                    <td className="px-6 py-4">
-                      <div>
-                        <p className="font-bold text-gray-900">{item.name}</p>
-                        <p className="text-xs text-gray-400">{item.email}</p>
-                      </div>
+                {inquiries.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="px-6 py-8 text-center text-gray-500">
+                      No inquiries yet. Share your properties to get inquiries!
                     </td>
-                    <td className="px-6 py-4 font-medium text-gray-700">
-                      {item.property}
-                    </td>
-                    <td className="px-6 py-4 text-gray-500">{item.date}</td>
-                    
-                    <td className="px-6 py-4 text-right">
-                      <Link
-                        to={`/chat/${item.id}`} 
-                        className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 bg-white rounded-lg shadow-sm hover:shadow-md text-sm font-bold text-gray-700 hover:text-blue-600 hover:border-blue-300 transition"
-                      >
-                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                        Chat
-                      </Link>
-                    </td>
-
                   </tr>
-                ))}
+                ) : (
+                  inquiries.map((item) => (
+                    <tr key={item.id} className="hover:bg-gray-50 transition">
+                      <td className="px-6 py-4">
+                        <div>
+                          <p className="font-bold text-gray-900">{item.buyer_name}</p>
+                          <p className="text-xs text-gray-400">{item.buyer_email}</p>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 font-medium text-gray-700">
+                        {item.property_title}
+                      </td>
+                      <td className="px-6 py-4 text-gray-500">{formatDate(item.inquiry_date)}</td>
+                      
+                      <td className="px-6 py-4 text-right">
+                        <Link
+                          to={`/chat/${item.id}`} 
+                          className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 bg-white rounded-lg shadow-sm hover:shadow-md text-sm font-bold text-gray-700 hover:text-blue-600 hover:border-blue-300 transition"
+                        >
+                          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                          Chat
+                        </Link>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
