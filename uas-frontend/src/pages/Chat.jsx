@@ -171,57 +171,6 @@ export default function Chat() {
               </div>
             </div>
           </div>
-<<<<<<< Updated upstream
-=======
-
-
-          {/* --- KOLOM KANAN: SIDEBAR INFO --- */}
-          <div className="lg:col-span-1 space-y-6">
-            
-            {/* 1. Detail Properti Card */}
-            <div className="border border-gray-200 rounded-xl p-5 shadow-sm bg-white">
-              <h3 className="font-bold text-slate-900 mb-4">Detail Properti</h3>
-              
-              <div className="rounded-lg overflow-hidden h-40 mb-4 relative">
-                <img 
-                  src="https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=600" 
-                  className="w-full h-full object-cover" 
-                  alt="Rumah Menteng"
-                />
-                <span className="absolute bottom-2 left-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded">
-                  Dijual
-                </span>
-              </div>
-
-              <h4 className="font-bold text-slate-900">Rumah di Menteng</h4>
-              <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
-                <MapPin size={12} /> Jakarta Pusat, DKI Jakarta
-              </p>
-              <p className="text-slate-900 font-bold text-lg mt-3">Rp 15.000.000.000</p>
-            </div>
-
-            {/* 2. Informasi Agen Card */}
-            <div className="border border-gray-200 rounded-xl p-5 shadow-sm bg-white text-center">
-              <h3 className="font-bold text-slate-900 mb-4 text-left">Informasi Agen</h3>
-              
-              <div className="flex flex-col items-center">
-                <img 
-                  src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150" 
-                  className="w-20 h-20 rounded-full object-cover mb-3 ring-4 ring-gray-50" 
-                  alt="Agent Profile"
-                />
-                <h4 className="font-bold text-lg text-slate-900">Budi Santoso</h4>
-                <p className="text-sm text-gray-500 mb-5">Agen Properti</p>
-                
-                <button className="w-full bg-gray-100 hover:bg-gray-200 text-slate-800 py-2.5 rounded-lg text-sm font-semibold transition">
-                  Lihat Profil
-                </button>
-              </div>
-            </div>
-
-          </div>
-
->>>>>>> Stashed changes
         </div>
       </div>
     </div>
