@@ -52,7 +52,10 @@ export default function AgentDashboard() {
         {/* Menu Items */}
         <nav className="flex-1 px-4 space-y-2 mt-4">
           <NavItem to="/dashboard" icon={<DashboardIcon />} label="Dashboard" active />
+          
           <NavItem to="/my-properties" icon={<BuildingIcon />} label="My Properties" />
+          
+          {/* 👇 INI YANG MENGHUBUNGKAN KE HALAMAN SETTINGS 👇 */}
           <NavItem to="/settings" icon={<SettingsIcon />} label="Settings" />
         </nav>
 
@@ -69,7 +72,8 @@ export default function AgentDashboard() {
         {/* Bottom Menu */}
         <div className="p-4 space-y-2 border-t border-gray-100">
           <NavItem icon={<HelpIcon />} label="Help" />
-          <NavItem icon={<LogoutIcon />} label="Logout" />
+          {/* Logout diarahkan ke Login */}
+          <NavItem to="/login" icon={<LogoutIcon />} label="Logout" />
         </div>
       </aside>
 
@@ -134,7 +138,6 @@ export default function AgentDashboard() {
                   <th className="px-6 py-4">Inquirer</th>
                   <th className="px-6 py-4">Property</th>
                   <th className="px-6 py-4">Date</th>
-                  {/* --- PERUBAHAN 1: Header diganti Interaction --- */}
                   <th className="px-6 py-4 text-right">Interaction</th>
                 </tr>
               </thead>
@@ -152,13 +155,11 @@ export default function AgentDashboard() {
                     </td>
                     <td className="px-6 py-4 text-gray-500">{item.date}</td>
                     
-                    {/* --- PERUBAHAN 2 & 3: Tombol Chat dengan Border Timbul --- */}
                     <td className="px-6 py-4 text-right">
                       <Link
-                        to={`/chat/${item.id}`} // Link ke halaman chat (sesuaikan routenya nanti)
+                        to={`/chat/${item.id}`} 
                         className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 bg-white rounded-lg shadow-sm hover:shadow-md text-sm font-bold text-gray-700 hover:text-blue-600 hover:border-blue-300 transition"
                       >
-                        {/* Ikon Chat Kecil */}
                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
                         Chat
                       </Link>
