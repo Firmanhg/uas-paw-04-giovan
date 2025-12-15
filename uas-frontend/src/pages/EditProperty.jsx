@@ -23,7 +23,7 @@ export default function EditProperty() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Updated Data:", form);
+    // TODO: Implement API call to update property
     navigate("/my-properties");
   };
 

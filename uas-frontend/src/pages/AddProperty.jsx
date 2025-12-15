@@ -29,8 +29,7 @@ export default function AddProperty() {
   // Handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitting form:", form);
-    // Simulasi sukses, kembali ke dashboard atau my properties
+    // TODO: Implement API call to save property
     alert("Property Added Successfully!");
     navigate("/my-properties");
   };

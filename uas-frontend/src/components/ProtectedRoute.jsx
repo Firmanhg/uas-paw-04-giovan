@@ -17,7 +17,7 @@ export default function ProtectedRoute({ children, requireAgent = false }) {
         setUser(response.user);
       }
     } catch (err) {
-      console.error('Auth check failed:', err);
+      // Auth check failed, redirect to login
     } finally {
       setLoading(false);
     }

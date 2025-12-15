@@ -1,16 +1,116 @@
-# React + Vite
+# Real Estate Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend aplikasi Real Estate menggunakan **React + Vite** dengan **Tailwind CSS**.
 
-Currently, two official plugins are available:
+## 🚀 Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Framework**: React 19.2.0
+- **Build Tool**: Vite 7.2.4
+- **Styling**: Tailwind CSS 4.1.0
+- **Routing**: React Router 7.10.1
+- **HTTP Client**: Axios 2.32.5
 
-## React Compiler
+## 📋 Prerequisites
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Node.js 18+ / npm 9+
+- Backend API running on `http://localhost:6543`
 
-## Expanding the ESLint configuration
+## ⚙️ Setup & Installation
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 1. Install Dependencies
+```bash
+npm install
+```
+
+### 2. Start Development Server
+```bash
+npm run dev
+```
+
+Frontend akan berjalan di: `http://localhost:5173`
+
+### 3. Build for Production
+```bash
+npm run build
+```
+
+## 📁 Project Structure
+
+```
+uas-frontend/
+├── src/
+│   ├── pages/              # Page components
+│   │   ├── Home.jsx        # Landing page
+│   │   ├── Login.jsx       # Login page
+│   │   ├── Register.jsx    # Registration page
+│   │   ├── AgentDashboard.jsx  # Agent dashboard
+│   │   ├── MyProperties.jsx    # Agent properties management
+│   │   ├── AddProperty.jsx     # Add new property
+│   │   ├── EditProperty.jsx    # Edit property
+│   │   └── Settings.jsx        # Agent settings
+│   ├── components/         # Reusable components
+│   │   ├── Navbar.jsx      # Navigation bar
+│   │   ├── Footer.jsx      # Footer
+│   │   ├── PropertyCard.jsx    # Property card
+│   │   ├── AgentCard.jsx       # Agent card
+│   │   ├── ChatBubble.jsx      # Chat bubble
+│   │   └── ProtectedRoute.jsx  # Route protection
+│   ├── services/           # API services
+│   │   ├── api.js          # Axios instance
+│   │   ├── authService.js  # Authentication API
+│   │   ├── agentService.js # Agent API
+│   │   └── propertyService.js # Property API
+│   ├── router/
+│   │   └── AppRouter.jsx   # Route definitions
+│   ├── App.jsx             # Main app component
+│   └── main.jsx            # Entry point
+├── public/                 # Static assets
+├── index.html             # HTML template
+├── vite.config.js         # Vite configuration
+└── tailwind.config.js     # Tailwind configuration
+```
+
+## 🔐 Features
+
+### Authentication
+- ✅ User registration (Agent/Buyer)
+- ✅ User login with session management
+- ✅ Protected routes with role-based access
+- ✅ Logout functionality
+
+### Agent Features
+- ✅ Dashboard with real-time statistics
+- ✅ Property management (view properties)
+- ✅ Inquiry management (view inquiries)
+- ✅ Profile settings
+- 🚧 Add/Edit/Delete properties (UI ready, API pending)
+- 🚧 Chat with buyers (UI ready, API pending)
+
+### Buyer Features
+- 🚧 Browse properties
+- 🚧 Property search & filters
+- 🚧 Favorites management
+- 🚧 Contact agents
+- 🚧 Inquiry submission
+
+## 🔌 API Integration
+
+Frontend terhubung dengan backend API di `http://localhost:6543`. Semua request menggunakan Axios dengan `withCredentials: true` untuk session management.
+
+Lihat [INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md) untuk detail integrasi.
+
+## 👥 Team Collaboration
+
+Pastikan backend sudah running sebelum menjalankan frontend. Lihat [../TEAM_SETUP.md](../TEAM_SETUP.md) untuk panduan kolaborasi tim.
+
+## 🧪 Test Accounts
+
+- Agent: `agent@test.com` / `password123`
+- Buyer: `buyer@test.com` / `password123`
+
+## 📝 Development Notes
+
+- Tailwind CSS sudah dikonfigurasi
+- Route protection sudah diimplementasi
+- API service layer sudah terstruktur
+- Error handling sudah ada di semua API calls

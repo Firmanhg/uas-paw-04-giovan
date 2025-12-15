@@ -35,7 +35,7 @@ export default function Settings({ onLogout }) {
         });
       }
     } catch (err) {
-      console.error('Failed to fetch user:', err);
+      // Error fetching user data
     } finally {
       setLoading(false);
     }

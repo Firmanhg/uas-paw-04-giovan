@@ -45,7 +45,6 @@ export default function AgentDashboard() {
       }
     } catch (err) {
       setError('Failed to load dashboard data');
-      console.error('Dashboard error:', err);
     } finally {
       setLoading(false);
     }
@@ -72,7 +71,6 @@ export default function AgentDashboard() {
       await logout();
       navigate('/login');
     } catch (err) {
-      console.error('Logout failed:', err);
       // Force logout even if API fails
       localStorage.removeItem('userRole');
       navigate('/login');

@@ -28,7 +28,7 @@ export default function MyProperties() {
         setProperties(propertiesResponse.properties);
       }
     } catch (err) {
-      console.error('Failed to fetch data:', err);
+      // Error fetching data
     } finally {
       setLoading(false);
     }

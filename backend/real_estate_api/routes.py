@@ -1,5 +1,4 @@
 def includeme(config):
-    config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
     
     # CORS preflight routes - must be before other routes
@@ -19,7 +18,6 @@ def includeme(config):
     config.add_route('agent_properties', '/api/agent/properties')
     config.add_route('agent_inquiries', '/api/agent/inquiries')
     
-    # API routes
-    config.add_route('users', '/api/users')  
-    config.add_route('properties', '/api/properties')  
-    config.add_route('property_detail', '/api/properties/{id}')  
+    # TODO: Add property CRUD routes when implemented
+    # config.add_route('properties', '/api/properties')
+    # config.add_route('property_detail', '/api/properties/{id}')  
