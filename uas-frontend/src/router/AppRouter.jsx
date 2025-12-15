@@ -15,20 +15,18 @@ import AddProperty from "../pages/AddProperty";
 import EditProperty from "../pages/EditProperty";
 import Compare from "../pages/Compare";
 import Settings from "../pages/Settings";
+import MyProperties from "../pages/Myproperty";
 
 export default function AppRouter() {
   const navigate = useNavigate();
 
-  // --- 1. DATA DUMMY USER (Agar halaman Settings tidak error) ---
   const [currentUser, setCurrentUser] = useState({
     name: "John Appleseed",
     email: "j.appleseed@realty.com",
     phone: "+1 (555) 123-4567",
   });
 
-  // --- 2. FUNGSI LOGOUT ---
   const handleLogout = () => {
-    // Di sini nanti logika hapus token/session
     alert("You have logged out!");
     navigate("/login");
   };
@@ -42,34 +40,34 @@ export default function AppRouter() {
       <Route path="/property/:id" element={<Detail />} />
       <Route path="/favorite" element={<Favorite />} />
 
-      {/* NEW FEATURE → COMPARE PAGE */}
+      {/* COMPARE */}
       <Route path="/compare" element={<Compare />} />
 
-      {/* AUTH PAGES */}
+      {/* AUTH */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* AGENT PAGES */}
+      {/* AGENT */}
       <Route path="/agent/:id" element={<AgentProfile />} />
       <Route path="/chat/:id" element={<Chat />} />
 
-      {/* DASHBOARD & PROPERTY MANAGEMENT */}
+      {/* DASHBOARD & PROPERTY */}
       <Route path="/dashboard" element={<AgentDashboard />} />
+      <Route path="/my-properties" element={<MyProperties />} /> {/* ✅ INI KUNCI */}
       <Route path="/add-property" element={<AddProperty />} />
       <Route path="/edit-property/:id" element={<EditProperty />} />
 
-      {/* 👇 3. ROUTE SETTINGS (Diupdate dengan Props) */}
-      <Route 
-        path="/settings" 
+      {/* SETTINGS */}
+      <Route
+        path="/settings"
         element={
-          <Settings 
-            user={currentUser} 
-            setUser={setCurrentUser} // Supaya bisa update nama/email
-            onLogout={handleLogout} 
+          <Settings
+            user={currentUser}
+            setUser={setCurrentUser}
+            onLogout={handleLogout}
           />
-        } 
+        }
       />
-
     </Routes>
   );
 }
