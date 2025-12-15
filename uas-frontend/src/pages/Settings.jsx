@@ -18,50 +18,55 @@ export default function Settings({ user, onLogout }) {
   };
 
   return (
-    <div className="flex min-h-screen bg-white font-sans text-gray-800">
-      {/* --- SIDEBAR (Sesuai Gambar) --- */}
-      <aside className="w-64 border-r border-gray-200 flex flex-col bg-white hidden md:flex">
+    <div className="flex min-h-screen bg-gray-50 font-sans text-gray-800">
+      {/* --- SIDEBAR (Sama dengan Dashboard) --- */}
+      <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex md:flex-col">
         {/* Profile / Brand Header */}
-        <div className="p-6 flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold shrink-0">
+        <div className="p-6 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">
             J
           </div>
-          <div className="overflow-hidden">
-            <h3 className="text-sm font-bold text-gray-900 truncate">John Appleseed</h3>
-            <p className="text-xs text-gray-500 truncate">Realty Inc.</p>
+          <div>
+            <h3 className="text-sm font-bold text-gray-900">John Appleseed</h3>
+            <p className="text-xs text-gray-500">Realty Inc.</p>
           </div>
         </div>
 
         {/* Menu Items */}
-        <nav className="flex-1 px-4 space-y-1">
+        <nav className="flex-1 px-4 space-y-2 mt-4">
           <NavItem to="/dashboard" icon={<DashboardIcon />} label="Dashboard" />
+          
           <NavItem to="/my-properties" icon={<BuildingIcon />} label="My Properties" />
-          {/* Menu Settings Aktif (Background Biru Muda) */}
+          
+          {/* Menu Settings Aktif */}
           <NavItem to="/settings" icon={<SettingsIcon />} label="Settings" active />
         </nav>
 
-        {/* Bottom Actions */}
-        <div className="p-4 space-y-4 mt-auto">
-           {/* Tombol Add New Property */}
-          <Link to="/add-property" className="block w-full py-3 bg-[#2D3748] text-white text-center text-sm font-semibold rounded-lg hover:bg-gray-800 transition">
-            Add New Property
-          </Link>
-          
-          <div className="pt-4 border-t border-gray-100 space-y-2">
-            <NavItem to="/help" icon={<HelpIcon />} label="Help" />
-            <button 
-              onClick={onLogout}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-gray-600 hover:bg-gray-50 transition text-left"
-            >
-              <LogoutIcon />
-              Logout
-            </button>
-          </div>
+        {/* --- TOMBOL ADD PROPERTY (Sama dengan Dashboard) --- */}
+        <div className="px-4 mb-4">
+           <Link 
+             to="/add-property" 
+             className="flex items-center justify-center w-full py-3 bg-gray-800 text-white font-bold rounded-lg hover:bg-gray-900 transition shadow-md"
+           >
+             Add New Property
+           </Link>
+        </div>
+
+        {/* Bottom Menu */}
+        <div className="p-4 space-y-2 border-t border-gray-100">
+          <NavItem icon={<HelpIcon />} label="Help" />
+          <button 
+            onClick={onLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-gray-600 hover:bg-gray-50 transition text-left"
+          >
+            <LogoutIcon />
+            Logout
+          </button>
         </div>
       </aside>
 
       {/* --- MAIN CONTENT (Formulir) --- */}
-      <main className="flex-1 p-8 bg-gray-50/50">
+      <main className="flex-1 p-8 overflow-y-auto">
         <h1 className="text-3xl font-extrabold text-gray-900 mb-8">My Profile</h1>
 
         {/* Card Putih Pembungkus Form */}
