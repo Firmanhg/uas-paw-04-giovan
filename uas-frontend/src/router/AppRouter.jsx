@@ -1,74 +1,157 @@
-import { Routes, Route, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
-// Pages
+/* ================= PUBLIC ================= */
 import Home from "../pages/Home";
 import Listing from "../pages/Listing";
 import Detail from "../pages/Detail";
+import Favorite from "../pages/Favorite";
+
+/* ================= AUTH ================= */
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import Favorite from "../pages/Favorite";
+
+/* ================= CHAT ================= */
+import Chat from "../pages/Chat";              // BUYER CHAT
+import ChatAgent from "../pages/ChatAgent";    // AGENT CHAT
+
+/* ================= AGENT ================= */
 import AgentProfile from "../pages/AgentProfile";
-import Chat from "../pages/Chat";
 import AgentDashboard from "../pages/AgentDashboard";
+import Myproperty from "../pages/Myproperty";
 import AddProperty from "../pages/AddProperty";
 import EditProperty from "../pages/EditProperty";
+
+/* ================= FEATURES ================= */
 import Compare from "../pages/Compare";
 import Settings from "../pages/Settings";
 
 export default function AppRouter() {
   const navigate = useNavigate();
 
-  // --- 1. DATA DUMMY USER (Agar halaman Settings tidak error) ---
-  const [currentUser, setCurrentUser] = useState({
-    name: "John Appleseed",
-    email: "j.appleseed@realty.com",
-    phone: "+1 (555) 123-4567",
-  });
+  /* ================= AUTH STATE ================= */
+  const [userRole, setUserRole] = useState(null); // buyer | agent | null
+  const [authChecked, setAuthChecked] = useState(false);
 
-  // --- 2. FUNGSI LOGOUT ---
+  /* ================= LOAD SESSION ================= */
+  useEffect(() => {
+    const savedRole = localStorage.getItem("userRole");
+    if (savedRole) {
+      setUserRole(savedRole);
+    }
+    setAuthChecked(true);
+  }, []);
+
+  /* ================= LOGOUT ================= */
   const handleLogout = () => {
-    // Di sini nanti logika hapus token/session
-    alert("You have logged out!");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("user");
+    setUserRole(null);
     navigate("/login");
   };
+
+  /* ================= LOADING ================= */
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-500">
+        Checking session...
+      </div>
+    );
+  }
 
   return (
     <Routes>
 
-      {/* PUBLIC PAGES */}
+      {/* ================= PUBLIC ================= */}
       <Route path="/" element={<Home />} />
       <Route path="/listing" element={<Listing />} />
       <Route path="/property/:id" element={<Detail />} />
       <Route path="/favorite" element={<Favorite />} />
-
-      {/* NEW FEATURE → COMPARE PAGE */}
       <Route path="/compare" element={<Compare />} />
 
-      {/* AUTH PAGES */}
-      <Route path="/login" element={<Login />} />
+      {/* ================= AUTH ================= */}
+      <Route
+        path="/login"
+        element={<Login setUserRole={setUserRole} />}
+      />
       <Route path="/register" element={<Register />} />
 
-      {/* AGENT PAGES */}
-      <Route path="/agent/:id" element={<AgentProfile />} />
-      <Route path="/chat/:id" element={<Chat />} />
-
-      {/* DASHBOARD & PROPERTY MANAGEMENT */}
-      <Route path="/dashboard" element={<AgentDashboard />} />
-      <Route path="/add-property" element={<AddProperty />} />
-      <Route path="/edit-property/:id" element={<EditProperty />} />
-
-      {/* 👇 3. ROUTE SETTINGS (Diupdate dengan Props) */}
-      <Route 
-        path="/settings" 
+      {/* ================= BUYER CHAT ================= */}
+      <Route
+        path="/chat/:agentId"
         element={
-          <Settings 
-            user={currentUser} 
-            setUser={setCurrentUser} // Supaya bisa update nama/email
-            onLogout={handleLogout} 
-          />
-        } 
+          userRole === "buyer"
+            ? <Chat />
+            : <Navigate to="/login" />
+        }
       />
+
+      {/* ================= AGENT CHAT ================= */}
+      <Route
+        path="/agent/chat/:buyerId"
+        element={
+          userRole === "agent"
+            ? <ChatAgent />
+            : <Navigate to="/login" />
+        }
+      />
+
+      {/* ================= AGENT AREA ================= */}
+      <Route
+        path="/dashboard"
+        element={
+          userRole === "agent"
+            ? <AgentDashboard />
+            : <Navigate to="/login" />
+        }
+      />
+
+      <Route
+        path="/my-properties"
+        element={
+          userRole === "agent"
+            ? <Myproperty />
+            : <Navigate to="/login" />
+        }
+      />
+
+      <Route
+        path="/add-property"
+        element={
+          userRole === "agent"
+            ? <AddProperty />
+            : <Navigate to="/login" />
+        }
+      />
+
+      <Route
+        path="/edit-property/:id"
+        element={
+          userRole === "agent"
+            ? <EditProperty />
+            : <Navigate to="/login" />
+        }
+      />
+
+      <Route path="/agent/:id" element={<AgentProfile />} />
+
+      {/* ================= SETTINGS ================= */}
+      <Route
+        path="/settings"
+        element={
+          userRole
+            ? (
+              <Settings
+                userRole={userRole}
+                onLogout={handleLogout}
+              />
+            )
+            : <Navigate to="/login" />
+        }
+      />
+
+      {/* ================= FALLBACK ================= */}
+      <Route path="*" element={<Navigate to="/" />} />
 
     </Routes>
   );
