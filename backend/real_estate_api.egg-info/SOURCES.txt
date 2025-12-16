@@ -21,6 +21,8 @@ real_estate_api/alembic/versions/README.txt
 real_estate_api/models/__init__.py
 real_estate_api/models/meta.py
 real_estate_api/models/mymodel.py
+real_estate_api/models/property.py
+real_estate_api/models/user.py
 real_estate_api/scripts/__init__.py
 real_estate_api/scripts/initialize_db.py
 real_estate_api/static/pyramid-16x16.png
