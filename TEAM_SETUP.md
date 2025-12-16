@@ -1,153 +1,237 @@
-# 🚀 Setup Database untuk Tim Development
+# 🚀 Panduan Setup untuk Tim Development
 
-## Pilihan Setup Database
+## ✅ Database Setup (SUDAH SELESAI)
 
-### Option 1: PostgreSQL Lokal (Setiap Developer)
+Project ini sudah menggunakan **Neon Cloud PostgreSQL** (Singapore region), sehingga semua developer dapat mengakses database yang sama tanpa setup tambahan.
 
-Setiap anggota tim install PostgreSQL di komputer masing-masing.
-
-#### Langkah Setup:
-
-1. **Install PostgreSQL**
-   - Download dari: https://www.postgresql.org/download/
-   - Install dengan password: `admin123` (atau sesuai kesepakatan)
-
-2. **Buat Database**
-   ```sql
-   CREATE DATABASE real_estate_db;
-   ```
-
-3. **Update Connection String**
-   Edit `backend/development.ini`:
-   ```ini
-   sqlalchemy.url = postgresql://postgres:admin123@localhost/real_estate_db
-   ```
-
-4. **Run Migrations**
-   ```bash
-   cd backend
-   alembic -c development.ini upgrade head
-   ```
-
-5. **Test Connection**
-   ```bash
-   python check_db.py
-   ```
+**Connection String:** Sudah dikonfigurasi di `backend/development.ini`
+```
+postgresql://neondb_owner:npg_R4DbEZ9xCMFq@ep-weathered-fog-a12akjml-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+```
 
 ---
 
-### Option 2: Database Cloud (Shared - Recommended)
+## 👥 Cara Teman Bergabung untuk Coding Backend
 
-Semua tim pakai database yang sama di cloud.
+### **Step 1: Clone Repository**
 
-#### A. ElephantSQL (Free 20MB)
+Teman Anda clone repository ke komputer mereka:
 
-1. Daftar: https://www.elephantsql.com/
-2. Buat instance "Tiny Turtle" (Free)
-3. Copy URL: `postgres://username:password@host.db.elephantsql.com/database`
-4. Update `development.ini`:
-   ```ini
-   sqlalchemy.url = postgres://username:password@host.db.elephantsql.com/database
-   ```
-
-#### B. Neon (Free - Modern)
-
-1. Daftar: https://neon.tech/
-2. Buat project baru
-3. Copy connection string
-4. Update `development.ini`
-
-#### C. Supabase (Free - Full Featured)
-
-1. Daftar: https://supabase.com/
-2. Buat project
-3. Dapatkan connection string di Settings → Database
-4. Update `development.ini`
+```bash
+# Clone repository (ganti dengan URL repo Anda)
+git clone <URL_REPOSITORY>
+cd uas-paw-04-giovan
+```
 
 ---
 
-### Option 3: Docker (Best Practice)
+### **Step 2: Setup Backend Environment**
 
-Gunakan Docker untuk standardisasi environment.
+```bash
+# Masuk ke folder backend
+cd backend
 
-#### Setup Docker PostgreSQL:
+# Buat virtual environment
+python -m venv venv
 
-1. **Buat file `docker-compose.yml`** di root project:
-   ```yaml
-   version: '3.8'
-   services:
-     postgres:
-       image: postgres:15
-       environment:
-         POSTGRES_USER: postgres
-         POSTGRES_PASSWORD: admin123
-         POSTGRES_DB: real_estate_db
-       ports:
-         - "5432:5432"
-       volumes:
-         - postgres_data:/var/lib/postgresql/data
+# Aktifkan virtual environment
+# Untuk Windows PowerShell:
+.\venv\Scripts\Activate.ps1
 
-   volumes:
-     postgres_data:
-   ```
+# Untuk Windows CMD:
+.\venv\Scripts\activate.bat
 
-2. **Install Docker Desktop**
-   - Download: https://www.docker.com/products/docker-desktop/
-
-3. **Jalankan Database**
-   ```bash
-   docker-compose up -d
-   ```
-
-4. **Stop Database**
-   ```bash
-   docker-compose down
-   ```
-
-5. **Connection String tetap sama**
-   ```ini
-   sqlalchemy.url = postgresql://postgres:admin123@localhost/real_estate_db
-   ```
-
-**Keuntungan Docker:**
-- ✅ Semua developer pakai versi PostgreSQL yang sama
-- ✅ Setup sekali, tinggal `docker-compose up`
-- ✅ Tidak bentrok dengan install lokal
-- ✅ Bisa share dengan `.env` file
+# Untuk Mac/Linux:
+source venv/bin/activate
+```
 
 ---
 
-### Option 4: Git + Migration Files
+### **Step 3: Install Dependencies**
 
-Share database structure via migrations, bukan database itu sendiri.
+```bash
+# Install semua package yang dibutuhkan
+pip install -e .
 
-#### Setup:
+# Verify installation
+pip list | findstr pyramid  # Windows
+pip list | grep pyramid     # Mac/Linux
+```
 
-1. **Commit migration files ke Git**
+---
+
+### **Step 4: Verify Database Connection**
+
+Database connection string sudah ada di `development.ini`, teman Anda TIDAK perlu mengubah apapun.
+
+Test koneksi:
+
+```bash
+# Test koneksi ke Neon database
+python -c "from sqlalchemy import create_engine; engine = create_engine('postgresql://neondb_owner:npg_R4DbEZ9xCMFq@ep-weathered-fog-a12akjml-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require'); conn = engine.connect(); print('✅ Connected to database!'); conn.close()"
+```
+
+---
+
+### **Step 5: Start Backend Server**
+
+```bash
+# Jalankan development server
+python -m pyramid.scripts.pserve development.ini --reload
+
+# Server akan berjalan di: http://localhost:6543
+```
+
+**Output yang diharapkan:**
+```
+Starting subprocess with file monitor
+Starting server in PID 12345.
+Serving on http://localhost:6543
+```
+
+---
+
+### **Step 6: Test API Endpoint**
+
+Buka browser atau gunakan curl/Postman untuk test:
+
+```bash
+# Test health check
+curl http://localhost:6543/
+
+# Test login (gunakan test account)
+curl -X POST http://localhost:6543/api/login \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"agent@test.com\",\"password\":\"password123\"}"
+```
+
+---
+
+## 🔄 Workflow Kolaborasi
+
+### **Sebelum Mulai Coding:**
+
+```bash
+# Pull perubahan terbaru dari Git
+git pull origin main
+
+# Pastikan virtual environment aktif
+# (venv) akan muncul di terminal
+
+# Start backend server
+python -m pyramid.scripts.pserve development.ini --reload
+```
+
+### **Saat Coding:**
+
+1. **Database Otomatis Sync** ✅
+   - Semua developer connect ke Neon Cloud yang sama
+   - Data yang di-register/login langsung tersimpan dan terlihat semua developer
+   - TIDAK perlu sync database manual
+
+2. **Backend Code Changes** 📝
+   - Edit file di `backend/real_estate_api/`
+   - Server auto-reload dengan flag `--reload`
+   - Changes langsung terlihat
+
+3. **Database Schema Changes** 🗄️
+   - Jika mengubah model (database structure):
    ```bash
-   git add backend/real_estate_api/alembic/versions/
-   git commit -m "Add database migrations"
+   # Buat migration baru
+   alembic revision --autogenerate -m "Deskripsi perubahan"
+   
+   # Apply migration
+   alembic upgrade head
+   
+   # Commit migration file ke Git
+   git add real_estate_api/alembic/versions/*
+   git commit -m "Add migration: deskripsi"
    git push
    ```
 
-2. **Teman pull dan run migrations**
-   ```bash
-   git pull
-   cd backend
-   alembic -c development.ini upgrade head
-   ```
+### **Setelah Selesai Coding:**
 
-3. **(Optional) Seed Data Script**
-   Buat script untuk insert data dummy:
-   ```bash
-   python seed_data.py
-   ```
+```bash
+# Add changes ke Git
+git add .
+
+# Commit dengan pesan yang jelas
+git commit -m "Deskripsi perubahan yang dibuat"
+
+# Push ke repository
+git push origin main
+
+# (Optional) Beritahu teman untuk pull
+```
 
 ---
 
-## 🔐 Environment Variables (.env)
+## 📊 Test Accounts (Shared Database)
 
-Untuk keamanan, jangan hardcode connection string di code.
+Semua developer bisa login dengan account berikut:
+
+| Role  | Email              | Password      | Keterangan              |
+|-------|-------------------|---------------|------------------------|
+| Agent | agent@test.com    | password123   | Test agent account     |
+| Buyer | buyer@test.com    | password123   | Test buyer account     |
+| Admin | admin@test.com    | password123   | Test admin account     |
+
+**Note:** Data registration/login yang dibuat oleh siapapun akan langsung terlihat oleh semua developer!
+
+---
+
+## 🛠️ Troubleshooting
+
+### **Problem: "No module named 'pyramid'"**
+```bash
+# Pastikan virtual environment aktif
+.\venv\Scripts\Activate.ps1  # Windows PowerShell
+
+# Install ulang dependencies
+pip install -e .
+```
+
+### **Problem: "Connection refused" atau database error**
+```bash
+# Check internet connection (Neon database di cloud)
+ping ep-weathered-fog-a12akjml-pooler.ap-southeast-1.aws.neon.tech
+
+# Verify connection string di development.ini
+# JANGAN ubah apapun, harus sama persis
+```
+
+### **Problem: "Port 6543 already in use"**
+```bash
+# Cek process yang pakai port
+netstat -ano | findstr :6543  # Windows
+
+# Kill process atau ganti port di development.ini:
+[server:main]
+listen = localhost:6544  # Ganti port
+```
+
+### **Problem: Git Merge Conflicts**
+```bash
+# Pull dengan rebase
+git pull --rebase origin main
+
+# Resolve conflicts di editor
+# Kemudian:
+git add .
+git rebase --continue
+```
+
+---
+
+## ⚠️ Important Notes
+
+1. **JANGAN Ubah `development.ini`** - Connection string sudah benar
+2. **SELALU Pull Sebelum Coding** - Hindari merge conflicts
+3. **Commit Sering** - Lebih mudah track changes
+4. **Test Sebelum Push** - Pastikan code tidak error
+5. **Komunikasi Tim** - Beritahu jika ada breaking changes
+
+---
 
 ### Setup .env:
 
