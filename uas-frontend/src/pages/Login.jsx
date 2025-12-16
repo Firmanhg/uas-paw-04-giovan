@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Eye, EyeOff, Home } from "lucide-react"; // Import icon
+import { login } from "../services/authService";
+import { Eye, EyeOff, Home } from "lucide-react";
 
 export default function Login({ setUserRole }) {
   const navigate = useNavigate();
@@ -9,24 +10,40 @@ export default function Login({ setUserRole }) {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
 
     if (!email || !password) {
-      alert("Email dan password wajib diisi");
+      setError("Email dan password wajib diisi");
       return;
     }
 
-    // ✅ LOGIKA TETAP SAMA SEPERTI KODE ASLIMU
-    localStorage.setItem("userRole", role);
-    localStorage.setItem("user", JSON.stringify({ email, role }));
-    setUserRole(role);
+    setLoading(true);
 
-    if (role === "agent") {
-      navigate("/dashboard");
-    } else {
-      navigate("/");
+    try {
+      const response = await login({ email, password });
+
+      if (response.success) {
+        // Set role ke state App
+        setUserRole(response.user.role);
+
+        // Redirect sesuai role
+        if (response.user.role === "agent") {
+          navigate("/agent/dashboard");
+        } else {
+          navigate("/");
+        }
+      } else {
+        setError(response.message || "Login gagal");
+      }
+    } catch (err) {
+      setError("Terjadi kesalahan. Silakan coba lagi.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -34,14 +51,12 @@ export default function Login({ setUserRole }) {
     <div className="w-full min-h-screen flex font-sans text-slate-800">
       
       {/* --- LEFT IMAGE SECTION --- */}
-      {/* Menggunakan width 50% (w-1/2) pada layar besar agar seimbang */}
       <div className="hidden md:block w-1/2 relative bg-gray-100">
         <img
           src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2000&auto=format&fit=crop"
           alt="Interior Rumah"
           className="w-full h-full object-cover"
         />
-        {/* Overlay tipis agar gambar tidak terlalu kontras (opsional) */}
         <div className="absolute inset-0 bg-black/10"></div>
       </div>
 
@@ -58,6 +73,13 @@ export default function Login({ setUserRole }) {
             <h1 className="text-3xl font-bold text-slate-900">Selamat Datang Kembali</h1>
             <p className="text-slate-500 mt-2 text-sm">Silakan masuk ke akun Anda</p>
           </div>
+
+          {/* ERROR MESSAGE */}
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
 
           {/* 2. Role Selector */}
           <div>
@@ -77,6 +99,7 @@ export default function Login({ setUserRole }) {
                     className="accent-slate-800 w-4 h-4"
                     checked={role === r}
                     onChange={() => setRole(r)}
+                    disabled={loading}
                   />
                   <span className="capitalize font-medium text-slate-700">{r}</span>
                 </label>
@@ -96,6 +119,7 @@ export default function Login({ setUserRole }) {
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-800 focus:bg-white transition-all text-sm"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
               />
             </div>
 
@@ -109,12 +133,14 @@ export default function Login({ setUserRole }) {
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-800 focus:bg-white transition-all text-sm pr-10"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
                 />
                 {/* Toggle Eye Icon */}
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-slate-600 transition-colors"
+                  disabled={loading}
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -131,9 +157,10 @@ export default function Login({ setUserRole }) {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full py-3.5 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-lg transition-colors shadow-lg shadow-slate-800/20"
+              className="w-full py-3.5 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-lg transition-colors shadow-lg shadow-slate-800/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading}
             >
-              Login
+              {loading ? "Loading..." : "Login"}
             </button>
           </form>
 
