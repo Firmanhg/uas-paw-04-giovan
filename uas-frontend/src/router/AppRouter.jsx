@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 
 /* ================= PUBLIC ================= */
 import Home from "../pages/Home";
-import Listing from "../pages/Listing";
+import Listing from "../pages/Listing"; // Kita pakai ini untuk halaman Properties
 import Detail from "../pages/Detail";
 import Favorite from "../pages/Favorite";
 
@@ -71,9 +71,16 @@ export default function AppRouter() {
     <Routes>
       {/* ================= PUBLIC ================= */}
       <Route path="/" element={<Home />} />
-      <Route path="/listing" element={<Listing />} />
+      
+      {/* --- PERUBAHAN DI SINI --- */}
+      {/* Ubah path="/listing" menjadi "/properties" agar sesuai Navbar */}
+      <Route path="/properties" element={<Listing />} /> 
+      
       <Route path="/property/:id" element={<Detail />} />
-      <Route path="/favorite" element={<Favorite />} />
+      
+      {/* Ubah path="/favorite" menjadi "/favorites" agar sesuai Navbar */}
+      <Route path="/favorites" element={<Favorite />} />
+      
       <Route path="/compare" element={<Compare />} />
 
       {/* ================= AUTH ================= */}
