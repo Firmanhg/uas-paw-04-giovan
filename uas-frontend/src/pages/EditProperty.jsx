@@ -1,30 +1,103 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { getPropertyById, updateProperty } from "../services/api";
 
 export default function EditProperty() {
   const navigate = useNavigate();
-  const { id } = useParams(); // Ambil ID dari URL (dummy use)
-
-  // Dummy Initial Data
+  const { id } = useParams();
+  
+  // TODO: Get actual agent_id from session/auth
+  const AGENT_ID = 1;
+  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [form, setForm] = useState({
-    title: "Modern Downtown Loft",
-    description: "Discover urban living at its finest in this stylish downtown loft. Featuring an open-concept layout, high ceilings, and floor-to-ceiling windows that flood the space with natural light. The gourmet kitchen is equipped with stainless steel appliances and granite countertops. Enjoy...",
-    price: "450,000",
-    type: "For Sale",
-    location: "123 Main Street, Metropolis, USA",
-    bedrooms: "2",
-    bathrooms: "2",
-    area: "1200",
+    title: "",
+    description: "",
+    price: "",
+    property_type: "House",
+    location: "",
+    bedrooms: "",
+    bathrooms: "",
+    area: "",
   });
+
+  useEffect(() => {
+    fetchProperty();
+  }, [id]);
+
+  const fetchProperty = async () => {
+    try {
+      setLoading(true);
+      console.log('Fetching property ID:', id);
+      const response = await getPropertyById(id);
+      
+      // Backend returns {status: "success", data: {...}}
+      // Axios wraps it in response.data, so property data is in response.data.data
+      const property = response.data.data || response.data;
+      
+      console.log('Full response:', response.data);
+      console.log('Property data:', property);
+      console.log('Property agent_id:', property.agent_id, 'Current AGENT_ID:', AGENT_ID);
+      
+      // Check if this property belongs to current agent
+      if (property.agent_id !== AGENT_ID) {
+        setError(`You do not have permission to edit this property (Owner: ${property.agent_id}, You: ${AGENT_ID})`);
+        setLoading(false);
+        return;
+      }
+      
+      setForm({
+        title: property.title || '',
+        description: property.description || '',
+        price: property.price ? property.price.toString() : '',
+        property_type: property.property_type || 'House',
+        location: property.location || '',
+        bedrooms: property.bedrooms ? property.bedrooms.toString() : '',
+        bathrooms: property.bathrooms ? property.bathrooms.toString() : '',
+        area: property.area ? property.area.toString() : '',
+      });
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching property:', err);
+      console.error('Error response:', err.response);
+      setError('Failed to load property data: ' + (err.response?.data?.error || err.message));
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Updated Data:", form);
-    navigate("/my-properties");
+    
+    try {
+      setError('');
+      
+      const updateData = {
+        title: form.title,
+        description: form.description,
+        price: parseInt(form.price),
+        property_type: form.property_type,
+        location: form.location,
+        bedrooms: parseInt(form.bedrooms),
+        bathrooms: parseInt(form.bathrooms),
+        area: parseInt(form.area),
+        agent_id: AGENT_ID
+      };
+      
+      console.log('Updating property:', updateData);
+      
+      await updateProperty(id, updateData);
+      
+      alert('Property updated successfully!');
+      navigate("/my-properties");
+    } catch (err) {
+      console.error('Error updating property:', err);
+      setError(err.response?.data?.error || 'Failed to update property');
+    }
   };
 
   // Helper styles
@@ -63,9 +136,18 @@ export default function EditProperty() {
       <main className="flex-1 p-8 md:p-12 overflow-y-auto bg-gray-50/50">
         <div className="mb-8">
            <h1 className="text-3xl font-extrabold text-gray-900">Edit Property</h1>
-           <p className="text-gray-500 mt-1">Update the details for the property listing "{form.title}".</p>
+           <p className="text-gray-500 mt-1">Update the details for the property listing.</p>
         </div>
 
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        ) : error ? (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* LEFT COLUMN: FORM */}
@@ -85,15 +167,17 @@ export default function EditProperty() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <div>
-                    <label className={labelClass}>Price ($)</label>
-                    <input type="text" name="price" value={form.price} onChange={handleChange} className={inputClass} />
+                    <label className={labelClass}>Price (IDR)</label>
+                    <input type="number" name="price" value={form.price} onChange={handleChange} className={inputClass} required />
                  </div>
                  <div>
-                    <label className={labelClass}>Type</label>
+                    <label className={labelClass}>Property Type</label>
                     <div className="relative">
-                       <select name="type" value={form.type} onChange={handleChange} className={`${inputClass} appearance-none`}>
-                         <option>For Sale</option>
-                         <option>For Rent</option>
+                       <select name="property_type" value={form.property_type} onChange={handleChange} className={`${inputClass} appearance-none`} required>
+                         <option value="House">House</option>
+                         <option value="Apartment">Apartment</option>
+                         <option value="Villa">Villa</option>
+                         <option value="Land">Land</option>
                        </select>
                        <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-500">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -110,17 +194,23 @@ export default function EditProperty() {
               <div className="grid grid-cols-3 gap-6">
                 <div>
                   <label className={labelClass}>Bedrooms</label>
-                  <input type="number" name="bedrooms" value={form.bedrooms} onChange={handleChange} className={inputClass} />
+                  <input type="number" name="bedrooms" value={form.bedrooms} onChange={handleChange} className={inputClass} required />
                 </div>
                  <div>
                   <label className={labelClass}>Bathrooms</label>
-                  <input type="number" name="bathrooms" value={form.bathrooms} onChange={handleChange} className={inputClass} />
+                  <input type="number" name="bathrooms" value={form.bathrooms} onChange={handleChange} className={inputClass} required />
                 </div>
                  <div>
-                  <label className={labelClass}>Area (sq ft)</label>
-                  <input type="number" name="area" value={form.area} onChange={handleChange} className={inputClass} />
+                  <label className={labelClass}>Area (m²)</label>
+                  <input type="number" name="area" value={form.area} onChange={handleChange} className={inputClass} required />
                 </div>
               </div>
+
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                  {error}
+                </div>
+              )}
             </form>
           </div>
 
@@ -156,6 +246,7 @@ export default function EditProperty() {
           </div>
 
         </div>
+        )}
       </main>
     </div>
   );

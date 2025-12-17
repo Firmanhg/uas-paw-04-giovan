@@ -5,6 +5,8 @@ from pyramid.paster import bootstrap, setup_logging
 from sqlalchemy.exc import OperationalError
 
 from .. import models
+from ..models.user import User
+from ..models.property import Property
 
 
 def setup_models(dbsession):
@@ -12,8 +14,52 @@ def setup_models(dbsession):
     Add or update models / fixtures in the database.
 
     """
-    model = models.mymodel.MyModel(name='one', value=1)
-    dbsession.add(model)
+    # Create sample users (agents and buyers)
+    agent1 = User(
+        name='Agus Agent',
+        email='agent@test.com',
+        password_hash='password123',  # In production, use hashed password
+        role='agent'
+    )
+    
+    buyer1 = User(
+        name='Budi Buyer',
+        email='buyer@test.com',
+        password_hash='password123',  # In production, use hashed password
+        role='buyer'
+    )
+    
+    dbsession.add(agent1)
+    dbsession.add(buyer1)
+    dbsession.flush()  # Flush to get the IDs
+    
+    # Create sample properties
+    property1 = Property(
+        title='Rumah Mewah di Bandung',
+        description='Rumah mewah dengan kolam renang dan taman luas',
+        price=850000000,
+        property_type='house',
+        location='Bandung, Jawa Barat',
+        bedrooms=4,
+        bathrooms=3,
+        area=200,
+        agent_id=agent1.id
+    )
+    
+    property2 = Property(
+        title='Apartemen Modern Jakarta Pusat',
+        description='Apartemen modern dengan view kota yang indah',
+        price=1200000000,
+        property_type='apartment',
+        location='Jakarta Pusat',
+        bedrooms=2,
+        bathrooms=1,
+        area=45,
+        agent_id=agent1.id
+    )
+    
+    dbsession.add(property1)
+    dbsession.add(property2)
 
 
 def parse_args(argv):

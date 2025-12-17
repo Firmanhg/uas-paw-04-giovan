@@ -1,38 +1,82 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { addProperty } from "../services/api";
 
 export default function AddProperty() {
   const navigate = useNavigate();
+  
+  // TODO: Get agent_id from auth context/session
+  const AGENT_ID = 1; // Hardcoded untuk sementara
 
   // State form
   const [form, setForm] = useState({
     title: "",
     location: "",
     price: "",
-    type: "Jual (For Sale)",
-    beds: "",
-    baths: "",
+    property_type: "house",
+    bedrooms: "",
+    bathrooms: "",
     area: "",
     description: "",
-    image: null,
   });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // Handle change
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
+    const { name, value } = e.target;
     setForm({
       ...form,
-      [name]: files ? files[0] : value,
+      [name]: value,
     });
   };
 
   // Handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitting form:", form);
-    // Simulasi sukses, kembali ke dashboard atau my properties
-    alert("Property Added Successfully!");
-    navigate("/my-properties");
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Prepare data for backend
+      const propertyData = {
+        title: form.title,
+        description: form.description,
+        price: parseInt(form.price),
+        property_type: form.property_type,
+        location: form.location,
+        bedrooms: parseInt(form.bedrooms) || 1,
+        bathrooms: parseInt(form.bathrooms) || 1,
+        area: parseInt(form.area) || 0,
+        agent_id: AGENT_ID,
+      };
+
+      console.log("Submitting property:", propertyData);
+      
+      const response = await addProperty(propertyData);
+      console.log("Backend response:", response.data);
+      
+      if (response.data.status === "success") {
+        alert("Property Added Successfully!");
+        navigate("/my-properties");
+      } else {
+        setError("Failed to add property: " + (response.data.message || "Unknown error"));
+      }
+    } catch (err) {
+      console.error("Error adding property:", err);
+      console.error("Error details:", err.response);
+      
+      // Tampilkan error detail dari backend
+      const errorMessage = err.response?.data?.error || 
+                          err.response?.data?.details || 
+                          err.message || 
+                          "Failed to add property. Please try again.";
+      
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Style helper
@@ -112,16 +156,19 @@ export default function AddProperty() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
-                <label className={labelClass}>Type</label>
+                <label className={labelClass}>Property Type</label>
                 <div className="relative">
                   <select
-                    name="type"
-                    value={form.type}
+                    name="property_type"
+                    value={form.property_type}
                     onChange={handleChange}
                     className={`${inputClass} appearance-none`}
                   >
-                    <option>Jual (For Sale)</option>
-                    <option>Sewa (For Rent)</option>
+                    <option value="house">House</option>
+                    <option value="apartment">Apartment</option>
+                    <option value="villa">Villa</option>
+                    <option value="land">Land</option>
+                    <option value="office">Office</option>
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
                     <svg className="fill-current h-4 w-4" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
@@ -143,7 +190,7 @@ export default function AddProperty() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className={labelClass}>Location</label>
                 <input
@@ -157,11 +204,25 @@ export default function AddProperty() {
                 />
               </div>
               <div>
+                <label className={labelClass}>Area (m²)</label>
+                <input
+                  type="number"
+                  name="area"
+                  value={form.area}
+                  onChange={handleChange}
+                  placeholder="e.g. 250"
+                  className={inputClass}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
                 <label className={labelClass}>Bedrooms</label>
                 <input
                   type="number"
-                  name="beds"
-                  value={form.beds}
+                  name="bedrooms"
+                  value={form.bedrooms}
                   onChange={handleChange}
                   placeholder="3"
                   className={inputClass}
@@ -172,8 +233,8 @@ export default function AddProperty() {
                 <label className={labelClass}>Bathrooms</label>
                 <input
                   type="number"
-                  name="baths"
-                  value={form.baths}
+                  name="bathrooms"
+                  value={form.bathrooms}
                   onChange={handleChange}
                   placeholder="2"
                   className={inputClass}
@@ -183,32 +244,20 @@ export default function AddProperty() {
             </div>
           </div>
 
-          {/* SECTION 3: PHOTOS */}
-          <div className="mb-10">
-            <h2 className="text-lg font-bold text-gray-900 mb-6 border-b border-gray-100 pb-2">
-              Photos
-            </h2>
-            <div className="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition relative cursor-pointer">
-               <input
-                  type="file"
-                  name="image"
-                  onChange={handleChange}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                />
-               <div className="text-gray-400 mb-3">
-                 <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-               </div>
-               <p className="text-sm font-medium text-gray-700">Click to upload or drag and drop</p>
-               <p className="text-xs text-gray-500 mt-1">SVG, PNG, JPG (max 5MB)</p>
+          {/* ERROR MESSAGE */}
+          {error && (
+            <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+              {error}
             </div>
-          </div>
+          )}
 
           {/* BUTTONS */}
           <div className="flex justify-end gap-4 pt-6 border-t border-gray-100">
             <button
               type="button"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/my-properties')}
               className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition"
+              disabled={loading}
             >
               Cancel
             </button>

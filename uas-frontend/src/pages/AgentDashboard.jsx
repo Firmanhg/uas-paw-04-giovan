@@ -1,38 +1,56 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAllProperties } from "../services/api";
 
 export default function AgentDashboard() {
-  // Data dummy untuk Inquiries
-  const [inquiries] = useState([
-    {
-      id: 1,
-      name: "Jane Doe",
-      email: "jane.doe@example.com",
-      property: "Modern Villa on Hilltop",
-      date: "Today, 11:34 AM",
-    },
-    {
-      id: 2,
-      name: "John Smith",
-      email: "j.smith@email.com",
-      property: "Downtown Loft Apartment",
-      date: "Yesterday, 8:15 PM",
-    },
-    {
-      id: 3,
-      name: "Emily White",
-      email: "emily.w@mail.net",
-      property: "Cozy Suburban Home",
-      date: "May 28, 2024",
-    },
-    {
-      id: 4,
-      name: "Michael Brown",
-      email: "mbrown@web.com",
-      property: "Seaside Cottage with View",
-      date: "May 27, 2024",
-    },
-  ]);
+  // TODO: Get actual agent_id from session/auth
+  const AGENT_ID = 1;
+  
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalProperties: 0,
+    recentProperties: []
+  });
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      // Fetch all properties for this agent
+      const response = await getAllProperties({ agent_id: AGENT_ID });
+      
+      // Backend returns {status: "success", data: [...]}
+      const agentProperties = response.data.data || response.data || [];
+      
+      setProperties(agentProperties);
+      
+      // Calculate stats
+      setStats({
+        totalProperties: agentProperties.length,
+        // Get 4 most recent properties (sorted by ID descending)
+        recentProperties: agentProperties
+          .sort((a, b) => b.id - a.id)
+          .slice(0, 4)
+      });
+      
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      setLoading(false);
+    }
+  };
+  
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0
+    }).format(value);
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-50 font-sans text-gray-800">
@@ -83,94 +101,129 @@ export default function AgentDashboard() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-extrabold text-gray-900">
-              Welcome back, Olivia!
+              Welcome back, Agent!
             </h1>
             <p className="text-gray-500 mt-1">
-              Here's a summary of your activity.
+              Here's a summary of your properties.
             </p>
           </div>
-          <button className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition">
+          <Link 
+            to="/my-properties"
+            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition"
+          >
             View All Properties
-          </button>
+          </Link>
         </div>
 
-        {/* STATS CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <StatCard
-            title="Total Properties Listed"
-            value="128"
-            trend="+5 this month"
-            trendColor="text-green-500"
-            icon={<BuildingIconFilled />}
-            iconColor="text-blue-500 bg-blue-50"
-          />
-          <StatCard
-            title="Total Inquiries Received"
-            value="542"
-            trend="+12% this month"
-            trendColor="text-green-500"
-            icon={<PhoneIcon />}
-            iconColor="text-blue-500 bg-blue-50"
-          />
-          <StatCard
-            title="Active Listings"
-            value="96"
-            trend="-2 from last week"
-            trendColor="text-red-500"
-            icon={<EyeIcon />}
-            iconColor="text-blue-500 bg-blue-50"
-          />
-        </div>
-
-        {/* RECENT INQUIRIES TABLE */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="flex justify-between items-center p-6 border-b border-gray-100">
-                <h2 className="text-xl font-bold text-gray-800">Recent Inquiries</h2>
-                <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium py-2 px-4 rounded-lg transition">
-                    View All Inquiries
-                </button>
-            </div>
-            
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-gray-600">
-              <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-semibold">
-                <tr>
-                  <th className="px-6 py-4">Inquirer</th>
-                  <th className="px-6 py-4">Property</th>
-                  <th className="px-6 py-4">Date</th>
-                  <th className="px-6 py-4 text-right">Interaction</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {inquiries.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 transition">
-                    <td className="px-6 py-4">
-                      <div>
-                        <p className="font-bold text-gray-900">{item.name}</p>
-                        <p className="text-xs text-gray-400">{item.email}</p>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 font-medium text-gray-700">
-                      {item.property}
-                    </td>
-                    <td className="px-6 py-4 text-gray-500">{item.date}</td>
-                    
-                    <td className="px-6 py-4 text-right">
-                      <Link
-                        to={`/chat/${item.id}`} 
-                        className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 bg-white rounded-lg shadow-sm hover:shadow-md text-sm font-bold text-gray-700 hover:text-blue-600 hover:border-blue-300 transition"
-                      >
-                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                        Chat
-                      </Link>
-                    </td>
-
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
           </div>
-        </div>
+        ) : (
+          <>
+            {/* STATS CARDS */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+              <StatCard
+                title="Total Properties Listed"
+                value={stats.totalProperties.toString()}
+                trend={stats.totalProperties > 0 ? "Properties active" : "No properties yet"}
+                trendColor="text-blue-500"
+                icon={<BuildingIconFilled />}
+                iconColor="text-blue-500 bg-blue-50"
+              />
+              <StatCard
+                title="Recent Properties"
+                value={stats.recentProperties.length.toString()}
+                trend="Latest uploads"
+                trendColor="text-green-500"
+                icon={<PhoneIcon />}
+                iconColor="text-green-500 bg-green-50"
+              />
+              <StatCard
+                title="Active Listings"
+                value={stats.totalProperties.toString()}
+                trend="Available for sale"
+                trendColor="text-purple-500"
+                icon={<EyeIcon />}
+                iconColor="text-purple-500 bg-purple-50"
+              />
+            </div>
+
+            {/* RECENT PROPERTIES TABLE */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="flex justify-between items-center p-6 border-b border-gray-100">
+                    <h2 className="text-xl font-bold text-gray-800">Recent Properties</h2>
+                    <Link
+                      to="/my-properties"
+                      className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium py-2 px-4 rounded-lg transition"
+                    >
+                        View All Properties
+                    </Link>
+                </div>
+                
+              {stats.recentProperties.length === 0 ? (
+                <div className="p-12 text-center">
+                  <p className="text-gray-500 mb-4">No properties yet</p>
+                  <Link
+                    to="/add-property"
+                    className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition"
+                  >
+                    Add Your First Property
+                  </Link>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm text-gray-600">
+                    <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-semibold">
+                      <tr>
+                        <th className="px-6 py-4">Property</th>
+                        <th className="px-6 py-4">Type</th>
+                        <th className="px-6 py-4">Location</th>
+                        <th className="px-6 py-4">Price</th>
+                        <th className="px-6 py-4 text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {stats.recentProperties.map((property) => (
+                        <tr key={property.id} className="hover:bg-gray-50 transition">
+                          <td className="px-6 py-4">
+                            <div>
+                              <p className="font-bold text-gray-900">{property.title}</p>
+                              <p className="text-xs text-gray-400">
+                                {property.bedrooms} BR • {property.bathrooms} BA • {property.area} m²
+                              </p>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded">
+                              {property.property_type}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 font-medium text-gray-700">
+                            {property.location}
+                          </td>
+                          <td className="px-6 py-4 text-gray-900 font-bold">
+                            {formatCurrency(property.price)}
+                          </td>
+                          
+                          <td className="px-6 py-4 text-right">
+                            <Link
+                              to={`/edit-property/${property.id}`} 
+                              className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 bg-white rounded-lg shadow-sm hover:shadow-md text-sm font-bold text-gray-700 hover:text-blue-600 hover:border-blue-300 transition"
+                            >
+                              Edit
+                            </Link>
+                          </td>
+
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </main>
     </div>
   );

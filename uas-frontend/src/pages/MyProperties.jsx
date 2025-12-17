@@ -1,41 +1,50 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAllProperties, deleteProperty } from "../services/api";
 
 export default function MyProperties() {
-  // Dummy Data Properti
-  const [properties, setProperties] = useState([
-    {
-      id: 1,
-      title: "Modern Villa in South Jakarta",
-      price: 2500000000,
-      location: "Jakarta Selatan",
-      type: "Sale",
-      status: "Published",
-      image: "https://images.unsplash.com/photo-1600596542815-2a4d9f0152ba?q=80&w=200&auto=format&fit=crop",
-    },
-    {
-      id: 2,
-      title: "Luxury Apartment SCBD",
-      price: 3500000000,
-      location: "SCBD Jakarta",
-      type: "Rent",
-      status: "Draft",
-      image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=200&auto=format&fit=crop",
-    },
-    {
-      id: 3,
-      title: "Cozy Family House",
-      price: 1200000000,
-      location: "Depok",
-      type: "Sale",
-      status: "Published",
-      image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b91d?q=80&w=200&auto=format&fit=crop",
-    },
-  ]);
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // TODO: Get agent_id from auth context/session
+  const AGENT_ID = 1; // Hardcoded untuk sementara
 
-  const handleDelete = (id) => {
+  // Fetch properties from backend
+  useEffect(() => {
+    fetchProperties();
+  }, []);
+
+  const fetchProperties = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Filter by agent_id untuk hanya menampilkan property milik agent ini
+      const response = await getAllProperties({ agent_id: AGENT_ID });
+      
+      if (response.data.status === "success") {
+        setProperties(response.data.data);
+      }
+    } catch (err) {
+      console.error("Error fetching properties:", err);
+      setError("Failed to load properties. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this property?")) {
-      setProperties(properties.filter((p) => p.id !== id));
+      try {
+        await deleteProperty(id, AGENT_ID);
+        // Refresh list setelah delete
+        fetchProperties();
+        alert("Property deleted successfully!");
+      } catch (err) {
+        console.error("Error deleting property:", err);
+        alert("Failed to delete property. Please try again.");
+      }
     }
   };
 
@@ -82,52 +91,68 @@ export default function MyProperties() {
             </Link>
         </div>
 
+        {/* LOADING & ERROR STATES */}
+        {loading && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-10 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading properties...</p>
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700">
+            {error}
+          </div>
+        )}
+
         {/* PROPERTY TABLE */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table className="w-full text-left text-sm text-gray-600">
-            <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-semibold border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-4">Property</th>
-                <th className="px-6 py-4">Location</th>
-                <th className="px-6 py-4">Type</th>
-                <th className="px-6 py-4">Price</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {properties.map((p) => (
-                <tr key={p.id} className="hover:bg-gray-50 transition">
-                  <td className="px-6 py-4 flex items-center gap-4">
-                    <img src={p.image} alt={p.title} className="w-16 h-12 rounded object-cover" />
-                    <span className="font-bold text-gray-900">{p.title}</span>
-                  </td>
-                  <td className="px-6 py-4">{p.location}</td>
-                  <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded text-xs font-bold ${p.type === 'Sale' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
-                          {p.type}
-                      </span>
-                  </td>
-                  <td className="px-6 py-4 font-medium text-gray-900">Rp {p.price.toLocaleString("id-ID")}</td>
-                  <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-bold ${p.status === 'Published' ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'}`}>
-                          {p.status}
-                      </span>
-                  </td>
-                  <td className="px-6 py-4 text-right space-x-3">
-                    <Link to={`/edit-property/${p.id}`} className="text-blue-600 hover:underline font-medium">Edit</Link>
-                    <button onClick={() => handleDelete(p.id)} className="text-red-500 hover:underline font-medium">Delete</button>
-                  </td>
+        {!loading && !error && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <table className="w-full text-left text-sm text-gray-600">
+              <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-semibold border-b border-gray-200">
+                <tr>
+                  <th className="px-6 py-4">Property</th>
+                  <th className="px-6 py-4">Location</th>
+                  <th className="px-6 py-4">Type</th>
+                  <th className="px-6 py-4">Price</th>
+                  <th className="px-6 py-4">Rooms</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          {properties.length === 0 && (
-              <div className="p-10 text-center text-gray-500">
-                  No properties found. Click "Add Property" to start.
-              </div>
-          )}
-        </div>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {properties.map((p) => (
+                  <tr key={p.id} className="hover:bg-gray-50 transition">
+                    <td className="px-6 py-4 flex items-center gap-4">
+                      <div className="w-16 h-12 rounded bg-gray-200 flex items-center justify-center text-gray-400 text-xs">
+                        No Image
+                      </div>
+                      <span className="font-bold text-gray-900">{p.title}</span>
+                    </td>
+                    <td className="px-6 py-4">{p.location}</td>
+                    <td className="px-6 py-4">
+                        <span className="px-2 py-1 rounded text-xs font-bold bg-blue-100 text-blue-700 capitalize">
+                            {p.property_type}
+                        </span>
+                    </td>
+                    <td className="px-6 py-4 font-medium text-gray-900">Rp {p.price.toLocaleString("id-ID")}</td>
+                    <td className="px-6 py-4 text-sm">
+                      🛏️ {p.bedrooms} | 🚿 {p.bathrooms}
+                    </td>
+                    <td className="px-6 py-4 text-right space-x-3">
+                      <Link to={`/edit-property/${p.id}`} className="text-blue-600 hover:underline font-medium">Edit</Link>
+                      <button onClick={() => handleDelete(p.id)} className="text-red-500 hover:underline font-medium">Delete</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {properties.length === 0 && (
+                <div className="p-10 text-center text-gray-500">
+                    No properties found. Click "Add Property" to start.
+                </div>
+            )}
+          </div>
+        )}
       </main>
     </div>
   );
