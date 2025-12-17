@@ -44,33 +44,34 @@ export default function MyProperties() {
       {/* --- SIDEBAR --- */}
       <aside className="hidden md:block w-64 bg-white border-r border-gray-200">
         <div className="flex flex-col h-full">
-        <div className="p-6 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">{user?.name?.[0]?.toUpperCase() || 'A'}</div>
-          <div>
-            <h3 className="text-sm font-bold text-gray-900">{user?.name || 'Agent'}</h3>
-            <p className="text-xs text-gray-500">Realty Inc.</p>
+          <div className="p-6 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">A</div>
+            <div>
+              <h3 className="text-sm font-bold text-gray-900">Agent</h3>
+              <p className="text-xs text-gray-500">Realty Inc.</p>
+            </div>
           </div>
-        </div>
 
-        <nav className="flex-1 px-4 space-y-2 mt-4">
-          <NavItem to="/dashboard" icon={<DashboardIcon />} label="Dashboard" />
-          {/* Active State di sini */}
-          <NavItem to="/my-properties" icon={<BuildingIcon />} label="My Properties" active />
-          <NavItem to="/settings" icon={<SettingsIcon />} label="Settings" />
-        </nav>
+          <nav className="flex-1 px-4 space-y-2 mt-4">
+            <NavItem to="/dashboard" icon={<DashboardIcon />} label="Dashboard" />
+            {/* Active State di sini */}
+            <NavItem to="/my-properties" icon={<BuildingIcon />} label="My Properties" active />
+            <NavItem to="/settings" icon={<SettingsIcon />} label="Settings" />
+          </nav>
 
-        <div className="px-4 mb-4">
-           <Link 
-             to="/add-property" 
-             className="flex items-center justify-center w-full py-3 bg-gray-800 text-white font-bold rounded-lg hover:bg-gray-900 transition shadow-md"
-           >
-             + Add New
-           </Link>
-        </div>
+          <div className="px-4 mb-4">
+            <Link 
+              to="/add-property" 
+              className="flex items-center justify-center w-full py-3 bg-gray-800 text-white font-bold rounded-lg hover:bg-gray-900 transition shadow-md"
+            >
+              + Add New
+            </Link>
+          </div>
 
-        <div className="p-4 space-y-2 border-t border-gray-100">
-          <NavItem icon={<HelpIcon />} label="Help" />
-          <NavItem to="/login" icon={<LogoutIcon />} label="Logout" />
+          <div className="p-4 space-y-2 border-t border-gray-100">
+            <NavItem icon={<HelpIcon />} label="Help" />
+            <NavItem to="/login" icon={<LogoutIcon />} label="Logout" />
+          </div>
         </div>
       </aside>
 
