@@ -9,7 +9,7 @@ export default function Register() {
     <div className="w-full min-h-screen grid grid-cols-1 md:grid-cols-2 font-sans text-gray-800">
       
       {/* LEFT SIDE - IMAGE */}
-      <div className="hidden md:block relative h-screen sticky top-0">
+      <div className="hidden md:block h-screen sticky top-0">
         <img 
             // GAMBAR  Modern Architecture House 
             src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop" 

@@ -3,25 +3,12 @@ from pyramid.response import Response
 
 @view_config(route_name='home', renderer='json')
 def home_view(request):
+    """API health check endpoint"""
     return {
-        "message": "API Real Estate - Iterasi 1",
-        "status": "success"
+        "message": "Real Estate API",
+        "status": "success",
+        "version": "1.0"
     }
 
-# Contoh: daftar user (untuk otentikasi)
-@view_config(route_name='users', renderer='json', request_method='GET')
-def list_users(request):
-    return [
-        {
-            "id": 1,
-            "name": "Agus Agent",
-            "email": "agus@example.com",
-            "role": "agent"
-        },
-        {
-            "id": 2,
-            "name": "Budi Buyer",
-            "email": "budi@example.com",
-            "role": "buyer"
-        }
-    ]
+# TODO: Old dummy endpoints removed - now using real database endpoints
+# See views/property.py for actual property endpoints
