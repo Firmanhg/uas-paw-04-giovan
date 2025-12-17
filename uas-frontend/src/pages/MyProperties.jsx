@@ -42,11 +42,12 @@ export default function MyProperties() {
   return (
     <div className="flex min-h-screen bg-gray-50 font-sans text-gray-800">
       {/* --- SIDEBAR --- */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col hidden md:flex">
+      <aside className="hidden md:block w-64 bg-white border-r border-gray-200">
+        <div className="flex flex-col h-full">
         <div className="p-6 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">J</div>
+          <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">{user?.name?.[0]?.toUpperCase() || 'A'}</div>
           <div>
-            <h3 className="text-sm font-bold text-gray-900">John Appleseed</h3>
+            <h3 className="text-sm font-bold text-gray-900">{user?.name || 'Agent'}</h3>
             <p className="text-xs text-gray-500">Realty Inc.</p>
           </div>
         </div>
