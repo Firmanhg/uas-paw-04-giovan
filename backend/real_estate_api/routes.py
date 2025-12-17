@@ -1,6 +1,37 @@
 def includeme(config):
-    config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
-    config.add_route('users', '/api/users')  
-    config.add_route('properties', '/api/properties')  
-    config.add_route('property_detail', '/api/properties/{id}')  
+    
+    # CORS preflight routes - must be before other routes
+    config.add_route('cors_register', '/api/register', request_method='OPTIONS')
+    config.add_route('cors_login', '/api/login', request_method='OPTIONS')
+    config.add_route('cors_logout', '/api/logout', request_method='OPTIONS')
+    config.add_route('cors_me', '/api/me', request_method='OPTIONS')
+    
+    # Authentication routes
+    config.add_route('register', '/api/register')
+    config.add_route('login', '/api/login')
+    config.add_route('logout', '/api/logout')
+    config.add_route('me', '/api/me')
+    
+    # Agent Dashboard routes
+    config.add_route('agent_stats', '/api/agent/stats')
+    config.add_route('agent_properties', '/api/agent/properties')
+    config.add_route('agent_inquiries', '/api/agent/inquiries')
+    
+    # Property routes
+    config.add_route('properties_list', '/api/properties', request_method='GET')
+    config.add_route('create_property', '/api/properties', request_method='POST')
+    config.add_route('property_detail', '/api/properties/{id}', request_method='GET')
+    config.add_route('update_property', '/api/properties/{id}', request_method='PUT')
+    config.add_route('delete_property', '/api/properties/{id}', request_method='DELETE')
+    config.add_route('search_properties', '/api/properties/search')
+    
+    # Favorites routes
+    config.add_route('add_favorite', '/api/favorites', request_method='POST')
+    config.add_route('get_favorites', '/api/favorites', request_method='GET')
+    config.add_route('remove_favorite', '/api/favorites/{id}', request_method='DELETE')
+    
+    # Inquiry routes
+    config.add_route('create_inquiry', '/api/inquiries', request_method='POST')
+    config.add_route('get_buyer_inquiries', '/api/inquiries/buyer')
+    config.add_route('get_all_inquiries', '/api/inquiries', request_method='GET')  
