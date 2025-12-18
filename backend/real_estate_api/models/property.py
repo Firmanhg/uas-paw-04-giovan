@@ -14,6 +14,7 @@ class Property(Base):
     location = Column(String(100))
     bedrooms = Column(Integer, default=1)
     bathrooms = Column(Integer, default=1)
+    area = Column(Integer, default=0)
     land_size = Column(Integer)  # dalam m2
     building_size = Column(Integer)  # dalam m2
     agent_id = Column(Integer, ForeignKey('users.id'))

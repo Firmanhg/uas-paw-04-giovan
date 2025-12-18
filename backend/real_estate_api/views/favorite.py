@@ -89,6 +89,15 @@ def add_favorite(request):
         }
 
 
+
+@view_config(route_name='cors_favorites', renderer='json', request_method='OPTIONS')
+@view_config(route_name='cors_favorite_delete', renderer='json', request_method='OPTIONS')
+def cors_favorites_options(request):
+    """Handle CORS preflight for /api/favorites endpoints"""
+    # Return empty JSON; CORS response headers are added by NewResponse subscriber
+    return {}
+
+
 @view_config(route_name='get_favorites', renderer='json', request_method='GET')
 def get_favorites(request):
     """

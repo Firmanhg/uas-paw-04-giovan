@@ -68,6 +68,7 @@ def create_property(request):
             location=data['location'],
             bedrooms=data.get('bedrooms', 1),
             bathrooms=data.get('bathrooms', 1),
+            area=data.get('area', 0),
             land_size=data.get('land_size', 0),
             building_size=data.get('building_size', 0),
             agent_id=agent_id,

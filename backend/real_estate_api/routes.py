@@ -30,6 +30,9 @@ def includeme(config):
     config.add_route('property_detail', '/api/properties/{id}')  # GET, PUT, DELETE
     
     # Favorites routes
+    # CORS preflight for favorites
+    config.add_route('cors_favorites', '/api/favorites', request_method='OPTIONS')
+    config.add_route('cors_favorite_delete', '/api/favorites/{id}', request_method='OPTIONS')
     config.add_route('add_favorite', '/api/favorites', request_method='POST')
     config.add_route('get_favorites', '/api/favorites', request_method='GET')
     config.add_route('remove_favorite', '/api/favorites/{id}', request_method='DELETE')

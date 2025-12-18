@@ -4,7 +4,8 @@ import {
   MapPin, Heart, BedDouble, Bath, Square, Scaling, 
   Phone, MessageCircle, Image as ImageIcon, ChevronLeft, ChevronRight 
 } from "lucide-react";
-import { getPropertyById } from "../services/api";
+import { getPropertyById, addToFavorites as addToFavoritesAPI, getFavorites as getFavoritesAPI, removeFavorite as removeFavoriteAPI } from "../services/api";
+import { getCurrentUser } from "../services/authService";
 
 // Favorite localStorage helpers
 const getFavorites = () =>
@@ -20,10 +21,42 @@ export default function Detail() {
   const [favoriteList, setFavoriteList] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Load favorites on mount
+  // Load favorites on mount: prefer server-side favorites when user is logged in
   useEffect(() => {
-    setFavoriteList(getFavorites());
+    const user = getCurrentUser();
+    if (user) {
+      fetchServerFavorites();
+    } else {
+      setFavoriteList(getFavorites());
+    }
   }, []);
+
+  const fetchServerFavorites = async () => {
+    try {
+      const resp = await getFavoritesAPI();
+      if (resp.data && resp.data.success) {
+        // Map server favorites to the local shape used in this component
+        const mapped = resp.data.favorites.map((f) => {
+          const p = f.property || {};
+          return {
+            id: p.id,
+            title: p.title,
+            location: p.location,
+            price: p.price,
+            bedrooms: p.bedrooms,
+            bathrooms: p.bathrooms,
+            area: p.area,
+            property_type: p.property_type,
+            img: p.thumbnail || (p.images && p.images[0]) || null,
+            favorite_id: f.id
+          };
+        });
+        setFavoriteList(mapped);
+      }
+    } catch (err) {
+      console.error('Failed to load server favorites', err);
+    }
+  };
 
   // Fetch property detail from backend
   useEffect(() => {
@@ -68,14 +101,41 @@ export default function Detail() {
 
   const toggleFavorite = () => {
     if (!property) return;
-    
+
+    const user = getCurrentUser();
     const exists = favoriteList.find((p) => p.id === parseInt(property.id));
+
+    // If user logged in, use backend API to add/remove favorites
+    if (user) {
+      (async () => {
+        try {
+          if (exists) {
+            // Need favorite_id to remove; fetch server favorites to find it
+            const resp = await getFavoritesAPI();
+            if (resp.data && resp.data.success) {
+              const serverFav = resp.data.favorites.find(f => f.property && f.property.id === parseInt(property.id));
+              if (serverFav) {
+                await removeFavoriteAPI(serverFav.id);
+              }
+            }
+            await fetchServerFavorites();
+          } else {
+            await addToFavoritesAPI(parseInt(property.id));
+            await fetchServerFavorites();
+          }
+        } catch (err) {
+          console.error('Favorite API error', err);
+          alert('Failed to update favorites');
+        }
+      })();
+      return;
+    }
+
+    // Fallback: use localStorage for unauthenticated users
     let updated;
     if (exists) {
-      // Remove from favorites
       updated = favoriteList.filter((p) => p.id !== parseInt(property.id));
     } else {
-      // Add to favorites
       const favoriteData = {
         id: parseInt(property.id),
         title: property.title,
