@@ -5,9 +5,30 @@ import zope.sqlalchemy
 
 # Import or define all models here to ensure they are attached to the
 # ``Base.metadata`` prior to any initialization routines.
-from .mymodel import MyModel  # flake8: noqa
 from .user import User  # flake8: noqa
 from .property import Property  # flake8: noqa
+
+# Import base for defining additional models
+from .meta import Base
+from sqlalchemy import Column, Integer, ForeignKey, Text, DateTime
+from datetime import datetime
+
+# Define Favorite model
+class Favorite(Base):
+    __tablename__ = 'favorites'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
+    property_id = Column(Integer, ForeignKey('properties.id', ondelete='CASCADE'))
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+# Define Inquiry model
+class Inquiry(Base):
+    __tablename__ = 'inquiries'
+    id = Column(Integer, primary_key=True)
+    buyer_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
+    property_id = Column(Integer, ForeignKey('properties.id', ondelete='CASCADE'))
+    message = Column(Text, nullable=False)
+    date = Column(DateTime, default=datetime.utcnow)
 
 # Run ``configure_mappers`` after defining all of the models to ensure
 # all relationships can be setup.
