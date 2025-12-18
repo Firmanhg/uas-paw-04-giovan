@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Settings({ user, onLogout }) {
+  const navigate = useNavigate();
+  
   // State untuk data form (Default value diambil dari props user atau dummy)
   const [formData, setFormData] = useState({
     name: user?.name || "John Doe",
@@ -54,10 +56,16 @@ export default function Settings({ user, onLogout }) {
 
         {/* Bottom Menu */}
         <div className="p-4 space-y-2 border-t border-gray-100">
-          <NavItem icon={<HelpIcon />} label="Help" />
+          <button 
+            onClick={() => navigate('/help')}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-gray-600 hover:bg-gray-50 transition text-left cursor-pointer"
+          >
+            <HelpIcon />
+            <span>Help</span>
+          </button>
           <button 
             onClick={onLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-gray-600 hover:bg-gray-50 transition text-left"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-gray-600 hover:bg-gray-50 transition text-left cursor-pointer"
           >
             <LogoutIcon />
             Logout

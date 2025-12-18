@@ -25,6 +25,7 @@ import MyProperties from "../pages/MyProperties";
 /* ================= FEATURES ================= */
 import Compare from "../pages/Compare";
 import Settings from "../pages/Settings";
+import Help from "../pages/Help";
 
 export default function AppRouter() {
   const navigate = useNavigate();
@@ -111,6 +112,9 @@ export default function AppRouter() {
           />
         }
       />
+
+      {/* ================= HELP ================= */}
+      <Route path="/help" element={<Help />} />
 
       {/* ================= FALLBACK ================= */}
       <Route path="*" element={<Navigate to="/" />} />

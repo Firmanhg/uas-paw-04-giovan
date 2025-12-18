@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getAllProperties } from "../services/api";
 
 export default function AgentDashboard() {
+  const navigate = useNavigate();
   // TODO: Get actual agent_id from session/auth
   const AGENT_ID = 1;
   
@@ -89,7 +90,13 @@ export default function AgentDashboard() {
 
         {/* Bottom Menu */}
         <div className="p-4 space-y-2 border-t border-gray-100">
-          <NavItem icon={<HelpIcon />} label="Help" />
+          <button 
+            onClick={() => navigate('/help')}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-gray-600 hover:bg-gray-50 transition text-left cursor-pointer"
+          >
+            <HelpIcon />
+            <span>Help</span>
+          </button>
           {/* Logout diarahkan ke Login */}
           <NavItem to="/login" icon={<LogoutIcon />} label="Logout" />
         </div>

@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getAllProperties, deleteProperty } from "../services/api";
 
 export default function MyProperties() {
+  const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -78,7 +79,13 @@ export default function MyProperties() {
           </div>
 
           <div className="p-4 space-y-2 border-t border-gray-100">
-            <NavItem icon={<HelpIcon />} label="Help" />
+            <button 
+              onClick={() => navigate('/help')}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-gray-600 hover:bg-gray-50 transition text-left cursor-pointer"
+            >
+              <HelpIcon />
+              <span>Help</span>
+            </button>
             <NavItem to="/login" icon={<LogoutIcon />} label="Logout" />
           </div>
         </div>
