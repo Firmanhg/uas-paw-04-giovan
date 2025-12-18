@@ -138,6 +138,21 @@ export default function Listing() {
     saveCompare(updated);
   };
 
+  // Sort properties based on selected sort option
+  const sortedProperties = [...properties].sort((a, b) => {
+    if (sort === "newest") {
+      // Sort by ID descending (assuming higher ID = newer)
+      return b.id - a.id;
+    } else if (sort === "price_low") {
+      // Price: Low to High (termurah ke termahal)
+      return a.price - b.price;
+    } else if (sort === "price_high") {
+      // Price: High to Low (termahal ke termurah)
+      return b.price - a.price;
+    }
+    return 0;
+  });
+
   return (
     <div className="bg-white min-h-screen pb-20 pt-8 font-sans text-slate-800">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -276,7 +291,7 @@ export default function Listing() {
                   'Loading properties...'
                 ) : (
                   <>
-                    Showing <span className="font-bold text-slate-900">1-{Math.min(12, properties.length)}</span> of <span className="font-bold text-slate-900">{properties.length}</span> properties
+                    Showing <span className="font-bold text-slate-900">1-{Math.min(12, sortedProperties.length)}</span> of <span className="font-bold text-slate-900">{sortedProperties.length}</span> properties
                   </>
                 )}
              </p>
@@ -303,7 +318,7 @@ export default function Listing() {
           )}
 
           {/* Empty State */}
-          {!loading && properties.length === 0 && (
+          {!loading && sortedProperties.length === 0 && (
             <div className="text-center py-20">
               <p className="text-gray-500 text-lg mb-2">No properties found</p>
               <p className="text-gray-400 text-sm">Try adjusting your filters</p>
@@ -311,9 +326,9 @@ export default function Listing() {
           )}
 
           {/* Grid Card */}
-          {!loading && properties.length > 0 && (
+          {!loading && sortedProperties.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {properties.map((p) => (
+              {sortedProperties.map((p) => (
                 <div
                   key={p.id}
                   className="bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 group"

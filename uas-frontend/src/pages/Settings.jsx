@@ -78,7 +78,7 @@ export default function Settings({ user, onLogout }) {
         <h1 className="text-3xl font-extrabold text-gray-900 mb-8">My Profile</h1>
 
         {/* Card Putih Pembungkus Form */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 max-w-4xl">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
           
           {/* SECTION 1: Personal Information */}
           <h2 className="text-lg font-bold text-gray-900 mb-6">Personal Information</h2>
@@ -117,7 +117,7 @@ export default function Settings({ user, onLogout }) {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              className="w-full md:w-1/2 px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
             />
           </div>
 
@@ -133,7 +133,7 @@ export default function Settings({ user, onLogout }) {
                 name="currentPassword"
                 value={formData.currentPassword}
                 onChange={handleChange}
-                className="w-full md:w-1/2 px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
               />
           </div>
 
@@ -163,13 +163,7 @@ export default function Settings({ user, onLogout }) {
           <hr className="border-gray-100 mb-8" />
 
           {/* BUTTON ACTIONS */}
-          <div className="flex justify-end gap-4">
-            <button 
-                onClick={onLogout}
-                className="px-6 py-2.5 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition"
-            >
-              Logout
-            </button>
+          <div className="flex justify-end">
             <button className="px-6 py-2.5 bg-[#2D3748] text-white font-medium rounded-lg hover:bg-gray-800 transition shadow-lg shadow-gray-200">
               Update Profile
             </button>
