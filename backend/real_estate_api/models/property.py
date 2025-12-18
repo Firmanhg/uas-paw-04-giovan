@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from .meta import Base
 
@@ -14,4 +14,6 @@ class Property(Base):
     bathrooms = Column(Integer, default=1)
     area = Column(Integer)  # dalam m2
     agent_id = Column(Integer, ForeignKey('users.id'))
+    images = Column(JSON)  # Array of base64 images
+    img = Column(Text)  # Legacy single image support
     agent = relationship("User", backref="properties")

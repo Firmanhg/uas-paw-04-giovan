@@ -11,6 +11,7 @@ export default function EditProperty() {
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -57,6 +58,15 @@ export default function EditProperty() {
         bathrooms: property.bathrooms ? property.bathrooms.toString() : '',
         area: property.area ? property.area.toString() : '',
       });
+      
+      // Set existing images if available
+      if (property.images && Array.isArray(property.images)) {
+        setImagePreviews(property.images);
+      } else if (property.img) {
+        // Fallback for single image
+        setImagePreviews([property.img]);
+      }
+      
       setLoading(false);
     } catch (err) {
       console.error('Error fetching property:', err);
@@ -68,6 +78,37 @@ export default function EditProperty() {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  // Handle multiple image upload
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    
+    if (files.length === 0) return;
+
+    // Process each file
+    files.forEach(file => {
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        alert(`${file.name} is not an image file`);
+        return;
+      }
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreviews(prev => [...prev, reader.result]);
+      };
+      reader.readAsDataURL(file);
+    });
+    
+    // Reset input
+    e.target.value = null;
+  };
+
+  // Remove single image
+  const handleRemoveImage = (index) => {
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
@@ -87,6 +128,11 @@ export default function EditProperty() {
         area: parseInt(form.area),
         agent_id: AGENT_ID
       };
+      
+      // Add images array
+      if (imagePreviews.length > 0) {
+        updateData.images = imagePreviews;
+      }
       
       console.log('Updating property:', updateData);
       
@@ -216,30 +262,70 @@ export default function EditProperty() {
 
           {/* RIGHT COLUMN: PHOTOS & ACTIONS */}
           <div className="space-y-6">
-             {/* Photo Grid */}
+             {/* Photos Upload */}
              <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                 <h2 className="text-lg font-bold text-gray-900 mb-4">Property Photos</h2>
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                   <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=200" className="rounded-lg w-full h-24 object-cover" alt="1"/>
-                   <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=200" className="rounded-lg w-full h-24 object-cover" alt="2"/>
-                   <img src="https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?q=80&w=200" className="rounded-lg w-full h-24 object-cover" alt="3"/>
-                   <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=200" className="rounded-lg w-full h-24 object-cover" alt="4"/>
-                </div>
+                
+                {/* Image Previews Grid */}
+                {imagePreviews.length > 0 && (
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    {imagePreviews.map((preview, index) => (
+                      <div key={index} className="relative group">
+                        <img 
+                          src={preview} 
+                          className="rounded-lg w-full h-32 object-cover" 
+                          alt={`Property ${index + 1}`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(index)}
+                          className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 transition opacity-0 group-hover:opacity-100"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                        <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                          {index + 1}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {/* Upload Area */}
-                <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 cursor-pointer transition">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                  id="edit-image-upload"
+                  multiple
+                />
+                <label
+                  htmlFor="edit-image-upload"
+                  className="border-2 border-dashed border-gray-200 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 cursor-pointer transition block"
+                >
                    <svg className="w-6 h-6 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                   <p className="text-sm font-bold text-gray-700">Click to upload or drag & drop</p>
-                   <p className="text-xs text-gray-400 mt-1">PNG, JPG, GIF up to 10MB</p>
-                </div>
+                   <p className="text-sm font-bold text-gray-700">Click to upload multiple images</p>
+                   <p className="text-xs text-gray-400 mt-1">PNG, JPG, GIF - All sizes supported</p>
+                </label>
              </div>
 
              {/* Action Buttons */}
              <div className="flex gap-3">
-               <button onClick={handleSubmit} className="flex-1 bg-slate-800 text-white font-bold py-3 px-4 rounded-lg hover:bg-slate-900 transition">
+               <button 
+                 type="button"
+                 onClick={handleSubmit} 
+                 className="flex-1 bg-slate-800 text-white font-bold py-3 px-4 rounded-lg hover:bg-slate-900 transition"
+               >
                  Update Property
                </button>
-               <button onClick={() => navigate('/my-properties')} className="flex-1 bg-white border border-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg hover:bg-gray-50 transition">
+               <button 
+                 type="button"
+                 onClick={() => navigate('/my-properties')} 
+                 className="flex-1 bg-white border border-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg hover:bg-gray-50 transition"
+               >
                  Cancel
                </button>
              </div>

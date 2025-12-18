@@ -336,7 +336,11 @@ export default function Listing() {
                   {/* Image & Badge */}
                   <div className="relative h-56">
                     <img
-                      src={p.img || "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"}
+                      src={
+                        p.images && p.images.length > 0 
+                          ? p.images[0] 
+                          : p.img || "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                      }
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       alt={p.title}
                     />
@@ -344,6 +348,15 @@ export default function Listing() {
                     <span className="absolute top-4 left-4 px-3 py-1 text-xs font-bold text-white rounded uppercase tracking-wide bg-slate-800">
                       {p.property_type}
                     </span>
+                    {/* Multiple Images Indicator */}
+                    {p.images && p.images.length > 1 && (
+                      <div className="absolute top-4 right-4 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        {p.images.length}
+                      </div>
+                    )}
                   </div>
 
                   {/* Card Body */}

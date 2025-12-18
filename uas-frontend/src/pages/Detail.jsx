@@ -2,7 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { 
   MapPin, Heart, BedDouble, Bath, Square, Scaling, 
-  Phone, MessageCircle, Image as ImageIcon 
+  Phone, MessageCircle, Image as ImageIcon, ChevronLeft, ChevronRight 
 } from "lucide-react";
 import { getPropertyById } from "../services/api";
 
@@ -18,6 +18,7 @@ export default function Detail() {
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [favoriteList, setFavoriteList] = useState([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Load favorites on mount
   useEffect(() => {
@@ -132,7 +133,19 @@ export default function Detail() {
     );
   }
 
-  const propertyImages = property.img ? [property.img] : defaultImages;
+  const propertyImages = property.images && property.images.length > 0 
+    ? property.images 
+    : property.img 
+    ? [property.img] 
+    : defaultImages;
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % propertyImages.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + propertyImages.length) % propertyImages.length);
+  };
 
   return (
     <div className="bg-white min-h-screen pb-0 font-sans text-slate-800">
@@ -147,24 +160,64 @@ export default function Detail() {
           <span className="font-medium text-slate-900 truncate">{property.title}</span>
         </div>
 
-        {/* GALLERY GRID (Sesuai Gambar) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[400px] md:h-[500px] rounded-2xl overflow-hidden bg-gray-100">
-          <div className="h-full">
-            <img src={propertyImages[0]} className="w-full h-full object-cover hover:scale-105 transition duration-700 cursor-pointer" alt="Main Property" />
-          </div>
-          <div className="grid grid-cols-2 gap-4 h-full">
-            <img src={propertyImages[1] || propertyImages[0]} className="w-full h-full object-cover" alt="Detail 1" />
-            <img src={propertyImages[2] || propertyImages[0]} className="w-full h-full object-cover rounded-tr-2xl" alt="Detail 2" />
-            <img src={propertyImages[1] || propertyImages[0]} className="w-full h-full object-cover" alt="Detail 3" />
-            <div className="relative w-full h-full">
-              <img src={propertyImages[2] || propertyImages[0]} className="w-full h-full object-cover" alt="Detail 4" />
-              <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                 <button className="bg-white px-4 py-2 rounded-lg shadow-md flex items-center gap-2 text-sm font-semibold text-slate-800 hover:bg-gray-100 transition">
-                    <ImageIcon size={16} /> View All Photos
-                 </button>
-              </div>
+        {/* GALLERY WITH CAROUSEL */}
+        <div className="relative rounded-2xl overflow-hidden bg-gray-100 mb-6">
+          {/* Main Image Display */}
+          <div className="relative h-[400px] md:h-[500px]">
+            <img 
+              src={propertyImages[currentImageIndex]} 
+              className="w-full h-full object-cover" 
+              alt={`Property ${currentImageIndex + 1}`} 
+            />
+            
+            {/* Navigation Arrows */}
+            {propertyImages.length > 1 && (
+              <>
+                <button
+                  onClick={prevImage}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-3 rounded-full transition"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                <button
+                  onClick={nextImage}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-3 rounded-full transition"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              </>
+            )}
+
+            {/* Image Counter */}
+            <div className="absolute bottom-4 right-4 bg-black bg-opacity-60 text-white px-3 py-1.5 rounded-lg text-sm">
+              {currentImageIndex + 1} / {propertyImages.length}
             </div>
           </div>
+
+          {/* Thumbnail Strip */}
+          {propertyImages.length > 1 && (
+            <div className="bg-white p-4">
+              <div className="flex gap-3 overflow-x-auto">
+                {propertyImages.map((img, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`flex-shrink-0 w-24 h-20 rounded-lg overflow-hidden border-2 transition ${
+                      index === currentImageIndex 
+                        ? 'border-blue-600 ring-2 ring-blue-200' 
+                        : 'border-gray-200 hover:border-gray-400'
+                    }`}
+                  >
+                    <img 
+                      src={img} 
+                      alt={`Thumbnail ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* SPLIT LAYOUT */}

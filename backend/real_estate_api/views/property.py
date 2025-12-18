@@ -63,7 +63,9 @@ def create_property(request):
             bedrooms=data.get('bedrooms', 1),
             bathrooms=data.get('bathrooms', 1),
             area=data.get('area', 0),
-            agent_id=agent_id
+            agent_id=agent_id,
+            images=data.get('images'),  # Support multiple images
+            img=data.get('img')  # Legacy single image support
         )
         
         # Save to database
@@ -206,6 +208,8 @@ def list_properties(request):
                 "bathrooms": prop.bathrooms,
                 "area": prop.area,
                 "agent_id": prop.agent_id,
+                "images": prop.images,  # Include images array
+                "img": prop.img,  # Legacy single image
                 "agent": {
                     "id": prop.agent.id,
                     "name": prop.agent.name,
@@ -266,6 +270,8 @@ def get_property_detail(request):
                 "bathrooms": prop.bathrooms,
                 "area": prop.area,
                 "agent_id": prop.agent_id,
+                "images": prop.images,  # Include images array
+                "img": prop.img,  # Legacy single image
                 "agent": {
                     "id": prop.agent.id,
                     "name": prop.agent.name,
@@ -329,6 +335,10 @@ def update_property(request):
             prop.bathrooms = data['bathrooms']
         if 'area' in data:
             prop.area = data['area']
+        if 'images' in data:
+            prop.images = data['images']
+        if 'img' in data:
+            prop.img = data['img']
         
         # Flush untuk memastikan perubahan tersimpan
         dbsession.flush()
