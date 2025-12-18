@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, JSON
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, JSON, BigInteger
 from sqlalchemy.orm import relationship
 from .meta import Base
 
@@ -7,14 +7,12 @@ class Property(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String(200))
     description = Column(Text)
-    price = Column(Integer)
-    property_type = Column(String(50))  # rumah, apartemen, dll
-    listing_type = Column(String(20), default='sale')  # sale or rent
+    price = Column(BigInteger)  # Use BigInteger for large prices
+    property_type = Column(String(50))  # rumah, apartemen, villa, tanah
     location = Column(String(100))
     bedrooms = Column(Integer, default=1)
     bathrooms = Column(Integer, default=1)
     area = Column(Integer)  # dalam m2
     agent_id = Column(Integer, ForeignKey('users.id'))
-    images = Column(JSON)  # Array of base64 images
-    img = Column(Text)  # Legacy single image support
+    images = Column(JSON)  # Array of image URLs
     agent = relationship("User", backref="properties")

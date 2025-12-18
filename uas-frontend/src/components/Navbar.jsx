@@ -1,35 +1,47 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Home, User, LogOut } from "lucide-react"; 
+import { getCurrentUser, logout as logoutAPI } from "../services/authService";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
+  const location = useLocation();
 
-  // 1. Cek status login setiap kali Navbar dimuat
+  // Load user data on mount and when location changes
   useEffect(() => {
-    // Ambil data user & role dari LocalStorage
-    const storedUser = localStorage.getItem("user");
-    const storedRole = localStorage.getItem("userRole");
-    
-    if (storedUser && storedRole) {
-      setUserData({
-        ...JSON.parse(storedUser),
-        role: storedRole
-      });
-    }
-  }, []);
+    const loadUser = () => {
+      const user = getCurrentUser();
+      setUserData(user);
+    };
 
-  // 2. LOGIKA PENTING: Jika Role = 'agent', Sembunyikan Navbar!
-  // Agent akan menggunakan Sidebar di Dashboard, jadi Navbar atas tidak butuh.
+    // Load initially
+    loadUser();
+
+    // Listen for storage changes (when user logs in from another tab or Login component)
+    window.addEventListener('storage', loadUser);
+    
+    // Custom event for same-window updates
+    window.addEventListener('userChanged', loadUser);
+
+    return () => {
+      window.removeEventListener('storage', loadUser);
+      window.removeEventListener('userChanged', loadUser);
+    };
+  }, [location.pathname]);
+
+  // Hide navbar for agents (they have sidebar in dashboard)
   if (userData && userData.role === "agent") {
     return null; 
   }
 
-  // 3. Fungsi Logout (Khusus untuk Buyer di Navbar ini)
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("userRole");
+  // Logout handler
+  const handleLogout = async () => {
+    try {
+      await logoutAPI();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
     setUserData(null);
     navigate("/login");
   };

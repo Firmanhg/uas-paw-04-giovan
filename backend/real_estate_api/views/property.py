@@ -1,9 +1,13 @@
 from pyramid.view import view_config
 from pyramid.response import Response
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import desc
 from ..models.property import Property
 from ..models.user import User
 import json
+import os
+import base64
+from datetime import datetime
 
 
 @view_config(route_name='properties', renderer='json', request_method='OPTIONS')
@@ -59,14 +63,12 @@ def create_property(request):
             description=data['description'],
             price=data['price'],
             property_type=data['property_type'],
-            listing_type=data.get('listing_type', 'sale'),  # sale or rent
             location=data['location'],
             bedrooms=data.get('bedrooms', 1),
             bathrooms=data.get('bathrooms', 1),
             area=data.get('area', 0),
             agent_id=agent_id,
-            images=data.get('images'),  # Support multiple images
-            img=data.get('img')  # Legacy single image support
+            images=data.get('images', [])
         )
         
         # Save to database
@@ -158,9 +160,7 @@ def list_properties(request):
             query = query.filter(Property.property_type.ilike(f'%{property_type}%'))
         
         # Filter by listing type (sale or rent)
-        listing_type = request.params.get('listing_type')
-        if listing_type:
-            query = query.filter(Property.listing_type == listing_type)
+        # listing_type filter removed (column doesn't exist in PostgreSQL)
         
         # Filter by location (partial match)
         location = request.params.get('location')
@@ -209,14 +209,12 @@ def list_properties(request):
                 "description": prop.description,
                 "price": prop.price,
                 "property_type": prop.property_type,
-                "listing_type": prop.listing_type if hasattr(prop, 'listing_type') else 'sale',
                 "location": prop.location,
                 "bedrooms": prop.bedrooms,
                 "bathrooms": prop.bathrooms,
                 "area": prop.area,
                 "agent_id": prop.agent_id,
-                "images": prop.images,  # Include images array
-                "img": prop.img,  # Legacy single image
+                "images": prop.images or [],
                 "agent": {
                     "id": prop.agent.id,
                     "name": prop.agent.name,
@@ -272,14 +270,12 @@ def get_property_detail(request):
                 "description": prop.description,
                 "price": prop.price,
                 "property_type": prop.property_type,
-                "listing_type": prop.listing_type if hasattr(prop, 'listing_type') else 'sale',
                 "location": prop.location,
                 "bedrooms": prop.bedrooms,
                 "bathrooms": prop.bathrooms,
                 "area": prop.area,
                 "agent_id": prop.agent_id,
-                "images": prop.images,  # Include images array
-                "img": prop.img,  # Legacy single image
+                "images": prop.images or [],
                 "agent": {
                     "id": prop.agent.id,
                     "name": prop.agent.name,
@@ -335,8 +331,7 @@ def update_property(request):
             prop.price = data['price']
         if 'property_type' in data:
             prop.property_type = data['property_type']
-        if 'listing_type' in data:
-            prop.listing_type = data['listing_type']
+        # listing_type update removed (column doesn't exist)
         if 'location' in data:
             prop.location = data['location']
         if 'bedrooms' in data:
@@ -347,8 +342,6 @@ def update_property(request):
             prop.area = data['area']
         if 'images' in data:
             prop.images = data['images']
-        if 'img' in data:
-            prop.img = data['img']
         
         # Flush untuk memastikan perubahan tersimpan
         dbsession.flush()
@@ -456,6 +449,182 @@ def delete_property(request):
         
     except SQLAlchemyError as e:
         request.dbsession.rollback()
+        return Response(
+            json={"error": "Database error", "details": str(e)},
+            status=500
+        )
+    except Exception as e:
+        return Response(
+            json={"error": "Internal server error", "details": str(e)},
+            status=500
+        )
+
+
+@view_config(route_name='upload_photos', renderer='json', request_method='POST')
+def upload_property_photos(request):
+    """
+    Upload photos for a property
+    POST /api/properties/{id}/photos
+    
+    Body (JSON):
+    {
+        "images": [
+            "data:image/jpeg;base64,/9j/4AAQSkZJRg...",
+            "https://example.com/image.jpg"
+        ]
+    }
+    """
+    try:
+        property_id = request.matchdict['id']
+        dbsession = request.dbsession
+        
+        # Find property
+        prop = dbsession.query(Property).filter_by(id=property_id).first()
+        
+        if not prop:
+            return Response(
+                json={"error": "Property not found"},
+                status=404
+            )
+        
+        # Get current images or initialize empty array
+        current_images = prop.images if prop.images else []
+        
+        # Handle JSON body with base64 or URLs
+        data = request.json_body
+        
+        if 'images' not in data or not isinstance(data['images'], list):
+            return Response(
+                json={"error": "Field 'images' must be an array"},
+                status=400
+            )
+        
+        new_images = []
+        
+        for img in data['images']:
+            if img.startswith('data:image'):
+                # Handle base64 image
+                try:
+                    # Extract base64 data
+                    header, encoded = img.split(',', 1)
+                    
+                    # Determine file extension
+                    if 'jpeg' in header or 'jpg' in header:
+                        ext = 'jpg'
+                    elif 'png' in header:
+                        ext = 'png'
+                    elif 'gif' in header:
+                        ext = 'gif'
+                    else:
+                        ext = 'jpg'
+                    
+                    # Generate filename
+                    filename = f"property_{property_id}_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}.{ext}"
+                    filepath = os.path.join('uploads', 'properties', filename)
+                    
+                    # Create directory if not exists
+                    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+                    
+                    # Decode and save
+                    with open(filepath, 'wb') as f:
+                        f.write(base64.b64decode(encoded))
+                    
+                    # Store relative path
+                    new_images.append(f"/uploads/properties/{filename}")
+                    
+                except Exception as e:
+                    return Response(
+                        json={"error": f"Failed to process image: {str(e)}"},
+                        status=400
+                    )
+            elif img.startswith('http'):
+                # Handle URL
+                new_images.append(img)
+            else:
+                return Response(
+                    json={"error": "Image must be base64 data URI or URL"},
+                    status=400
+                )
+        
+        # Append new images to current images
+        current_images.extend(new_images)
+        prop.images = current_images
+        
+        dbsession.flush()
+        
+        return {
+            "success": True,
+            "message": f"Successfully uploaded {len(new_images)} image(s)",
+            "images": current_images
+        }
+        
+    except ValueError as e:
+        return Response(
+            json={"error": "Invalid JSON", "details": str(e)},
+            status=400
+        )
+    except SQLAlchemyError as e:
+        request.dbsession.rollback()
+        return Response(
+            json={"error": "Database error", "details": str(e)},
+            status=500
+        )
+    except Exception as e:
+        return Response(
+            json={"error": "Internal server error", "details": str(e)},
+            status=500
+        )
+
+
+@view_config(route_name='featured_properties', renderer='json', request_method='GET')
+def get_featured_properties(request):
+    """
+    Get featured/recommended properties
+    GET /api/properties/featured
+    
+    Returns top 6 newest properties
+    """
+    try:
+        dbsession = request.dbsession
+        
+        # Get newest 6 properties (ordered by id desc as proxy for newest)
+        featured = dbsession.query(Property)\
+            .order_by(desc(Property.id))\
+            .limit(6)\
+            .all()
+        
+        result = []
+        
+        for prop in featured:
+            # Get agent info
+            agent = dbsession.query(User).filter_by(id=prop.agent_id).first()
+            
+            result.append({
+                "id": prop.id,
+                "title": prop.title,
+                "description": prop.description,
+                "price": prop.price,
+                "property_type": prop.property_type,
+                "location": prop.location,
+                "bedrooms": prop.bedrooms,
+                "bathrooms": prop.bathrooms,
+                "area": prop.area,
+                "agent_id": prop.agent_id,
+                "images": prop.images if prop.images else [],
+                "agent": {
+                    "id": agent.id if agent else None,
+                    "name": agent.name if agent else "Unknown",
+                    "email": agent.email if agent else ""
+                } if agent else None
+            })
+        
+        return {
+            "status": "success",
+            "count": len(result),
+            "data": result
+        }
+        
+    except SQLAlchemyError as e:
         return Response(
             json={"error": "Database error", "details": str(e)},
             status=500

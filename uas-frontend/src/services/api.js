@@ -1,8 +1,14 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:6543/api", // Backend Pyramid
+  baseURL: "http://localhost:6543/api",
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  }
 });
+
+export default API;
 
 // GET ALL PROPERTIES (with optional filters)
 export const getAllProperties = async (filters = {}) => {

@@ -1,9 +1,55 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { register as registerAPI } from "../services/authService";
 
 export default function Register() {
   const [role, setRole] = useState("buyer");
   const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    phone: ""
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+    setError("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await registerAPI({
+        ...formData,
+        role: role
+      });
+
+      if (response.success) {
+        navigate("/login", { 
+          state: { 
+            message: "Registration successful! Please login.",
+            email: formData.email 
+          } 
+        });
+      } else {
+        setError(response.message || "Registration failed");
+      }
+    } catch (err) {
+      setError(err.message || "An error occurred during registration");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="w-full min-h-screen grid grid-cols-1 md:grid-cols-2 font-sans text-gray-800">
@@ -31,13 +77,24 @@ export default function Register() {
           </div>
 
           {/* FORM */}
-          <form className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5">
             
+            {/* ERROR MESSAGE */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
             {/* NAME INPUT */}
             <div>
               <label className="block mb-1.5 font-semibold text-gray-700 text-sm">Name</label>
               <input
                 type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
                 className="w-full bg-gray-50 border border-gray-200 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-800 transition-colors placeholder-gray-400"
                 placeholder="Enter your full name"
               />
@@ -49,6 +106,10 @@ export default function Register() {
               <div className="relative">
                 <input
                     type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
                     className="w-full bg-gray-50 border border-gray-200 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-800 transition-colors placeholder-gray-400 pr-10"
                     placeholder="Enter your email address"
                 />
@@ -64,6 +125,11 @@ export default function Register() {
               <div className="relative">
                 <input
                     type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    minLength="6"
                     className="w-full bg-gray-50 border border-gray-200 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-800 transition-colors placeholder-gray-400 pr-10"
                     placeholder="Enter your password"
                 />
@@ -86,6 +152,9 @@ export default function Register() {
               <label className="block mb-1.5 font-semibold text-gray-700 text-sm">Phone</label>
               <input
                 type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
                 className="w-full bg-gray-50 border border-gray-200 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-800 transition-colors placeholder-gray-400"
                 placeholder="Enter your phone number"
               />
@@ -136,9 +205,10 @@ export default function Register() {
             {/* REGISTER BUTTON */}
             <button
               type="submit"
-              className="w-full py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition font-semibold mt-4"
+              disabled={loading}
+              className="w-full py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition font-semibold mt-4 disabled:bg-slate-400 disabled:cursor-not-allowed"
             >
-              Register
+              {loading ? "Registering..." : "Register"}
             </button>
           </form>
 

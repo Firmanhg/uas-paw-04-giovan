@@ -42,10 +42,6 @@ def get_agent_profile(request):
                 "name": agent.name,
                 "email": agent.email,
                 "phone": agent.phone,
-                "bio": agent.bio,
-                "avatar": agent.avatar,
-                "company": agent.company,
-                "license_number": agent.license_number,
                 "role": agent.role,
                 "total_properties": total_properties
             }
@@ -91,14 +87,6 @@ def update_agent_profile(request):
             agent.name = data['name']
         if 'phone' in data:
             agent.phone = data['phone']
-        if 'bio' in data:
-            agent.bio = data['bio']
-        if 'avatar' in data:
-            agent.avatar = data['avatar']
-        if 'company' in data:
-            agent.company = data['company']
-        if 'license_number' in data:
-            agent.license_number = data['license_number']
         
         # Email update with validation
         if 'email' in data and data['email'] != agent.email:
@@ -120,11 +108,7 @@ def update_agent_profile(request):
                 "id": agent.id,
                 "name": agent.name,
                 "email": agent.email,
-                "phone": agent.phone,
-                "bio": agent.bio,
-                "avatar": agent.avatar,
-                "company": agent.company,
-                "license_number": agent.license_number
+                "phone": agent.phone
             }
         }
         
@@ -167,10 +151,6 @@ def list_agents(request):
                 "name": agent.name,
                 "email": agent.email,
                 "phone": agent.phone,
-                "bio": agent.bio,
-                "avatar": agent.avatar,
-                "company": agent.company,
-                "license_number": agent.license_number,
                 "total_properties": total_properties
             })
         

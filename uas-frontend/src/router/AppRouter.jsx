@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { getCurrentUser, logout as logoutAPI } from "../services/authService";
 
 /* ================= PUBLIC ================= */
 import Home from "../pages/Home";
@@ -33,29 +34,27 @@ export default function AppRouter() {
   /* ================= AUTH STATE ================= */
   const [userRole, setUserRole] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
-  
-  const [currentUser, setCurrentUser] = useState({
-    name: "John Appleseed",
-    email: "j.appleseed@realty.com",
-    phone: "+1 (555) 123-4567",
-    role: "admin"
-  });
+  const [currentUser, setCurrentUser] = useState(null);
 
   /* ================= LOAD SESSION ================= */
   useEffect(() => {
-    const savedRole = localStorage.getItem("userRole");
-    if (savedRole) {
-      setUserRole(savedRole);
+    const user = getCurrentUser();
+    if (user) {
+      setUserRole(user.role);
+      setCurrentUser(user);
     }
     setAuthChecked(true);
   }, []);
 
   /* ================= LOGOUT ================= */
-  const handleLogout = () => {
-    localStorage.removeItem("userRole");
-    localStorage.removeItem("user");
+  const handleLogout = async () => {
+    try {
+      await logoutAPI();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
     setUserRole(null);
-    alert("You have logged out!");
+    setCurrentUser(null);
     navigate("/login");
   };
 

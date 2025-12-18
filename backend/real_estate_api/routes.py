@@ -3,16 +3,16 @@ def includeme(config):
     config.add_route('home', '/')
     
     # CORS preflight routes - must be before other routes
-    config.add_route('cors_register', '/api/register', request_method='OPTIONS')
-    config.add_route('cors_login', '/api/login', request_method='OPTIONS')
-    config.add_route('cors_logout', '/api/logout', request_method='OPTIONS')
-    config.add_route('cors_me', '/api/me', request_method='OPTIONS')
+    config.add_route('cors_register', '/api/auth/register', request_method='OPTIONS')
+    config.add_route('cors_login', '/api/auth/login', request_method='OPTIONS')
+    config.add_route('cors_logout', '/api/auth/logout', request_method='OPTIONS')
+    config.add_route('cors_me', '/api/auth/me', request_method='OPTIONS')
     
     # Authentication routes
-    config.add_route('register', '/api/register')
-    config.add_route('login', '/api/login')
-    config.add_route('logout', '/api/logout')
-    config.add_route('me', '/api/me')
+    config.add_route('register', '/api/auth/register')
+    config.add_route('login', '/api/auth/login')
+    config.add_route('logout', '/api/auth/logout')
+    config.add_route('me', '/api/auth/me')
     
     # Agent routes
     config.add_route('agents_list', '/api/agents')
@@ -23,8 +23,10 @@ def includeme(config):
     
     # Property routes
     config.add_route('properties', '/api/properties')  # GET & POST
+    config.add_route('featured_properties', '/api/properties/featured')  # GET featured
+    config.add_route('search_properties', '/api/properties/search')  # Search
+    config.add_route('upload_photos', '/api/properties/{id}/photos')  # Upload photos
     config.add_route('property_detail', '/api/properties/{id}')  # GET, PUT, DELETE
-    config.add_route('search_properties', '/api/properties/search')
     
     # Favorites routes
     config.add_route('add_favorite', '/api/favorites', request_method='POST')

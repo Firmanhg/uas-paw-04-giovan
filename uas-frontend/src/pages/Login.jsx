@@ -1,32 +1,57 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { Eye, EyeOff, Home } from "lucide-react"; // Import icon
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Eye, EyeOff, Home } from "lucide-react";
+import { login as loginAPI } from "../services/authService";
 
 export default function Login({ setUserRole }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [role, setRole] = useState("buyer");
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const handleLogin = (e) => {
+  useEffect(() => {
+    if (location.state?.message) {
+      setSuccessMessage(location.state.message);
+      if (location.state?.email) {
+        setEmail(location.state.email);
+      }
+    }
+  }, [location]);
+
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
     if (!email || !password) {
-      alert("Email dan password wajib diisi");
+      setError("Email dan password wajib diisi");
+      setLoading(false);
       return;
     }
 
-    // ✅ LOGIKA TETAP SAMA SEPERTI KODE ASLIMU
-    localStorage.setItem("userRole", role);
-    localStorage.setItem("user", JSON.stringify({ email, role }));
-    setUserRole(role);
+    try {
+      const response = await loginAPI({ email, password });
 
-    if (role === "agent") {
-      navigate("/dashboard");
-    } else {
-      navigate("/");
+      if (response.success) {
+        setUserRole(response.user.role);
+
+        if (response.user.role === "agent") {
+          navigate("/dashboard");
+        } else {
+          navigate("/");
+        }
+      } else {
+        setError(response.message || "Login gagal");
+      }
+    } catch (err) {
+      setError(err.message || "Terjadi kesalahan saat login");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,32 +84,21 @@ export default function Login({ setUserRole }) {
             <p className="text-slate-500 mt-2 text-sm">Silakan masuk ke akun Anda</p>
           </div>
 
-          {/* 2. Role Selector */}
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">I am a:</label>
-            <div className="grid grid-cols-2 gap-4">
-              {["buyer", "agent"].map((r) => (
-                <label
-                  key={r}
-                  className={`
-                    border rounded-lg p-3 flex items-center gap-3 cursor-pointer transition-all
-                    ${role === r ? "border-slate-800 bg-slate-50 ring-1 ring-slate-800" : "border-gray-200 hover:border-slate-400"}
-                  `}
-                >
-                  <input
-                    type="radio"
-                    name="role"
-                    className="accent-slate-800 w-4 h-4"
-                    checked={role === r}
-                    onChange={() => setRole(r)}
-                  />
-                  <span className="capitalize font-medium text-slate-700">{r}</span>
-                </label>
-              ))}
+          {/* Success Message */}
+          {successMessage && (
+            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
+              {successMessage}
             </div>
-          </div>
+          )}
 
-          {/* 3. Form Inputs */}
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+
+          {/* 2. Form Inputs */}
           <form onSubmit={handleLogin} className="space-y-5">
             
             {/* Email Field */}
@@ -131,9 +145,10 @@ export default function Login({ setUserRole }) {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full py-3.5 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-lg transition-colors shadow-lg shadow-slate-800/20"
+              disabled={loading}
+              className="w-full py-3.5 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-lg transition-colors shadow-lg shadow-slate-800/20 disabled:bg-slate-400 disabled:cursor-not-allowed"
             >
-              Login
+              {loading ? "Loading..." : "Login"}
             </button>
           </form>
 
