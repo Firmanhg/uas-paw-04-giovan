@@ -339,15 +339,16 @@ export default function MyProperties() {
                       </svg>
                     </Link>
                     
-                    <button 
+                    <Link 
+                      to={`/property/${p.id}`}
                       className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                      title="View"
+                      title="View as buyer"
                     >
                       <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                         <circle cx="12" cy="12" r="3"></circle>
                       </svg>
-                    </button>
+                    </Link>
                     
                     <button 
                       onClick={() => handleDelete(p.id)}
