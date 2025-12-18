@@ -93,14 +93,30 @@ export default function MyProperties() {
 
       {/* --- MAIN CONTENT --- */}
       <main className="flex-1 p-8 overflow-y-auto">
-        <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-extrabold text-gray-900">My Properties</h1>
-            <Link to="/add-property" className="bg-gray-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-black transition">
-                + Add Property
-            </Link>
+        {/* Search and Filter Bar */}
+        <div className="mb-6 flex items-center gap-4">
+          <div className="flex-1 relative">
+            <input 
+              type="text" 
+              placeholder="Search by title or address..." 
+              className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <svg className="absolute right-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="M21 21l-4.35-4.35"></path>
+            </svg>
+          </div>
+          <button className="flex items-center gap-2 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+            Filters
+          </button>
         </div>
 
-        {/* LOADING & ERROR STATES */}
+        <h1 className="text-3xl font-extrabold text-gray-900 mb-8">My Properties</h1>
+
+        {/* LOADING STATE */}
         {loading && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-10 text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
@@ -108,58 +124,112 @@ export default function MyProperties() {
           </div>
         )}
 
+        {/* ERROR STATE */}
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700">
             {error}
           </div>
         )}
 
-        {/* PROPERTY TABLE */}
-        {!loading && !error && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <table className="w-full text-left text-sm text-gray-600">
-              <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-semibold border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-4">Property</th>
-                  <th className="px-6 py-4">Location</th>
-                  <th className="px-6 py-4">Type</th>
-                  <th className="px-6 py-4">Price</th>
-                  <th className="px-6 py-4">Rooms</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {properties.map((p) => (
-                  <tr key={p.id} className="hover:bg-gray-50 transition">
-                    <td className="px-6 py-4 flex items-center gap-4">
-                      <div className="w-16 h-12 rounded bg-gray-200 flex items-center justify-center text-gray-400 text-xs">
-                        No Image
-                      </div>
-                      <span className="font-bold text-gray-900">{p.title}</span>
-                    </td>
-                    <td className="px-6 py-4">{p.location}</td>
-                    <td className="px-6 py-4">
-                        <span className="px-2 py-1 rounded text-xs font-bold bg-blue-100 text-blue-700 capitalize">
-                            {p.property_type}
-                        </span>
-                    </td>
-                    <td className="px-6 py-4 font-medium text-gray-900">Rp {p.price.toLocaleString("id-ID")}</td>
-                    <td className="px-6 py-4 text-sm">
-                      🛏️ {p.bedrooms} | 🚿 {p.bathrooms}
-                    </td>
-                    <td className="px-6 py-4 text-right space-x-3">
-                      <Link to={`/edit-property/${p.id}`} className="text-blue-600 hover:underline font-medium">Edit</Link>
-                      <button onClick={() => handleDelete(p.id)} className="text-red-500 hover:underline font-medium">Delete</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {properties.length === 0 && (
-                <div className="p-10 text-center text-gray-500">
-                    No properties found. Click "Add Property" to start.
+        {/* PROPERTY GRID */}
+        {!loading && !error && properties.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {properties.map((p) => (
+              <div key={p.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition group">
+                {/* Property Image */}
+                <div className="relative h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                  <span className="text-gray-400 text-sm">No Image</span>
+                  {/* Status Badge */}
+                  <div className="absolute top-3 left-3">
+                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                      For Sale
+                    </span>
+                  </div>
                 </div>
-            )}
+
+                {/* Property Details */}
+                <div className="p-5">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition">
+                    {p.title}
+                  </h3>
+                  
+                  <p className="text-xl font-bold text-gray-900 mb-3">
+                    Rp {p.price.toLocaleString("id-ID")}
+                  </p>
+
+                  <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    <span>{p.location}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <span className="capitalize">{p.property_type}</span>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <Link 
+                      to={`/edit-property/${p.id}`}
+                      className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                      title="Edit"
+                    >
+                      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      </svg>
+                    </Link>
+                    
+                    <button 
+                      className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                      title="View"
+                    >
+                      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    </button>
+                    
+                    <button 
+                      onClick={() => handleDelete(p.id)}
+                      className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                      title="Delete"
+                    >
+                      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* EMPTY STATE */}
+        {!loading && !error && properties.length === 0 && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg width="32" height="32" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="text-gray-400">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">No properties yet</h3>
+            <p className="text-gray-500 mb-6">Start by adding your first property listing</p>
+            <Link 
+              to="/add-property"
+              className="inline-block bg-gray-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-black transition"
+            >
+              + Add Your First Property
+            </Link>
           </div>
         )}
       </main>

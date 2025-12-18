@@ -156,6 +156,134 @@ export default function AgentDashboard() {
               />
             </div>
 
+            {/* RECENT INQUIRIES SECTION */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-10">
+              <div className="flex justify-between items-center p-6 border-b border-gray-100">
+                <h2 className="text-xl font-bold text-gray-800">Recent Inquiries</h2>
+                <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium py-2 px-4 rounded-lg transition">
+                  View All Inquiries
+                </button>
+              </div>
+              
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm text-gray-600">
+                  <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-semibold">
+                    <tr>
+                      <th className="px-6 py-4">Inquirer</th>
+                      <th className="px-6 py-4">Property</th>
+                      <th className="px-6 py-4">Date</th>
+                      <th className="px-6 py-4 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {/* Inquiry 1 */}
+                    <tr className="hover:bg-gray-50 transition">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                            JD
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900">Jane Doe</p>
+                            <p className="text-xs text-gray-500">jane.doe@example.com</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-gray-800 font-medium">
+                        Modern Villa on Hilltop
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">
+                        Today, 11:34 AM
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition">
+                          Chat
+                        </button>
+                      </td>
+                    </tr>
+
+                    {/* Inquiry 2 */}
+                    <tr className="hover:bg-gray-50 transition">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                            JS
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900">John Smith</p>
+                            <p className="text-xs text-gray-500">j.smith@email.com</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-gray-800 font-medium">
+                        Downtown Loft Apartment
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">
+                        Yesterday, 8:15 PM
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition">
+                          Chat
+                        </button>
+                      </td>
+                    </tr>
+
+                    {/* Inquiry 3 */}
+                    <tr className="hover:bg-gray-50 transition">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                            EW
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900">Emily White</p>
+                            <p className="text-xs text-gray-500">emily.w@mail.net</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-gray-800 font-medium">
+                        Cozy Suburban Home
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">
+                        May 28, 2024
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition">
+                          Chat
+                        </button>
+                      </td>
+                    </tr>
+
+                    {/* Inquiry 4 */}
+                    <tr className="hover:bg-gray-50 transition">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-red-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                            MB
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900">Michael Brown</p>
+                            <p className="text-xs text-gray-500">mbrown@web.com</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-gray-800 font-medium">
+                        Seaside Cottage with View
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">
+                        May 27, 2024
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition">
+                          Chat
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
             {/* RECENT PROPERTIES TABLE */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="flex justify-between items-center p-6 border-b border-gray-100">
