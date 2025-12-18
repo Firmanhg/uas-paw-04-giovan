@@ -10,5 +10,13 @@ def home_view(request):
         "version": "1.0"
     }
 
+# CORS preflight handler for agent profile
+@view_config(route_name='cors_agent_profile', request_method='OPTIONS')
+def cors_agent_profile(request):
+    """Handle CORS preflight for agent profile"""
+    response = Response()
+    response.status = '200 OK'
+    return response
+
 # TODO: Old dummy endpoints removed - now using real database endpoints
 # See views/property.py for actual property endpoints

@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { addProperty } from "../services/api";
+import { getCurrentUser } from "../services/authService";
 
 export default function AddProperty() {
   const navigate = useNavigate();
   
-  // TODO: Get agent_id from auth context/session
-  const AGENT_ID = 1; // Hardcoded untuk sementara
+  const currentUser = getCurrentUser();
+  const AGENT_ID = currentUser?.id;
 
   // State form
   const [form, setForm] = useState({
@@ -130,11 +131,11 @@ export default function AddProperty() {
       <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col">
         <div className="p-6 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">
-            J
+            {getCurrentUser()?.name?.charAt(0).toUpperCase() || 'A'}
           </div>
           <div>
-            <h3 className="text-sm font-bold text-gray-900">John Appleseed</h3>
-            <p className="text-xs text-gray-500">Realty Inc.</p>
+            <h3 className="text-sm font-bold text-gray-900">{getCurrentUser()?.name || 'Agent'}</h3>
+            <p className="text-xs text-gray-500">{getCurrentUser()?.email || ''}</p>
           </div>
         </div>
 

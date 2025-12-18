@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getPropertyById, updateProperty } from "../services/api";
+import { getCurrentUser } from "../services/authService";
 
 export default function EditProperty() {
   const navigate = useNavigate();
@@ -160,10 +161,10 @@ export default function EditProperty() {
       <aside className="w-64 bg-white border-r border-gray-200 flex-col hidden md:flex sticky top-0 h-screen">
         <div className="p-6">
           <div className="flex items-center gap-3 mb-8">
-             <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold text-lg">J</div>
+             <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold text-lg">{getCurrentUser()?.name?.charAt(0).toUpperCase() || 'A'}</div>
              <div>
-              <h3 className="text-sm font-bold text-gray-900">John Appleseed</h3>
-              <p className="text-xs text-gray-500">Realty Inc.</p>
+              <h3 className="text-sm font-bold text-gray-900">{getCurrentUser()?.name || 'Agent'}</h3>
+              <p className="text-xs text-gray-500">{getCurrentUser()?.email || ''}</p>
             </div>
           </div>
           <nav className="space-y-1">

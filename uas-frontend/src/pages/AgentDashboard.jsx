@@ -1,6 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { getAllProperties } from "../services/api";
+import { useState, useEffect } from "react";import { getCurrentUser } from '../services/authService';import { getAllProperties } from "../services/api";
 
 export default function AgentDashboard() {
   const navigate = useNavigate();
@@ -60,11 +59,11 @@ export default function AgentDashboard() {
         {/* Profile / Brand Header */}
         <div className="p-6 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">
-            J
+            {getCurrentUser()?.name?.charAt(0).toUpperCase() || 'A'}
           </div>
           <div>
-            <h3 className="text-sm font-bold text-gray-900">John Appleseed</h3>
-            <p className="text-xs text-gray-500">Realty Inc.</p>
+            <h3 className="text-sm font-bold text-gray-900">{getCurrentUser()?.name || 'Agent'}</h3>
+            <p className="text-xs text-gray-500">{getCurrentUser()?.email || ''}</p>
           </div>
         </div>
 

@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getAgentProfile, updateAgentProfile } from "../services/api";
+import { getCurrentUser } from "../services/authService";
 
 export default function Settings({ user, onLogout }) {
   const navigate = useNavigate();
-  const AGENT_ID = 1; // TODO: Get from auth context
+  const [currentUser, setCurrentUser] = useState(getCurrentUser());
+  const AGENT_ID = currentUser?.id; // Get from logged in user
   
   // State untuk data form
   const [formData, setFormData] = useState({
@@ -23,6 +25,19 @@ export default function Settings({ user, onLogout }) {
 
   useEffect(() => {
     fetchAgentProfile();
+    
+    // Listen for user changes
+    const handleUserChange = () => {
+      setCurrentUser(getCurrentUser());
+    };
+    
+    window.addEventListener('userChanged', handleUserChange);
+    window.addEventListener('storage', handleUserChange);
+    
+    return () => {
+      window.removeEventListener('userChanged', handleUserChange);
+      window.removeEventListener('storage', handleUserChange);
+    };
   }, []);
 
   const fetchAgentProfile = async () => {
@@ -62,6 +77,18 @@ export default function Settings({ user, onLogout }) {
 
       const response = await updateAgentProfile(AGENT_ID, formData);
       if (response.data.status === "success") {
+        // Update localStorage with new user data
+        const updatedUser = {
+          ...currentUser,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone
+        };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        
+        // Trigger event to update sidebar and other components
+        window.dispatchEvent(new Event('userChanged'));
+        
         setMessage({ type: "success", text: "Profile updated successfully!" });
       }
     } catch (error) {
@@ -90,11 +117,11 @@ export default function Settings({ user, onLogout }) {
         {/* Profile / Brand Header */}
         <div className="p-6 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">
-            J
+            {currentUser?.name?.charAt(0).toUpperCase() || 'A'}
           </div>
           <div>
-            <h3 className="text-sm font-bold text-gray-900">John Appleseed</h3>
-            <p className="text-xs text-gray-500">Realty Inc.</p>
+            <h3 className="text-sm font-bold text-gray-900">{currentUser?.name || 'Agent'}</h3>
+            <p className="text-xs text-gray-500">{currentUser?.email || ''}</p>
           </div>
         </div>
 

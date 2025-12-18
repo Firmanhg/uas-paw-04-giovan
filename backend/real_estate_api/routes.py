@@ -15,6 +15,7 @@ def includeme(config):
     config.add_route('me', '/api/auth/me')
     
     # Agent routes
+    config.add_route('cors_agent_profile', '/api/agents/{id}', request_method='OPTIONS')
     config.add_route('agents_list', '/api/agents')
     config.add_route('agent_profile', '/api/agents/{id}')
     config.add_route('agent_stats', '/api/agent/stats')

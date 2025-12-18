@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getAllProperties, deleteProperty } from "../services/api";
+import { getCurrentUser } from "../services/authService";
 
 export default function MyProperties() {
   const navigate = useNavigate();
@@ -13,8 +14,8 @@ export default function MyProperties() {
   const [propertyTypeFilter, setPropertyTypeFilter] = useState("all");
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   
-  // TODO: Get agent_id from auth context/session
-  const AGENT_ID = 1; // Hardcoded untuk sementara
+  const currentUser = getCurrentUser();
+  const AGENT_ID = currentUser?.id;
 
   // Fetch properties from backend
   useEffect(() => {
@@ -83,10 +84,10 @@ export default function MyProperties() {
       <aside className="hidden md:block w-64 bg-white border-r border-gray-200">
         <div className="flex flex-col h-full">
           <div className="p-6 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">A</div>
+            <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">{currentUser?.name?.charAt(0).toUpperCase() || 'A'}</div>
             <div>
-              <h3 className="text-sm font-bold text-gray-900">Agent</h3>
-              <p className="text-xs text-gray-500">Realty Inc.</p>
+              <h3 className="text-sm font-bold text-gray-900">{currentUser?.name || 'Agent'}</h3>
+              <p className="text-xs text-gray-500">{currentUser?.email || ''}</p>
             </div>
           </div>
 
