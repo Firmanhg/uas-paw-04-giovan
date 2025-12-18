@@ -8,6 +8,11 @@ export default function MyProperties() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  // Search & Filter States
+  const [searchQuery, setSearchQuery] = useState("");
+  const [propertyTypeFilter, setPropertyTypeFilter] = useState("all");
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  
   // TODO: Get agent_id from auth context/session
   const AGENT_ID = 1; // Hardcoded untuk sementara
 
@@ -47,6 +52,29 @@ export default function MyProperties() {
         alert("Failed to delete property. Please try again.");
       }
     }
+  };
+
+  // Filter properties based on search and filter
+  const filteredProperties = properties.filter((property) => {
+    // Search filter (title or location)
+    const matchesSearch = 
+      property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      property.location.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Property type filter
+    const matchesType = 
+      propertyTypeFilter === "all" || 
+      property.property_type === propertyTypeFilter;
+    
+    return matchesSearch && matchesType;
+  });
+
+  // Get unique property types for filter dropdown
+  const propertyTypes = [...new Set(properties.map(p => p.property_type))];
+
+  const handleClearFilters = () => {
+    setSearchQuery("");
+    setPropertyTypeFilter("all");
   };
 
   return (
@@ -99,22 +127,103 @@ export default function MyProperties() {
             <input 
               type="text" 
               placeholder="Search by title or address..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <svg className="absolute right-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <circle cx="11" cy="11" r="8"></circle>
               <path d="M21 21l-4.35-4.35"></path>
             </svg>
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-10 top-3.5 text-gray-400 hover:text-gray-600"
+              >
+                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            )}
           </div>
-          <button className="flex items-center gap-2 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
-            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-            </svg>
-            Filters
-          </button>
+          <div className="relative">
+            <button 
+              onClick={() => setShowFilterMenu(!showFilterMenu)}
+              className="flex items-center gap-2 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+            >
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+              </svg>
+              Filters
+              {propertyTypeFilter !== "all" && (
+                <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">1</span>
+              )}
+            </button>
+
+            {/* Filter Dropdown Menu */}
+            {showFilterMenu && (
+              <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                <div className="p-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-bold text-gray-900">Filter Properties</h3>
+                    <button
+                      onClick={() => setShowFilterMenu(false)}
+                      className="text-gray-400 hover:text-gray-600"
+                    >
+                      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
+                    <select
+                      value={propertyTypeFilter}
+                      onChange={(e) => setPropertyTypeFilter(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="all">All Types</option>
+                      {propertyTypes.map(type => (
+                        <option key={type} value={type} className="capitalize">
+                          {type.charAt(0).toUpperCase() + type.slice(1)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleClearFilters}
+                      className="flex-1 px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium"
+                    >
+                      Clear All
+                    </button>
+                    <button
+                      onClick={() => setShowFilterMenu(false)}
+                      className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        <h1 className="text-3xl font-extrabold text-gray-900 mb-8">My Properties</h1>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-extrabold text-gray-900">My Properties</h1>
+            {(searchQuery || propertyTypeFilter !== "all") && (
+              <p className="text-sm text-gray-600 mt-1">
+                Showing {filteredProperties.length} of {properties.length} properties
+              </p>
+            )}
+          </div>
+        </div>
 
         {/* LOADING STATE */}
         {loading && (
@@ -133,8 +242,27 @@ export default function MyProperties() {
 
         {/* PROPERTY GRID */}
         {!loading && !error && properties.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {properties.map((p) => (
+          <>
+            {filteredProperties.length === 0 ? (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg width="32" height="32" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="text-gray-400">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">No properties found</h3>
+                <p className="text-gray-500 mb-4">Try adjusting your search or filters</p>
+                <button
+                  onClick={handleClearFilters}
+                  className="text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Clear all filters
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredProperties.map((p) => (
               <div key={p.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition group">
                 {/* Property Image */}
                 <div className="relative h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
@@ -209,8 +337,10 @@ export default function MyProperties() {
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
 
         {/* EMPTY STATE */}
