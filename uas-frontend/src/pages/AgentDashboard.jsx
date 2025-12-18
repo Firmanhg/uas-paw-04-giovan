@@ -1,10 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";import { getCurrentUser } from '../services/authService';import { getAllProperties } from "../services/api";
+import { useState, useEffect } from "react";
+import { getCurrentUser } from '../services/authService';
+import { getAllProperties } from "../services/api";
 
 export default function AgentDashboard() {
   const navigate = useNavigate();
-  // TODO: Get actual agent_id from session/auth
-  const AGENT_ID = 1;
+  const [currentUser, setCurrentUser] = useState(getCurrentUser());
+  const AGENT_ID = currentUser?.id;
   
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,6 +17,19 @@ export default function AgentDashboard() {
 
   useEffect(() => {
     fetchDashboardData();
+    
+    // Listen for user changes
+    const handleUserChange = () => {
+      setCurrentUser(getCurrentUser());
+    };
+    
+    window.addEventListener('userChanged', handleUserChange);
+    window.addEventListener('storage', handleUserChange);
+    
+    return () => {
+      window.removeEventListener('userChanged', handleUserChange);
+      window.removeEventListener('storage', handleUserChange);
+    };
   }, []);
 
   const fetchDashboardData = async () => {
@@ -59,11 +74,11 @@ export default function AgentDashboard() {
         {/* Profile / Brand Header */}
         <div className="p-6 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">
-            {getCurrentUser()?.name?.charAt(0).toUpperCase() || 'A'}
+            {currentUser?.name?.charAt(0).toUpperCase() || 'A'}
           </div>
           <div>
-            <h3 className="text-sm font-bold text-gray-900">{getCurrentUser()?.name || 'Agent'}</h3>
-            <p className="text-xs text-gray-500">{getCurrentUser()?.email || ''}</p>
+            <h3 className="text-sm font-bold text-gray-900">{currentUser?.name || 'Agent'}</h3>
+            <p className="text-xs text-gray-500">{currentUser?.email || ''}</p>
           </div>
         </div>
 

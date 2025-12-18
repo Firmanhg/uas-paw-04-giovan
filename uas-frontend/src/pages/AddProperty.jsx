@@ -131,11 +131,11 @@ export default function AddProperty() {
       <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col">
         <div className="p-6 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">
-            {getCurrentUser()?.name?.charAt(0).toUpperCase() || 'A'}
+            {currentUser?.name?.charAt(0).toUpperCase() || 'A'}
           </div>
           <div>
-            <h3 className="text-sm font-bold text-gray-900">{getCurrentUser()?.name || 'Agent'}</h3>
-            <p className="text-xs text-gray-500">{getCurrentUser()?.email || ''}</p>
+            <h3 className="text-sm font-bold text-gray-900">{currentUser?.name || 'Agent'}</h3>
+            <p className="text-xs text-gray-500">{currentUser?.email || ''}</p>
           </div>
         </div>
 

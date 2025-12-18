@@ -68,3 +68,20 @@ export const updateAgentProfile = async (id, data) => {
     headers: { "Content-Type": "application/json" }
   });
 };
+
+// ============= FAVORITES ENDPOINTS =============
+
+// GET USER FAVORITES
+export const getFavorites = async () => {
+  return await API.get("/favorites");
+};
+
+// ADD TO FAVORITES
+export const addToFavorites = async (propertyId) => {
+  return await API.post("/favorites", { property_id: propertyId });
+};
+
+// REMOVE FROM FAVORITES
+export const removeFavorite = async (favoriteId) => {
+  return await API.delete(`/favorites/${favoriteId}`);
+};
