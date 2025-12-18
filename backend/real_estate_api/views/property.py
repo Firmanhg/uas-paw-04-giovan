@@ -63,10 +63,13 @@ def create_property(request):
             description=data['description'],
             price=data['price'],
             property_type=data['property_type'],
+            listing_type=data.get('listing_type', 'sale'),
+            status=data.get('status', 'available'),
             location=data['location'],
             bedrooms=data.get('bedrooms', 1),
             bathrooms=data.get('bathrooms', 1),
-            area=data.get('area', 0),
+            land_size=data.get('land_size', 0),
+            building_size=data.get('building_size', 0),
             agent_id=agent_id,
             images=data.get('images', [])
         )
@@ -160,7 +163,9 @@ def list_properties(request):
             query = query.filter(Property.property_type.ilike(f'%{property_type}%'))
         
         # Filter by listing type (sale or rent)
-        # listing_type filter removed (column doesn't exist in PostgreSQL)
+        listing_type = request.params.get('listing_type')
+        if listing_type:
+            query = query.filter(Property.listing_type == listing_type)
         
         # Filter by location (partial match)
         location = request.params.get('location')
@@ -209,10 +214,13 @@ def list_properties(request):
                 "description": prop.description,
                 "price": prop.price,
                 "property_type": prop.property_type,
+                "listing_type": prop.listing_type if hasattr(prop, 'listing_type') else 'sale',
+                "status": prop.status if hasattr(prop, 'status') else 'available',
                 "location": prop.location,
                 "bedrooms": prop.bedrooms,
                 "bathrooms": prop.bathrooms,
-                "area": prop.area,
+                "land_size": prop.land_size if hasattr(prop, 'land_size') else prop.area if hasattr(prop, 'area') else 0,
+                "building_size": prop.building_size if hasattr(prop, 'building_size') else 0,
                 "agent_id": prop.agent_id,
                 "images": prop.images or [],
                 "agent": {
