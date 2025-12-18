@@ -344,11 +344,6 @@ export default function Listing() {
                     <span className="absolute top-4 left-4 px-3 py-1 text-xs font-bold text-white rounded uppercase tracking-wide bg-slate-800">
                       {p.property_type}
                     </span>
-                    
-                    {/* Favorite Button */}
-                    <button className="absolute top-4 right-4 p-2 bg-white/30 backdrop-blur-sm rounded-full text-white hover:bg-white hover:text-red-500 transition-all">
-                      <Heart size={18} />
-                    </button>
                   </div>
 
                   {/* Card Body */}
