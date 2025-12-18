@@ -157,6 +157,11 @@ def list_properties(request):
         if property_type:
             query = query.filter(Property.property_type.ilike(f'%{property_type}%'))
         
+        # Filter by listing type (sale or rent)
+        listing_type = request.params.get('listing_type')
+        if listing_type:
+            query = query.filter(Property.listing_type == listing_type)
+        
         # Filter by location (partial match)
         location = request.params.get('location')
         if location:

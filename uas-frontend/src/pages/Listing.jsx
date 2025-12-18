@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { getAllProperties } from "../services/api";
 import {
   Heart,
@@ -21,6 +21,7 @@ const saveCompare = (data) =>
   localStorage.setItem("compare-properties", JSON.stringify(data));
 
 export default function Listing() {
+  const [searchParams] = useSearchParams();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState("newest");
@@ -28,6 +29,7 @@ export default function Listing() {
   // Filter states
   const [filters, setFilters] = useState({
     property_type: "",
+    listing_type: "",
     location: "",
     min_price: "",
     max_price: "",
@@ -40,9 +42,23 @@ export default function Listing() {
   /* ================= */
   const [compareList, setCompareList] = useState(getCompare());
 
+  // Handle URL query parameters and initial load
   useEffect(() => {
-    fetchProperties();
-  }, []);
+    const typeFromURL = searchParams.get('type');
+    if (typeFromURL === 'sale' || typeFromURL === 'rent') {
+      setFilters(prev => ({...prev, listing_type: typeFromURL}));
+    } else {
+      // Load all properties if no type specified
+      fetchProperties();
+    }
+  }, [searchParams]);
+
+  // Re-fetch when filters change
+  useEffect(() => {
+    if (filters.listing_type) {
+      fetchProperties();
+    }
+  }, [filters.listing_type]);
 
   const fetchProperties = async () => {
     try {
@@ -51,6 +67,7 @@ export default function Listing() {
       // Build clean filters - remove empty values
       const cleanFilters = {};
       if (filters.property_type) cleanFilters.property_type = filters.property_type;
+      if (filters.listing_type) cleanFilters.listing_type = filters.listing_type;
       if (filters.location) cleanFilters.location = filters.location;
       if (filters.min_price) cleanFilters.min_price = filters.min_price;
       if (filters.max_price) cleanFilters.max_price = filters.max_price;
@@ -92,6 +109,7 @@ export default function Listing() {
   const handleResetFilter = async () => {
     const emptyFilters = {
       property_type: "",
+      listing_type: "",
       location: "",
       min_price: "",
       max_price: "",
@@ -226,6 +244,21 @@ export default function Listing() {
                 </select>
               </div>
 
+              {/* Listing Type */}
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Listing Type</label>
+                <select 
+                  name="listing_type"
+                  value={filters.listing_type}
+                  onChange={handleFilterChange}
+                  className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-800 text-sm text-gray-600"
+                >
+                  <option value="">All Listings</option>
+                  <option value="sale">For Sale</option>
+                  <option value="rent">For Rent</option>
+                </select>
+              </div>
+
                {/* Bedrooms */}
                <div>
                 <label className="text-xs font-bold text-slate-700 block mb-1">Bedrooms</label>
@@ -348,6 +381,44 @@ export default function Listing() {
                     <span className="absolute top-4 left-4 px-3 py-1 text-xs font-bold text-white rounded uppercase tracking-wide bg-slate-800">
                       {p.property_type}
                     </span>
+                    {/* Badge Listing Type - Bottom Right, Clickable */}
+                    <button
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const newFilters = {...filters, listing_type: p.listing_type};
+                        setFilters(newFilters);
+                        
+                        // Fetch immediately with new filters
+                        try {
+                          setLoading(true);
+                          const cleanFilters = {};
+                          if (newFilters.property_type) cleanFilters.property_type = newFilters.property_type;
+                          if (newFilters.listing_type) cleanFilters.listing_type = newFilters.listing_type;
+                          if (newFilters.location) cleanFilters.location = newFilters.location;
+                          if (newFilters.min_price) cleanFilters.min_price = newFilters.min_price;
+                          if (newFilters.max_price) cleanFilters.max_price = newFilters.max_price;
+                          if (newFilters.min_bedrooms) cleanFilters.min_bedrooms = newFilters.min_bedrooms;
+                          if (newFilters.min_bathrooms) cleanFilters.min_bathrooms = newFilters.min_bathrooms;
+                          
+                          const response = await getAllProperties(cleanFilters);
+                          const properties = response.data?.data || [];
+                          setProperties(properties);
+                          setLoading(false);
+                          
+                          // Scroll to top
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        } catch (error) {
+                          console.error('Error fetching properties:', error);
+                          setLoading(false);
+                        }
+                      }}
+                      className={`absolute bottom-4 right-4 px-3 py-1 text-xs font-bold text-white rounded uppercase tracking-wide transition-transform hover:scale-105 cursor-pointer ${
+                        p.listing_type === 'rent' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-green-600 hover:bg-green-700'
+                      }`}
+                    >
+                      {p.listing_type === 'rent' ? 'For Rent' : 'For Sale'}
+                    </button>
                     {/* Multiple Images Indicator */}
                     {p.images && p.images.length > 1 && (
                       <div className="absolute top-4 right-4 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
