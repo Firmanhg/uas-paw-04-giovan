@@ -134,10 +134,6 @@ export default function AgentProfile() {
           </div>
         )}
       </div>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

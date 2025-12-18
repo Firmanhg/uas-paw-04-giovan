@@ -264,8 +264,6 @@ export default function Settings({ user, onLogout }) {
             </button>
           </div>
         </form>
-
-        </div>
       </main>
     </div>
   );
