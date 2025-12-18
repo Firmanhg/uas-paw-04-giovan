@@ -14,6 +14,7 @@ export default function AddProperty() {
     location: "",
     price: "",
     property_type: "house",
+    listing_type: "sale",
     bedrooms: "",
     bathrooms: "",
     area: "",
@@ -78,6 +79,7 @@ export default function AddProperty() {
         description: form.description,
         price: parseInt(form.price),
         property_type: form.property_type,
+        listing_type: form.listing_type,
         location: form.location,
         bedrooms: parseInt(form.bedrooms) || 1,
         bathrooms: parseInt(form.bathrooms) || 1,
@@ -250,6 +252,35 @@ export default function AddProperty() {
             <h2 className="text-lg font-bold text-gray-900 mb-6 border-b border-gray-100 pb-2">
               Property Details
             </h2>
+            {/* Listing Type - For Sale or For Rent */}
+            <div className="mb-6">
+              <label className={labelClass}>Listing Type</label>
+              <div className="flex gap-4">
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="listing_type"
+                    value="sale"
+                    checked={form.listing_type === "sale"}
+                    onChange={handleChange}
+                    className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                  />
+                  <span className="ml-2 text-gray-700 font-medium">For Sale</span>
+                </label>
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="listing_type"
+                    value="rent"
+                    checked={form.listing_type === "rent"}
+                    onChange={handleChange}
+                    className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                  />
+                  <span className="ml-2 text-gray-700 font-medium">For Rent</span>
+                </label>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className={labelClass}>Property Type</label>
@@ -273,7 +304,7 @@ export default function AddProperty() {
               </div>
 
               <div>
-                <label className={labelClass}>Price (IDR)</label>
+                <label className={labelClass}>Price (IDR){form.listing_type === "rent" && " / Month"}</label>
                 <input
                   type="number"
                   name="price"

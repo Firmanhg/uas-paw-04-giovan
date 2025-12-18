@@ -59,6 +59,7 @@ def create_property(request):
             description=data['description'],
             price=data['price'],
             property_type=data['property_type'],
+            listing_type=data.get('listing_type', 'sale'),  # sale or rent
             location=data['location'],
             bedrooms=data.get('bedrooms', 1),
             bathrooms=data.get('bathrooms', 1),
@@ -203,6 +204,7 @@ def list_properties(request):
                 "description": prop.description,
                 "price": prop.price,
                 "property_type": prop.property_type,
+                "listing_type": prop.listing_type if hasattr(prop, 'listing_type') else 'sale',
                 "location": prop.location,
                 "bedrooms": prop.bedrooms,
                 "bathrooms": prop.bathrooms,
@@ -265,6 +267,7 @@ def get_property_detail(request):
                 "description": prop.description,
                 "price": prop.price,
                 "property_type": prop.property_type,
+                "listing_type": prop.listing_type if hasattr(prop, 'listing_type') else 'sale',
                 "location": prop.location,
                 "bedrooms": prop.bedrooms,
                 "bathrooms": prop.bathrooms,
@@ -327,6 +330,8 @@ def update_property(request):
             prop.price = data['price']
         if 'property_type' in data:
             prop.property_type = data['property_type']
+        if 'listing_type' in data:
+            prop.listing_type = data['listing_type']
         if 'location' in data:
             prop.location = data['location']
         if 'bedrooms' in data:

@@ -17,6 +17,7 @@ export default function EditProperty() {
     description: "",
     price: "",
     property_type: "House",
+    listing_type: "sale",
     location: "",
     bedrooms: "",
     bathrooms: "",
@@ -53,6 +54,7 @@ export default function EditProperty() {
         description: property.description || '',
         price: property.price ? property.price.toString() : '',
         property_type: property.property_type || 'House',
+        listing_type: property.listing_type || 'sale',
         location: property.location || '',
         bedrooms: property.bedrooms ? property.bedrooms.toString() : '',
         bathrooms: property.bathrooms ? property.bathrooms.toString() : '',
@@ -122,6 +124,7 @@ export default function EditProperty() {
         description: form.description,
         price: parseInt(form.price),
         property_type: form.property_type,
+        listing_type: form.listing_type,
         location: form.location,
         bedrooms: parseInt(form.bedrooms),
         bathrooms: parseInt(form.bathrooms),
@@ -211,9 +214,38 @@ export default function EditProperty() {
                 <textarea name="description" rows="5" value={form.description} onChange={handleChange} className={inputClass}></textarea>
               </div>
 
+              {/* Listing Type */}
+              <div className="mb-4">
+                <label className={labelClass}>Listing Type</label>
+                <div className="flex gap-4">
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="listing_type"
+                      value="sale"
+                      checked={form.listing_type === "sale"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                    />
+                    <span className="ml-2 text-gray-700 font-medium">For Sale</span>
+                  </label>
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="listing_type"
+                      value="rent"
+                      checked={form.listing_type === "rent"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                    />
+                    <span className="ml-2 text-gray-700 font-medium">For Rent</span>
+                  </label>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <div>
-                    <label className={labelClass}>Price (IDR)</label>
+                    <label className={labelClass}>Price (IDR){form.listing_type === "rent" && " / Month"}</label>
                     <input type="number" name="price" value={form.price} onChange={handleChange} className={inputClass} required />
                  </div>
                  <div>

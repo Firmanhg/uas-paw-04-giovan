@@ -285,8 +285,12 @@ export default function MyProperties() {
                   )}
                   {/* Status Badge */}
                   <div className="absolute top-3 left-3">
-                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-                      For Sale
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      p.listing_type === 'rent' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'bg-green-100 text-green-700'
+                    }`}>
+                      {p.listing_type === 'rent' ? 'For Rent' : 'For Sale'}
                     </span>
                   </div>
                   {/* Multiple Images Indicator */}

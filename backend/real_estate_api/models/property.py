@@ -9,6 +9,7 @@ class Property(Base):
     description = Column(Text)
     price = Column(Integer)
     property_type = Column(String(50))  # rumah, apartemen, dll
+    listing_type = Column(String(20), default='sale')  # sale or rent
     location = Column(String(100))
     bedrooms = Column(Integer, default=1)
     bathrooms = Column(Integer, default=1)
