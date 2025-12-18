@@ -44,3 +44,21 @@ export const updateProperty = async (id, data) => {
 export const deleteProperty = async (id, agentId) => {
   return await API.delete(`/properties/${id}?agent_id=${agentId}`);
 };
+// ============= AGENT ENDPOINTS =============
+
+// GET ALL AGENTS
+export const getAllAgents = async () => {
+  return await API.get("/agents");
+};
+
+// GET AGENT PROFILE BY ID
+export const getAgentProfile = async (id) => {
+  return await API.get(`/agents/${id}`);
+};
+
+// UPDATE AGENT PROFILE
+export const updateAgentProfile = async (id, data) => {
+  return await API.put(`/agents/${id}`, data, {
+    headers: { "Content-Type": "application/json" }
+  });
+};

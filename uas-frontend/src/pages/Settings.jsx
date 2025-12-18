@@ -1,23 +1,87 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { getAgentProfile, updateAgentProfile } from "../services/api";
 
 export default function Settings({ user, onLogout }) {
   const navigate = useNavigate();
+  const AGENT_ID = 1; // TODO: Get from auth context
   
-  // State untuk data form (Default value diambil dari props user atau dummy)
+  // State untuk data form
   const [formData, setFormData] = useState({
-    name: user?.name || "John Doe",
-    email: user?.email || "j.doe@realestate.com",
-    phone: user?.phone || "+1 (555) 123-4567",
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
+    name: "",
+    email: "",
+    phone: "",
+    bio: "",
+    company: "",
+    license_number: "",
+    avatar: "",
   });
+
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState({ type: "", text: "" });
+
+  useEffect(() => {
+    fetchAgentProfile();
+  }, []);
+
+  const fetchAgentProfile = async () => {
+    try {
+      setLoading(true);
+      const response = await getAgentProfile(AGENT_ID);
+      if (response.data.status === "success") {
+        const agent = response.data.data;
+        setFormData({
+          name: agent.name || "",
+          email: agent.email || "",
+          phone: agent.phone || "",
+          bio: agent.bio || "",
+          company: agent.company || "",
+          license_number: agent.license_number || "",
+          avatar: agent.avatar || "",
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching agent profile:", error);
+      setMessage({ type: "error", text: "Failed to load profile" });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setSaving(true);
+      setMessage({ type: "", text: "" });
+
+      const response = await updateAgentProfile(AGENT_ID, formData);
+      if (response.data.status === "success") {
+        setMessage({ type: "success", text: "Profile updated successfully!" });
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      setMessage({ 
+        type: "error", 
+        text: error.response?.data?.error || "Failed to update profile" 
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-50 font-sans text-gray-800">
@@ -77,8 +141,17 @@ export default function Settings({ user, onLogout }) {
       <main className="flex-1 p-8 overflow-y-auto">
         <h1 className="text-3xl font-extrabold text-gray-900 mb-8">My Profile</h1>
 
+        {/* Message Alert */}
+        {message.text && (
+          <div className={`mb-6 p-4 rounded-lg ${
+            message.type === "success" ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"
+          }`}>
+            {message.text}
+          </div>
+        )}
+
         {/* Card Putih Pembungkus Form */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
           
           {/* SECTION 1: Personal Information */}
           <h2 className="text-lg font-bold text-gray-900 mb-6">Personal Information</h2>
@@ -92,6 +165,7 @@ export default function Settings({ user, onLogout }) {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
+                required
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
               />
             </div>
@@ -104,70 +178,92 @@ export default function Settings({ user, onLogout }) {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                required
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
               />
             </div>
           </div>
 
-          {/* Phone Number (Full Width) */}
-          <div className="mb-10">
-            <label className="block text-sm font-medium text-gray-600 mb-2">Phone Number</label>
+          {/* Phone Number & Company */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-2">Phone Number</label>
+              <input
+                type="text"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="+62 812-3456-7890"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-2">Company</label>
+              <input
+                type="text"
+                name="company"
+                value={formData.company}
+                onChange={handleChange}
+                placeholder="PropertiKu Realty"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+              />
+            </div>
+          </div>
+
+          {/* License Number */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-600 mb-2">License Number</label>
             <input
               type="text"
-              name="phone"
-              value={formData.phone}
+              name="license_number"
+              value={formData.license_number}
               onChange={handleChange}
+              placeholder="LIC-12345-AGENT"
               className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
             />
           </div>
 
-          <hr className="border-gray-100 mb-10" />
-
-          {/* SECTION 2: Change Password */}
-          <h2 className="text-lg font-bold text-gray-900 mb-6">Change Password</h2>
-
+          {/* Bio */}
           <div className="mb-6">
-             <label className="block text-sm font-medium text-gray-600 mb-2">Current Password</label>
-             <input
-                type="password"
-                name="currentPassword"
-                value={formData.currentPassword}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
-              />
+            <label className="block text-sm font-medium text-gray-600 mb-2">Bio</label>
+            <textarea
+              name="bio"
+              value={formData.bio}
+              onChange={handleChange}
+              rows="4"
+              placeholder="Tell us about yourself and your expertise..."
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+            />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-2">New Password</label>
-              <input
-                type="password"
-                name="newPassword"
-                value={formData.newPassword}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-2">Confirm New Password</label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
-              />
-            </div>
+          {/* Avatar URL */}
+          <div className="mb-10">
+            <label className="block text-sm font-medium text-gray-600 mb-2">Avatar URL</label>
+            <input
+              type="text"
+              name="avatar"
+              value={formData.avatar}
+              onChange={handleChange}
+              placeholder="https://example.com/avatar.jpg or base64"
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+            />
+            {formData.avatar && (
+              <img src={formData.avatar} alt="Avatar preview" className="mt-3 w-20 h-20 rounded-full object-cover" />
+            )}
           </div>
-
-          <hr className="border-gray-100 mb-8" />
 
           {/* BUTTON ACTIONS */}
-          <div className="flex justify-end">
-            <button className="px-6 py-2.5 bg-[#2D3748] text-white font-medium rounded-lg hover:bg-gray-800 transition shadow-lg shadow-gray-200">
-              Update Profile
+          <div className="flex justify-end pt-6 border-t border-gray-100">
+            <button 
+              type="submit"
+              disabled={saving}
+              className="px-6 py-2.5 bg-[#2D3748] text-white font-medium rounded-lg hover:bg-gray-800 transition shadow-lg disabled:bg-gray-400"
+            >
+              {saving ? "Saving..." : "Update Profile"}
             </button>
           </div>
+        </form>
 
         </div>
       </main>
