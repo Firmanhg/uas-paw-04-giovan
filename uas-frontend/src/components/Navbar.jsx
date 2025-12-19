@@ -8,20 +8,16 @@ export default function Navbar() {
   const [userData, setUserData] = useState(null);
   const location = useLocation();
 
-  // Load user data on mount and when location changes
   useEffect(() => {
     const loadUser = () => {
       const user = getCurrentUser();
       setUserData(user);
     };
 
-    // Load initially
     loadUser();
 
-    // Listen for storage changes (when user logs in from another tab or Login component)
     window.addEventListener('storage', loadUser);
     
-    // Custom event for same-window updates
     window.addEventListener('userChanged', loadUser);
 
     return () => {
@@ -30,12 +26,10 @@ export default function Navbar() {
     };
   }, [location.pathname]);
 
-  // Hide navbar for agents (they have sidebar in dashboard)
   if (userData && userData.role === "agent") {
     return null; 
   }
 
-  // Logout handler
   const handleLogout = async () => {
     try {
       await logoutAPI();
@@ -49,16 +43,15 @@ export default function Navbar() {
   return (
     <nav className="w-full bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
       
-      {/* BAGIAN KIRI: LOGO */}
+      {}
       <Link to="/" className="flex items-center gap-2">
         <Home className="text-slate-900" />
         <span className="text-xl font-bold text-slate-900">PropertiKu</span>
       </Link>
 
-      {/* BAGIAN KANAN: MENU */}
+      {}
       <div className="flex items-center gap-6">
         {userData ? (
-          // === TAMPILAN SESUDAH LOGIN (KHUSUS BUYER) ===
           <>
             <Link to="/properties?type=sale" className="text-sm font-medium text-gray-600 hover:text-slate-900">For Sale</Link>
             <Link to="/properties?type=rent" className="text-sm font-medium text-gray-600 hover:text-slate-900">For Rent</Link>
@@ -67,7 +60,7 @@ export default function Navbar() {
               Your Favorites
             </Link>
 
-            {/* Profil Dropdown Buyer */}
+            {}
             <div className="relative group cursor-pointer py-2">
                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 border border-orange-200">
                  <User size={20} />
@@ -87,7 +80,6 @@ export default function Navbar() {
             </div>
           </>
         ) : (
-          // === TAMPILAN SEBELUM LOGIN (TAMU) ===
           <>
              <div className="hidden md:flex gap-6 mr-4">
                 <Link to="/properties?type=sale" className="text-sm font-medium text-gray-600 hover:text-slate-900">For Buy</Link>
