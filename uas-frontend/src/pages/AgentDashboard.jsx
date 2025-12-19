@@ -2,11 +2,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getAllProperties } from "../services/api";
 import { getAgentInquiries } from "../services/api";
+import { getCurrentUser } from "../services/authService";
 
 export default function AgentDashboard() {
   const navigate = useNavigate();
-  const AGENT_ID = 1;
-  
+  const currentUser = getCurrentUser();
+  const AGENT_ID = currentUser?.id;
+
   const [properties, setProperties] = useState([]);
   const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
