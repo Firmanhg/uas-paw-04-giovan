@@ -86,7 +86,7 @@ export default function Register() {
               </div>
             )}
 
-            {/* NAME INPUT */}
+            {}
             <div>
               <label className="block mb-1.5 font-semibold text-gray-700 text-sm">Name</label>
               <input
