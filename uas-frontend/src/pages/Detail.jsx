@@ -340,10 +340,11 @@ export default function Detail() {
                         })
                       });
                       const data = await res.json();
-                      if (data.success && data.inquiry) {
+                      if (data.success && data.inquiry && data.inquiry.id) {
                         navigate(`/chat/${data.inquiry.id}`);
                       } else {
-                        alert('Gagal membuat inquiry!');
+                        const text = await res.text();
+                        alert(`Gagal membuat inquiry!\nStatus: ${res.status}\nResponse: ${text}`);
                       }
                     } catch (err) {
                       alert('Terjadi error saat membuat inquiry!');

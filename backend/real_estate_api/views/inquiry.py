@@ -57,17 +57,18 @@ def create_inquiry(request):
             return Response(
                 json.dumps({'success': False, 'message': 'Unauthorized'}),
                 status=401,
-                content_type='application/json'
+                content_type='application/json; charset=UTF-8'
             )
         
         data = request.json_body
         
         # Validate required fields
         if 'property_id' not in data or 'message' not in data:
-            return {
-                'success': False,
-                'message': 'property_id and message are required'
-            }
+            return Response(
+                json.dumps({'success': False, 'message': 'property_id and message are required'}),
+                status=400,
+                content_type='application/json; charset=UTF-8'
+            )
         
         property_id = data['property_id']
         message = data['message']
@@ -81,7 +82,7 @@ def create_inquiry(request):
             return Response(
                 json.dumps({'success': False, 'message': 'Property not found'}),
                 status=404,
-                content_type='application/json'
+                content_type='application/json; charset=UTF-8'
             )
         
         # Create inquiry
@@ -93,7 +94,6 @@ def create_inquiry(request):
         
         request.dbsession.add(new_inquiry)
         request.dbsession.flush()
-        
         return {
             'success': True,
             'message': 'Inquiry submitted successfully',
@@ -106,11 +106,15 @@ def create_inquiry(request):
         }
         
     except Exception as e:
+        import traceback
+        tb = traceback.format_exc()
+        print("[ERROR] create_inquiry exception:", tb)
         request.dbsession.rollback()
-        return {
-            'success': False,
-            'message': f'Failed to submit inquiry: {str(e)}'
-        }
+        return Response(
+            json.dumps({'success': False, 'message': f'Failed to submit inquiry: {str(e)}', 'traceback': tb}),
+            status=500,
+            content_type='application/json; charset=UTF-8'
+        )
 
 
 @view_config(route_name='get_buyer_inquiries', renderer='json', request_method='GET')

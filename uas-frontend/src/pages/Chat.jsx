@@ -9,7 +9,7 @@ export default function Chat() {
   const [message, setMessage] = useState("");
   const [chats, setChats] = useState([]);
   const [socket, setSocket] = useState(null);
-  const { id: inquiryId } = useParams();
+  const { inquiryId } = useParams();
   const currentUser = getCurrentUser();
   const [property, setProperty] = useState(null);
   const [agent, setAgent] = useState(null);
@@ -18,57 +18,78 @@ export default function Chat() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
-<<<<<<< HEAD
-    
-    // Debug: Log current user
-    console.log('Chat.jsx - Current User:', currentUser);
-    console.log('Chat.jsx - Current User ID:', currentUser?.id);
-    
-    // Fetch chat history
-=======
->>>>>>> fbdbe9ec12b15a1619fc2cc2ed7f425b8dc2c8d4
-    getChatMessages(inquiryId).then(res => {
-      if (res.data.success) setChats(res.data.messages);
-    });
-    getInquiryById(inquiryId)
-      .then(res => {
-        if (res.data.success && res.data.data) {
-<<<<<<< HEAD
-          const { property_id, agent_id, buyer_id } = res.data.data;
-          // Fetch property
-=======
-          const { property_id, agent_id } = res.data.data;
->>>>>>> fbdbe9ec12b15a1619fc2cc2ed7f425b8dc2c8d4
-          getPropertyById(property_id)
-            .then(propRes => {
-              if (propRes.data.data) setProperty(propRes.data.data);
-            })
-            .catch(() => setProperty(null));
-          getAgentProfile(agent_id)
-            .then(agentRes => {
-              if (agentRes.data.data) setAgent(agentRes.data.data);
-            })
-            .catch(() => setAgent(null));
-          // Fetch buyer jika user adalah agent
-          if (currentUser?.role === 'agent' && buyer_id) {
-            fetch(`http://localhost:6543/api/users/${buyer_id}`)
-              .then(r => r.json())
-              .then(data => setBuyer(data.user || null))
-              .catch(() => setBuyer(null));
+    console.log('[DEBUG] useEffect inquiryId:', inquiryId);
+    let retryCount = 0;
+    let retryTimeout;
+    const fetchInquiryWithRetry = () => {
+      if (!inquiryId || inquiryId === 'undefined') {
+        setError('Inquiry ID tidak valid.');
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      setError(null);
+      getChatMessages(inquiryId).then(res => {
+        if (res.data.success) setChats(res.data.messages);
+      });
+      getInquiryById(inquiryId)
+        .then(res => {
+          console.log('[DEBUG] getInquiryById response:', res);
+          // Fallback: support both 'data' and 'inquiry' field
+          const inquiry = res.data.data || res.data.inquiry;
+          if (res.data.success && inquiry) {
+            const { property_id, agent_id, buyer_id } = inquiry;
+            getPropertyById(property_id)
+              .then(propRes => {
+                if (propRes.data.data) setProperty(propRes.data.data);
+              })
+              .catch(() => setProperty(null));
+            getAgentProfile(agent_id)
+              .then(agentRes => {
+                if (agentRes.data.data) setAgent(agentRes.data.data);
+              })
+              .catch(() => setAgent(null));
+            // Fetch buyer jika user adalah agent
+            if (currentUser?.role === 'agent' && buyer_id) {
+              fetch(`http://localhost:6543/api/users/${buyer_id}`)
+                .then(r => r.json())
+                .then(data => setBuyer(data.user || null))
+                .catch(() => setBuyer(null));
+            }
+            setLoading(false);
+          } else {
+            // Retry up to 5x with 300ms delay
+            if (retryCount < 5) {
+              retryCount++;
+              retryTimeout = setTimeout(fetchInquiryWithRetry, 300);
+            } else {
+              setError("Inquiry not found");
+              setLoading(false);
+            }
           }
-        } else {
-          setError("Inquiry not found");
-        }
-      })
-      .catch(() => setError("Gagal memuat detail inquiry"));
-    const newSocket = io("http://localhost:6543");
-    setSocket(newSocket);
-    newSocket.emit("join_inquiry", { inquiry_id: inquiryId });
-    newSocket.on("chat_message", msg => setChats(prev => [...prev, msg]));
-    setLoading(false);
-    return () => newSocket.disconnect();
+        })
+        .catch((err) => {
+          console.error('[DEBUG] getInquiryById error:', err);
+          if (retryCount < 5) {
+            retryCount++;
+            retryTimeout = setTimeout(fetchInquiryWithRetry, 300);
+          } else {
+            setError("Gagal memuat detail inquiry");
+            setLoading(false);
+          }
+        });
+      const newSocket = io("http://localhost:6543");
+      setSocket(newSocket);
+      newSocket.emit("join_inquiry", { inquiry_id: inquiryId });
+      newSocket.on("chat_message", msg => setChats(prev => [...prev, msg]));
+      return () => {
+        clearTimeout(retryTimeout);
+        newSocket.disconnect();
+      };
+    };
+    fetchInquiryWithRetry();
+    // Cleanup on unmount
+    return () => clearTimeout(retryTimeout);
   }, [inquiryId]);
 
   const handleSend = async (e) => {
@@ -133,15 +154,11 @@ export default function Chat() {
               </button>
             </div>
 
-<<<<<<< HEAD
-            {/* 2. Chat Messages List */}
-            <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50 flex flex-col gap-4">
-              {/* Date Separator */}
-=======
+
             {}
             <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50 space-y-6">
               {}
->>>>>>> fbdbe9ec12b15a1619fc2cc2ed7f425b8dc2c8d4
+
               <div className="flex justify-center">
                 <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">Hari ini</span>
               </div>

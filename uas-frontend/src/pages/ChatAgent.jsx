@@ -17,19 +17,14 @@ export default function ChatAgent() {
     fetchInquiryAndMessages();
     const newSocket = io('http://localhost:6543');
     setSocket(newSocket);
-<<<<<<< HEAD
-    
+
     // Join inquiry room
     newSocket.emit('join_inquiry', { inquiry_id: buyerId });
-=======
 
-    newSocket.emit('join_inquiry', buyerId);
->>>>>>> fbdbe9ec12b15a1619fc2cc2ed7f425b8dc2c8d4
-    
     newSocket.on('chat_message', (message) => {
       setMessages(prev => [...prev, message]);
     });
-    
+
     return () => {
       newSocket.disconnect();
     };
@@ -38,7 +33,7 @@ export default function ChatAgent() {
   const fetchInquiryAndMessages = async () => {
     try {
       setLoading(true);
-      
+
       const mockInquiry = {
         id: buyerId,
         buyer: {
@@ -57,11 +52,10 @@ export default function ChatAgent() {
       if (messagesResponse.data.success) {
         setMessages(messagesResponse.data.messages || []);
       }
-      
-      // Debug: Log current user
+
       console.log('Current User:', currentUser);
       console.log('Current User ID:', currentUser?.id);
-      
+
       setLoading(false);
     } catch (error) {
       console.error('Error fetching chat data:', error);
@@ -80,9 +74,7 @@ export default function ChatAgent() {
       };
 
       await sendChatMessage(buyerId, { message: input.trim() });
-<<<<<<< HEAD
 
-      // Tambahkan ke state messages secara lokal (langsung tampil)
       setMessages(prev => [
         ...prev,
         {
@@ -94,12 +86,7 @@ export default function ChatAgent() {
         }
       ]);
 
-      // Emit via Socket.IO
-=======
-  
->>>>>>> fbdbe9ec12b15a1619fc2cc2ed7f425b8dc2c8d4
       socket.emit('chat_message', messageData);
-
       setInput("");
     } catch (error) {
       console.error('Error sending message:', error);
@@ -125,8 +112,7 @@ export default function ChatAgent() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-
-      {}
+      {/* Header */}
       <div className="bg-white border-b px-6 py-4 flex justify-between items-center">
         <div>
           <h2 className="font-bold text-lg text-gray-900">
@@ -145,39 +131,20 @@ export default function ChatAgent() {
         </Link>
       </div>
 
-<<<<<<< HEAD
-      {/* CHAT BODY */}
-      <div className="flex-1 px-6 py-6 flex flex-col gap-4 overflow-y-auto">
-=======
-      {}
+      {/* Chat Messages Area */}
       <div className="flex-1 px-6 py-6 space-y-4 overflow-y-auto">
->>>>>>> fbdbe9ec12b15a1619fc2cc2ed7f425b8dc2c8d4
         {messages.length === 0 ? (
           <div className="text-center text-gray-500 py-8">
             <p>No messages yet. Start the conversation!</p>
           </div>
         ) : (
           messages.map((msg, index) => {
-            // Debug log untuk setiap message
-            console.log(`Message ${index}:`, {
-              message: msg.message,
-              sender_id: msg.sender_id,
-              sender_id_type: typeof msg.sender_id,
-              currentUser_id: currentUser?.id,
-              currentUser_id_type: typeof currentUser?.id,
-              isMatch: msg.sender_id === currentUser?.id,
-              isMatchLoose: msg.sender_id == currentUser?.id
-            });
-            
-            // Gunakan sender_id (dari socket) atau sender.id (dari backend)
             const senderId = msg.sender_id ?? msg.sender?.id;
             const isCurrentUser = String(senderId) === String(currentUser?.id);
             return (
               <div
-                key={index}
-                className={`flex ${
-                  isCurrentUser ? "justify-end" : "justify-start"
-                }`}
+                key={msg.id || index}
+                className={`flex ${isCurrentUser ? "justify-end" : "justify-start"}`}
               >
                 <div className="flex flex-col max-w-[70%]">
                   <div
@@ -199,7 +166,7 @@ export default function ChatAgent() {
         )}
       </div>
 
-      {}
+      {/* Input Area */}
       <div className="bg-white border-t px-6 py-4 flex gap-3">
         <input
           type="text"
@@ -217,7 +184,6 @@ export default function ChatAgent() {
           Send
         </button>
       </div>
-
     </div>
   );
 }

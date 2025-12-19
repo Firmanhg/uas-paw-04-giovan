@@ -97,7 +97,7 @@ export default function AppRouter() {
       <Route path="/register" element={<Register />} />
 
       {/* ================= BUYER CHAT ================= */}
-      <Route path="/chat/:agentId" element={<Chat />} />
+      <Route path="/chat/:inquiryId" element={<Chat />} />
 
       {/* ================= AGENT CHAT ================= */}
       <Route path="/agent/chat/:buyerId" element={<ChatAgent />} />
