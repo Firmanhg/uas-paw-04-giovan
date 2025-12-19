@@ -1,12 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getCurrentUser } from '../services/authService';
 import { getAllProperties } from "../services/api";
 
 export default function AgentDashboard() {
   const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = useState(getCurrentUser());
-  const AGENT_ID = currentUser?.id;
+  // TODO: Get actual agent_id from session/auth
+  const AGENT_ID = 1;
   
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,19 +16,6 @@ export default function AgentDashboard() {
 
   useEffect(() => {
     fetchDashboardData();
-    
-    // Listen for user changes
-    const handleUserChange = () => {
-      setCurrentUser(getCurrentUser());
-    };
-    
-    window.addEventListener('userChanged', handleUserChange);
-    window.addEventListener('storage', handleUserChange);
-    
-    return () => {
-      window.removeEventListener('userChanged', handleUserChange);
-      window.removeEventListener('storage', handleUserChange);
-    };
   }, []);
 
   const fetchDashboardData = async () => {
@@ -67,6 +53,16 @@ export default function AgentDashboard() {
     }).format(value);
   };
 
+  // ==========================================
+  // FIX LOGOUT: Menggunakan window.location.href
+  // ==========================================
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("userRole");
+    // Paksa refresh halaman agar AppRouter mereset state dan bisa masuk ke Login
+    window.location.href = "/login";
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-50 font-sans text-gray-800">
       {/* --- SIDEBAR --- */}
@@ -74,11 +70,11 @@ export default function AgentDashboard() {
         {/* Profile / Brand Header */}
         <div className="p-6 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">
-            {currentUser?.name?.charAt(0).toUpperCase() || 'A'}
+            J
           </div>
           <div>
-            <h3 className="text-sm font-bold text-gray-900">{currentUser?.name || 'Agent'}</h3>
-            <p className="text-xs text-gray-500">{currentUser?.email || ''}</p>
+            <h3 className="text-sm font-bold text-gray-900">John Appleseed</h3>
+            <p className="text-xs text-gray-500">Realty Inc.</p>
           </div>
         </div>
 
@@ -111,8 +107,19 @@ export default function AgentDashboard() {
             <HelpIcon />
             <span>Help</span>
           </button>
-          {/* Logout diarahkan ke Login */}
-          <NavItem to="/login" icon={<LogoutIcon />} label="Logout" />
+          
+          {/* ======================================================= */}
+          {/* LOGOUT BUTTON (TAMPILAN SAMA PERSIS NAVITEM)            */}
+          {/* ======================================================= */}
+          <button 
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-gray-600 hover:bg-gray-50 transition text-left cursor-pointer"
+          >
+            <span className="text-gray-400"><LogoutIcon /></span>
+            Logout
+          </button>
+          {/* ======================================================= */}
+
         </div>
       </aside>
 
