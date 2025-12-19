@@ -8,7 +8,6 @@ export default function Favorite() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Load favorites from backend API on mount
   useEffect(() => {
     fetchFavorites();
     const onFavoritesChanged = () => fetchFavorites();
@@ -34,11 +33,9 @@ export default function Favorite() {
     }
   };
 
-  // Remove from favorite
   const handleRemoveFavorite = async (favoriteId) => {
     try {
       await removeFavoriteAPI(favoriteId);
-      // Refresh list after removal
       fetchFavorites();
     } catch (error) {
       console.error("Error removing favorite:", error);
@@ -64,7 +61,7 @@ export default function Favorite() {
         </div>
       )}
 
-      {/* IF FAVORITE EMPTY */}
+      {}
       {!loading && favorites.length === 0 && (
         <div className="text-center text-gray-600 mt-20">
           <p className="text-xl mb-4">No favorites yet 😢</p>
@@ -77,10 +74,10 @@ export default function Favorite() {
         </div>
       )}
 
-      {/* FAVORITE LIST */}
+      {}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {favorites.map((fav) => {
-          const p = fav.property; // Extract property from favorite object
+          const p = fav.property;
           return (
           <div
             key={fav.id}
@@ -96,7 +93,7 @@ export default function Favorite() {
                 {p.property_type}
               </span>
               
-              {/* Remove Button */}
+              {}
               <button
                 onClick={() => handleRemoveFavorite(fav.id)}
                 className="absolute top-4 right-4 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all"
@@ -118,7 +115,7 @@ export default function Favorite() {
                 {formatCurrency(p.price)}
               </p>
 
-              {/* Property Details */}
+              {}
               <div className="flex items-center gap-4 text-sm text-gray-600 border-t border-gray-100 pt-4">
                 <div className="flex items-center gap-1">
                   <BedDouble size={16} />
@@ -134,7 +131,7 @@ export default function Favorite() {
                 </div>
               </div>
 
-              {/* View Details Button */}
+              {}
               <Link
                 to={`/property/${p.id}`}
                 className="block mt-4 w-full text-center py-2.5 bg-slate-800 text-white font-semibold rounded-lg hover:bg-slate-900 transition"
