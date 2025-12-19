@@ -156,7 +156,7 @@ python seed.py
 python app.py
 ```
 
-Backend akan berjalan di `http://localhost:5000`
+Backend akan berjalan di `http://localhost:6543`
 
 #### 4. Setup Frontend
 ```bash
@@ -178,9 +178,16 @@ Frontend akan berjalan di `http://localhost:5173`
 
 ## 🌐 Deployment Links
 
-- **Link Deployment:** [https://property-listing-frontend.vercel.app](https://property-listing-frontend.vercel.app)
+- **Link Deployment Frontend:** https://propertyku04.vercel.app/ 
+- **Link Deployment Backend:** [propertiku04.web.id](http://propertiku04.web.id/)
 
 --- 
+
+## 🎥 Video Presentasi
+
+📹 **Link Video Presentasi:** https://youtu.be/RLuQ9IcEyLY?si=sVOi93bhKquZobgr 
+
+---
 
 ## 📚 API Documentation
 
@@ -587,20 +594,7 @@ Semua endpoint dapat mengembalikan error responses berikut:
 
 ---
 
-## 🎥 Video Presentasi
-
-📹 **Link Video Presentasi:** [https://youtu.be/your-video-link](https://youtu.be/your-video-link)
-
----
-
 ## 🧪 Testing
-
-### Testing API dengan Postman
-
-1. Import collection dari `postman_collection.json`
-2. Set environment variables:
-   - `base_url`: http://localhost:5000/api
-   - `token`: (akan diisi setelah login)
 
 ### Manual Testing Flow
 
