@@ -20,6 +20,9 @@ requires = [
     'SQLAlchemy',
     'transaction',
     'zope.sqlalchemy',
+    'python-socketio==5.8.0',
+    'python-engineio==4.7.1',
+    'eventlet==0.33.3',
 ]
 
 tests_require = [

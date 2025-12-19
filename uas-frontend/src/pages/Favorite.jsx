@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Heart, BedDouble, Bath, Square } from "lucide-react";
 import { getFavorites, removeFavorite as removeFavoriteAPI } from "../services/api";
@@ -6,10 +6,14 @@ import { getFavorites, removeFavorite as removeFavoriteAPI } from "../services/a
 export default function Favorite() {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // Load favorites from backend API on mount
   useEffect(() => {
     fetchFavorites();
+    const onFavoritesChanged = () => fetchFavorites();
+    window.addEventListener('favoritesChanged', onFavoritesChanged);
+    return () => window.removeEventListener('favoritesChanged', onFavoritesChanged);
   }, []);
 
   const fetchFavorites = async () => {
@@ -21,6 +25,10 @@ export default function Favorite() {
       }
     } catch (error) {
       console.error("Error fetching favorites:", error);
+      // If unauthorized, redirect to login
+      if (error.response && error.response.status === 401) {
+        navigate('/login');
+      }
     } finally {
       setLoading(false);
     }

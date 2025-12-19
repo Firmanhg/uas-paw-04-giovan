@@ -1,3 +1,7 @@
+// GET INQUIRY BY ID
+export const getInquiryById = async (id) => {
+  return await API.get(`/inquiries/${id}`);
+};
 import axios from "axios";
 
 const API = axios.create({
@@ -84,4 +88,21 @@ export const addToFavorites = async (propertyId) => {
 // REMOVE FROM FAVORITES
 export const removeFavorite = async (favoriteId) => {
   return await API.delete(`/favorites/${favoriteId}`);
+};
+
+// ============= INQUIRIES ENDPOINTS =============
+
+// GET AGENT INQUIRIES
+export const getAgentInquiries = async () => {
+  return await API.get("/agent/inquiries");
+};
+
+// GET CHAT MESSAGES
+export const getChatMessages = async (inquiryId) => {
+  return await API.get(`/inquiries/${inquiryId}/messages`);
+};
+
+// SEND CHAT MESSAGE
+export const sendChatMessage = async (inquiryId, messageData) => {
+  return await API.post(`/inquiries/${inquiryId}/messages`, messageData);
 };

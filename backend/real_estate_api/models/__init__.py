@@ -1,6 +1,7 @@
-from sqlalchemy import engine_from_config
+from sqlalchemy import engine_from_config, Column, Integer, String, Text, DateTime, ForeignKey
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import configure_mappers
+from datetime import datetime
 import zope.sqlalchemy
 
 # Import or define all models here to ensure they are attached to the
@@ -29,6 +30,16 @@ class Inquiry(Base):
     property_id = Column(Integer, ForeignKey('properties.id', ondelete='CASCADE'))
     message = Column(Text, nullable=False)
     date = Column(DateTime, default=datetime.utcnow)
+
+# Define ChatMessage model for real-time chat
+class ChatMessage(Base):
+    __tablename__ = 'chat_messages'
+    id = Column(Integer, primary_key=True)
+    inquiry_id = Column(Integer, ForeignKey('inquiries.id', ondelete='CASCADE'))
+    sender_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
+    message = Column(Text, nullable=False)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+    message_type = Column(String(20), default='text')  # text, image, etc.
 
 # Run ``configure_mappers`` after defining all of the models to ensure
 # all relationships can be setup.

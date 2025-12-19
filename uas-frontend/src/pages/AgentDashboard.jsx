@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getAllProperties } from "../services/api";
+import { getAgentInquiries } from "../services/api";
 
 export default function AgentDashboard() {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ export default function AgentDashboard() {
   const AGENT_ID = 1;
   
   const [properties, setProperties] = useState([]);
+  const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalProperties: 0,
@@ -21,13 +23,16 @@ export default function AgentDashboard() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
+      
       // Fetch all properties for this agent
-      const response = await getAllProperties({ agent_id: AGENT_ID });
-      
-      // Backend returns {status: "success", data: [...]}
-      const agentProperties = response.data.data || response.data || [];
-      
+      const propertiesResponse = await getAllProperties({ agent_id: AGENT_ID });
+      const agentProperties = propertiesResponse.data.data || propertiesResponse.data || [];
       setProperties(agentProperties);
+      
+      // Fetch inquiries for this agent
+      const inquiriesResponse = await getAgentInquiries();
+      const agentInquiries = inquiriesResponse.data.success ? inquiriesResponse.data.inquiries : [];
+      setInquiries(agentInquiries);
       
       // Calculate stats
       setStats({
@@ -197,109 +202,49 @@ export default function AgentDashboard() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
-                    {/* Inquiry 1 */}
-                    <tr className="hover:bg-gray-50 transition">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                            JD
-                          </div>
-                          <div>
-                            <p className="font-semibold text-gray-900">Jane Doe</p>
-                            <p className="text-xs text-gray-500">jane.doe@example.com</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-gray-800 font-medium">
-                        Modern Villa on Hilltop
-                      </td>
-                      <td className="px-6 py-4 text-gray-600">
-                        Today, 11:34 AM
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition">
-                          Chat
-                        </button>
-                      </td>
-                    </tr>
-
-                    {/* Inquiry 2 */}
-                    <tr className="hover:bg-gray-50 transition">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                            JS
-                          </div>
-                          <div>
-                            <p className="font-semibold text-gray-900">John Smith</p>
-                            <p className="text-xs text-gray-500">j.smith@email.com</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-gray-800 font-medium">
-                        Downtown Loft Apartment
-                      </td>
-                      <td className="px-6 py-4 text-gray-600">
-                        Yesterday, 8:15 PM
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition">
-                          Chat
-                        </button>
-                      </td>
-                    </tr>
-
-                    {/* Inquiry 3 */}
-                    <tr className="hover:bg-gray-50 transition">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                            EW
-                          </div>
-                          <div>
-                            <p className="font-semibold text-gray-900">Emily White</p>
-                            <p className="text-xs text-gray-500">emily.w@mail.net</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-gray-800 font-medium">
-                        Cozy Suburban Home
-                      </td>
-                      <td className="px-6 py-4 text-gray-600">
-                        May 28, 2024
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition">
-                          Chat
-                        </button>
-                      </td>
-                    </tr>
-
-                    {/* Inquiry 4 */}
-                    <tr className="hover:bg-gray-50 transition">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-red-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                            MB
-                          </div>
-                          <div>
-                            <p className="font-semibold text-gray-900">Michael Brown</p>
-                            <p className="text-xs text-gray-500">mbrown@web.com</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-gray-800 font-medium">
-                        Seaside Cottage with View
-                      </td>
-                      <td className="px-6 py-4 text-gray-600">
-                        May 27, 2024
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition">
-                          Chat
-                        </button>
-                      </td>
-                    </tr>
+                    {inquiries.length === 0 ? (
+                      <tr>
+                        <td colSpan="4" className="px-6 py-8 text-center text-gray-500">
+                          No inquiries yet
+                        </td>
+                      </tr>
+                    ) : (
+                      inquiries.map((inquiry) => (
+                        <tr key={inquiry.id} className="hover:bg-gray-50 transition">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                {inquiry.buyer.name.charAt(0).toUpperCase()}
+                              </div>
+                              <div>
+                                <p className="font-semibold text-gray-900">{inquiry.buyer.name}</p>
+                                <p className="text-xs text-gray-500">{inquiry.buyer.email}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-gray-800 font-medium">
+                            {inquiry.property.title}
+                          </td>
+                          <td className="px-6 py-4 text-gray-600">
+                            {inquiry.date ? new Date(inquiry.date).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            }) : 'N/A'}
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <button 
+                              className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition"
+                              onClick={() => navigate(`/agent/chat/${inquiry.id}`)}
+                            >
+                              Chat
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>

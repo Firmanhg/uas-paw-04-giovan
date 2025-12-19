@@ -260,7 +260,6 @@ def get_agent_properties(request):
     }
 
 
-@view_config(route_name='agent_inquiries', renderer='json', request_method='GET')
 def get_agent_inquiries(request):
     """Get all inquiries for agent's properties"""
     # Check if user is logged in
@@ -307,7 +306,64 @@ def get_agent_inquiries(request):
             }
         })
     
+
     return {
         'success': True,
         'inquiries': inquiries_list
     }
+
+
+@view_config(route_name='agent_inquiries', renderer='json', request_method='GET')
+def get_agent_inquiries(request):
+    """Get all inquiries for agent's properties"""
+    try:
+        user_id = request.session.get('user_id')
+        if not user_id:
+            return Response(
+                json.dumps({'success': False, 'message': 'Unauthorized'}),
+                status=401,
+                content_type='application/json'
+            )
+        user = request.dbsession.query(User).filter(User.id == user_id).first()
+        if not user or user.role != 'agent':
+            return Response(
+                json.dumps({'success': False, 'message': 'Access denied. Agent only.'}),
+                status=403,
+                content_type='application/json'
+            )
+        inquiries = request.dbsession.query(Inquiry, Property, User)\
+            .join(Property, Inquiry.property_id == Property.id)\
+            .join(User, Inquiry.buyer_id == User.id)\
+            .filter(Property.agent_id == user_id)\
+            .all()
+        inquiries_list = []
+        for inquiry, property, buyer in inquiries:
+            try:
+                inquiries_list.append({
+                    'id': inquiry.id,
+                    'message': inquiry.message,
+                    'date': inquiry.date.isoformat() if inquiry.date else None,
+                    'property': {
+                        'id': property.id,
+                        'title': property.title,
+                        'location': property.location
+                    },
+                    'buyer': {
+                        'id': buyer.id,
+                        'name': buyer.name,
+                        'email': buyer.email,
+                        'phone': buyer.phone
+                    }
+                })
+            except Exception as e:
+                # Jika ada data null, skip entry ini
+                continue
+        return {
+            'success': True,
+            'inquiries': inquiries_list
+        }
+    except Exception as e:
+        return {
+            'success': False,
+            'message': f'Failed to get agent inquiries: {str(e)}'
+        }

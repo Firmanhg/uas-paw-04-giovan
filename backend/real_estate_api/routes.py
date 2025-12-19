@@ -1,5 +1,6 @@
 def includeme(config):
     config.add_static_view('static', 'static', cache_max_age=3600)
+    config.add_static_view('uploads', 'uploads', cache_max_age=3600)
     config.add_route('home', '/')
     
     # CORS preflight routes - must be before other routes
@@ -30,7 +31,6 @@ def includeme(config):
     config.add_route('property_detail', '/api/properties/{id}')  # GET, PUT, DELETE
     
     # Favorites routes
-    # CORS preflight for favorites
     config.add_route('cors_favorites', '/api/favorites', request_method='OPTIONS')
     config.add_route('cors_favorite_delete', '/api/favorites/{id}', request_method='OPTIONS')
     config.add_route('add_favorite', '/api/favorites', request_method='POST')
@@ -38,9 +38,15 @@ def includeme(config):
     config.add_route('remove_favorite', '/api/favorites/{id}', request_method='DELETE')
     
     # Inquiry routes
+    config.add_route('cors_create_inquiry', '/api/inquiries', request_method='OPTIONS')
     config.add_route('create_inquiry', '/api/inquiries', request_method='POST')
     config.add_route('get_buyer_inquiries', '/api/inquiries/buyer')
     config.add_route('get_all_inquiries', '/api/inquiries', request_method='GET')
+    config.add_route('get_inquiry_detail', '/api/inquiries/{id}')
+    
+    # Chat routes — DIPERBAIKI
+    config.add_route('cors_chat_messages', '/api/inquiries/{inquiry_id}/messages', request_method='OPTIONS')
+    config.add_route('inquiry_messages', '/api/inquiries/{inquiry_id}/messages')  # satu route untuk GET & POST
     
     # Users route (if needed)
     config.add_route('users', '/api/users')
