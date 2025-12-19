@@ -1,5 +1,0 @@
-[console_scripts]
-initialize_real_estate_api_db = real_estate_api.scripts.initialize_db:main
-
-[paste.app_factory]
-main = real_estate_api:main
