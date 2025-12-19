@@ -18,7 +18,7 @@ import AddProperty from "../pages/AddProperty";
 import EditProperty from "../pages/EditProperty";
 import MyProperties from "../pages/MyProperties";
 
-import Compare from "../pages/compare";
+import compare from "../pages/compare";
 import Settings from "../pages/Settings";
 import Help from "../pages/Help";
 
