@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Send, PlusCircle, MoreVertical, MapPin, User } from "lucide-react";
@@ -14,12 +13,18 @@ export default function Chat() {
   const currentUser = getCurrentUser();
   const [property, setProperty] = useState(null);
   const [agent, setAgent] = useState(null);
+  const [buyer, setBuyer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     setLoading(true);
     setError(null);
+    
+    // Debug: Log current user
+    console.log('Chat.jsx - Current User:', currentUser);
+    console.log('Chat.jsx - Current User ID:', currentUser?.id);
+    
     // Fetch chat history
     getChatMessages(inquiryId).then(res => {
       if (res.data.success) setChats(res.data.messages);
@@ -28,7 +33,7 @@ export default function Chat() {
     getInquiryById(inquiryId)
       .then(res => {
         if (res.data.success && res.data.data) {
-          const { property_id, agent_id } = res.data.data;
+          const { property_id, agent_id, buyer_id } = res.data.data;
           // Fetch property
           getPropertyById(property_id)
             .then(propRes => {
@@ -41,6 +46,13 @@ export default function Chat() {
               if (agentRes.data.data) setAgent(agentRes.data.data);
             })
             .catch(() => setAgent(null));
+          // Fetch buyer jika user adalah agent
+          if (currentUser?.role === 'agent' && buyer_id) {
+            fetch(`http://localhost:6543/api/users/${buyer_id}`)
+              .then(r => r.json())
+              .then(data => setBuyer(data.user || null))
+              .catch(() => setBuyer(null));
+          }
         } else {
           setError("Inquiry not found");
         }
@@ -49,7 +61,7 @@ export default function Chat() {
     // Connect to Socket.IO
     const newSocket = io("http://localhost:6543");
     setSocket(newSocket);
-    newSocket.emit("join_inquiry", inquiryId);
+    newSocket.emit("join_inquiry", { inquiry_id: inquiryId });
     newSocket.on("chat_message", msg => setChats(prev => [...prev, msg]));
     setLoading(false);
     return () => newSocket.disconnect();
@@ -58,7 +70,21 @@ export default function Chat() {
   const handleSend = async (e) => {
     e?.preventDefault?.();
     if (!message.trim() || !socket) return;
-    await sendChatMessage(inquiryId, { message });
+    // Kirim ke backend (simpan DB)
+    const res = await sendChatMessage(inquiryId, { message });
+    // Tambahkan ke state chat secara lokal (langsung tampil)
+    setChats(prev => [
+      ...prev,
+      {
+        id: Date.now(),
+        message,
+        sender_id: currentUser?.id,
+        timestamp: new Date().toISOString(),
+        // Untuk kompatibilitas alignment
+        sender: { id: currentUser?.id, name: currentUser?.name, role: currentUser?.role }
+      }
+    ]);
+    // Broadcast ke user lain via socket
     socket.emit("chat_message", {
       inquiry_id: inquiryId,
       message,
@@ -80,15 +106,21 @@ export default function Chat() {
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <img
-                    src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=100"
+                    src={
+                      currentUser?.role === 'agent'
+                        ? (buyer?.avatar || "https://ui-avatars.com/api/?name=" + encodeURIComponent(buyer?.name || 'B'))
+                        : (agent?.avatar || "https://ui-avatars.com/api/?name=" + encodeURIComponent(agent?.name || 'A'))
+                    }
                     className="w-10 h-10 rounded-full object-cover"
-                    alt="Agent"
+                    alt="User"
                   />
                   {/* Status Indicator */}
                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900">Budi Santoso</h3>
+                  <h3 className="font-bold text-slate-900">
+                    {currentUser?.role === 'agent' ? (buyer?.name || 'Buyer') : (agent?.name || 'Agent')}
+                  </h3>
                   <p className="text-xs text-green-600 font-medium">Online</p>
                 </div>
               </div>
@@ -98,7 +130,7 @@ export default function Chat() {
             </div>
 
             {/* 2. Chat Messages List */}
-            <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50 space-y-6">
+            <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50 flex flex-col gap-4">
               {/* Date Separator */}
               <div className="flex justify-center">
                 <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">Hari ini</span>
@@ -107,25 +139,43 @@ export default function Chat() {
               {chats.length === 0 ? (
                 <div className="text-center text-gray-400 py-8">Belum ada pesan. Mulai percakapan!</div>
               ) : (
-                chats.map((chat) => (
-                  <div
-                    key={chat.id || Math.random()}
-                    className={`flex flex-col max-w-[80%] ${chat.sender_id === currentUser?.id ? "self-end items-end" : "self-start items-start"}`}
-                  >
+                chats.map((chat) => {
+                  // Debug log untuk setiap message
+                  console.log(`Chat message:`, {
+                    message: chat.message,
+                    sender_id: chat.sender_id,
+                    sender_id_type: typeof chat.sender_id,
+                    currentUser_id: currentUser?.id,
+                    currentUser_id_type: typeof currentUser?.id,
+                    isMatch: chat.sender_id === currentUser?.id,
+                    isMatchLoose: chat.sender_id == currentUser?.id
+                  });
+                  
+                  // Gunakan sender_id (dari socket) atau sender.id (dari backend)
+                  const senderId = chat.sender_id ?? chat.sender?.id;
+                  const isCurrentUser = String(senderId) === String(currentUser?.id);
+                  return (
                     <div
-                      className={`p-4 rounded-2xl text-sm leading-relaxed shadow-sm
-                        ${chat.sender_id === currentUser?.id
-                          ? "bg-slate-800 text-white rounded-tr-none"
-                          : "bg-white border border-gray-200 text-slate-700 rounded-tl-none"
-                        }`}
+                      key={chat.id || Math.random()}
+                      className={`flex ${isCurrentUser ? "justify-end" : "justify-start"}`}
                     >
-                      {chat.message}
+                      <div className="flex flex-col max-w-[70%]">
+                        <div
+                          className={`p-4 rounded-2xl text-sm leading-relaxed shadow-sm
+                            ${isCurrentUser
+                              ? "bg-slate-800 text-white rounded-tr-none"
+                              : "bg-white border border-gray-200 text-slate-700 rounded-tl-none"
+                            }`}
+                        >
+                          {chat.message}
+                        </div>
+                        <span className="text-[10px] text-gray-400 mt-1 px-1">
+                          {chat.timestamp && new Date(chat.timestamp).toLocaleTimeString()}
+                        </span>
+                      </div>
                     </div>
-                    <span className="text-[10px] text-gray-400 mt-1 px-1">
-                      {chat.timestamp && new Date(chat.timestamp).toLocaleTimeString()}
-                    </span>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
 
@@ -192,21 +242,30 @@ export default function Chat() {
                   <h4 className="font-bold text-lg text-slate-900">Memuat...</h4>
                 ) : error ? (
                   <h4 className="font-bold text-lg text-red-500">{error}</h4>
-                ) : agent ? (
+                ) : (
                   <>
                     <img
-                      src={agent.avatar || "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150"}
+                      src={
+                        currentUser?.role === 'agent'
+                          ? (currentUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name || 'A')}`)
+                          : (agent?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(agent?.name || 'A')}`)
+                      }
                       className="w-20 h-20 rounded-full object-cover mb-3 ring-4 ring-gray-50"
                       alt="Agent Profile"
                     />
-                    <h4 className="font-bold text-lg text-slate-900">{agent.name}</h4>
-                    <p className="text-sm text-gray-500 mb-5">{agent.role === "agent" ? "Agen Properti" : agent.role}</p>
-                    <button className="w-full bg-gray-100 hover:bg-gray-200 text-slate-800 py-2.5 rounded-lg text-sm font-semibold transition">
+                    <h4 className="font-bold text-lg text-slate-900">{currentUser?.role === 'agent' ? currentUser.name : agent?.name}</h4>
+                    <p className="text-sm text-gray-500 mb-5">Agen Properti</p>
+                    <a
+                      href={
+                        currentUser?.role === 'agent'
+                          ? `/agent-profile/${currentUser.id}`
+                          : agent?.id ? `/agent-profile/${agent.id}` : '#'
+                      }
+                      className="w-full bg-gray-100 hover:bg-gray-200 text-slate-800 py-2.5 rounded-lg text-sm font-semibold transition block text-center"
+                    >
                       Lihat Profil
-                    </button>
+                    </a>
                   </>
-                ) : (
-                  <h4 className="font-bold text-lg text-gray-400">Agen tidak ditemukan</h4>
                 )}
               </div>
             </div>

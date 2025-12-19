@@ -22,7 +22,7 @@ export default function ChatAgent() {
     setSocket(newSocket);
     
     // Join inquiry room
-    newSocket.emit('join_inquiry', buyerId);
+    newSocket.emit('join_inquiry', { inquiry_id: buyerId });
     
     // Listen for new messages
     newSocket.on('chat_message', (message) => {
@@ -61,6 +61,10 @@ export default function ChatAgent() {
         setMessages(messagesResponse.data.messages || []);
       }
       
+      // Debug: Log current user
+      console.log('Current User:', currentUser);
+      console.log('Current User ID:', currentUser?.id);
+      
       setLoading(false);
     } catch (error) {
       console.error('Error fetching chat data:', error);
@@ -80,10 +84,22 @@ export default function ChatAgent() {
 
       // Send via API
       await sendChatMessage(buyerId, { message: input.trim() });
-      
+
+      // Tambahkan ke state messages secara lokal (langsung tampil)
+      setMessages(prev => [
+        ...prev,
+        {
+          id: Date.now(),
+          message: input.trim(),
+          sender_id: currentUser.id,
+          timestamp: new Date().toISOString(),
+          sender: { id: currentUser.id, name: currentUser.name, role: currentUser.role }
+        }
+      ]);
+
       // Emit via Socket.IO
       socket.emit('chat_message', messageData);
-      
+
       setInput("");
     } catch (error) {
       console.error('Error sending message:', error);
@@ -130,33 +146,51 @@ export default function ChatAgent() {
       </div>
 
       {/* CHAT BODY */}
-      <div className="flex-1 px-6 py-6 space-y-4 overflow-y-auto">
+      <div className="flex-1 px-6 py-6 flex flex-col gap-4 overflow-y-auto">
         {messages.length === 0 ? (
           <div className="text-center text-gray-500 py-8">
             <p>No messages yet. Start the conversation!</p>
           </div>
         ) : (
-          messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`flex ${
-                msg.sender_id === currentUser?.id ? "justify-end" : "justify-start"
-              }`}
-            >
+          messages.map((msg, index) => {
+            // Debug log untuk setiap message
+            console.log(`Message ${index}:`, {
+              message: msg.message,
+              sender_id: msg.sender_id,
+              sender_id_type: typeof msg.sender_id,
+              currentUser_id: currentUser?.id,
+              currentUser_id_type: typeof currentUser?.id,
+              isMatch: msg.sender_id === currentUser?.id,
+              isMatchLoose: msg.sender_id == currentUser?.id
+            });
+            
+            // Gunakan sender_id (dari socket) atau sender.id (dari backend)
+            const senderId = msg.sender_id ?? msg.sender?.id;
+            const isCurrentUser = String(senderId) === String(currentUser?.id);
+            return (
               <div
-                className={`max-w-sm px-4 py-2 rounded-lg text-sm ${
-                  msg.sender_id === currentUser?.id
-                    ? "bg-slate-800 text-white"
-                    : "bg-white border text-gray-800"
+                key={index}
+                className={`flex ${
+                  isCurrentUser ? "justify-end" : "justify-start"
                 }`}
               >
-                {msg.message}
-                <div className="text-xs mt-1 opacity-70">
-                  {new Date(msg.timestamp).toLocaleTimeString()}
+                <div className="flex flex-col max-w-[70%]">
+                  <div
+                    className={`px-4 py-2 rounded-lg text-sm ${
+                      isCurrentUser
+                        ? "bg-slate-800 text-white rounded-tr-none"
+                        : "bg-white border text-gray-800 rounded-tl-none"
+                    }`}
+                  >
+                    {msg.message}
+                  </div>
+                  <div className="text-xs mt-1 opacity-70 text-gray-400 px-1">
+                    {new Date(msg.timestamp).toLocaleTimeString()}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
