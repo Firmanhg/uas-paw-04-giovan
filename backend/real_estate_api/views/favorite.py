@@ -118,7 +118,7 @@ def get_favorites(request):
         # Get all favorites for this user with property and agent details
         favorites = request.dbsession.query(Favorite, Property, User)\
             .join(Property, Favorite.property_id == Property.id)\
-            .join(User, Property.agent_id == User.id)\
+            .outerjoin(User, Property.agent_id == User.id)\
             .filter(Favorite.user_id == user_id)\
             .all()
         
@@ -137,11 +137,11 @@ def get_favorites(request):
                     'bedrooms': property.bedrooms,
                     'bathrooms': property.bathrooms,
                     'area': property.area,
-                    'thumbnail': property.img if hasattr(property, 'img') else None,
+                    'thumbnail': property.images[0] if property.images and len(property.images) > 0 else None,
                     'agent': {
-                        'id': agent.id,
-                        'name': agent.name,
-                        'phone': agent.phone
+                        'id': agent.id if agent else None,
+                        'name': agent.name if agent else 'Unknown Agent',
+                        'phone': agent.phone if agent else ''
                     }
                 }
             })

@@ -1,6 +1,9 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, JSON, BigInteger
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, JSON, BigInteger, DateTime
 from sqlalchemy.orm import relationship
 from .meta import Base
+import datetime
+
+
 
 class Property(Base):
     __tablename__ = 'properties'
