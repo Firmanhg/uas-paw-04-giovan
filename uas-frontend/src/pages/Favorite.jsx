@@ -136,7 +136,7 @@ export default function Favorite() {
 
               {/* View Details Button */}
               <Link
-                to={`/detail/${p.id}`}
+                to={`/property/${p.id}`}
                 className="block mt-4 w-full text-center py-2.5 bg-slate-800 text-white font-semibold rounded-lg hover:bg-slate-900 transition"
               >
                 View Details
