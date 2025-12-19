@@ -34,16 +34,13 @@ export default function EditProperty() {
       setLoading(true);
       console.log('Fetching property ID:', id);
       const response = await getPropertyById(id);
-      
-      // Backend returns {status: "success", data: {...}}
-      // Axios wraps it in response.data, so property data is in response.data.data
+
       const property = response.data.data || response.data;
       
       console.log('Full response:', response.data);
       console.log('Property data:', property);
       console.log('Property agent_id:', property.agent_id, 'Current AGENT_ID:', AGENT_ID);
-      
-      // Check if this property belongs to current agent
+
       if (property.agent_id !== AGENT_ID) {
         setError(`You do not have permission to edit this property (Owner: ${property.agent_id}, You: ${AGENT_ID})`);
         setLoading(false);
@@ -61,12 +58,11 @@ export default function EditProperty() {
         bathrooms: property.bathrooms ? property.bathrooms.toString() : '',
         area: property.area ? property.area.toString() : '',
       });
-      
-      // Set existing images if available
+
       if (property.images && Array.isArray(property.images)) {
         setImagePreviews(property.images);
       } else if (property.img) {
-        // Fallback for single image
+
         setImagePreviews([property.img]);
       }
       
@@ -83,33 +79,27 @@ export default function EditProperty() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Handle multiple image upload
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     
     if (files.length === 0) return;
 
-    // Process each file
     files.forEach(file => {
-      // Check file type
       if (!file.type.startsWith('image/')) {
         alert(`${file.name} is not an image file`);
         return;
       }
 
-      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreviews(prev => [...prev, reader.result]);
       };
       reader.readAsDataURL(file);
     });
-    
-    // Reset input
+
     e.target.value = null;
   };
 
-  // Remove single image
   const handleRemoveImage = (index) => {
     setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
@@ -132,8 +122,7 @@ export default function EditProperty() {
         area: parseInt(form.area),
         agent_id: AGENT_ID
       };
-      
-      // Add images array
+
       if (imagePreviews.length > 0) {
         updateData.images = imagePreviews;
       }
@@ -150,14 +139,13 @@ export default function EditProperty() {
     }
   };
 
-  // Helper styles
   const labelClass = "block text-sm font-bold text-gray-900 mb-2";
   const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:bg-white transition";
 
   return (
     <div className="flex min-h-screen bg-white font-sans text-gray-800">
       
-      {/* --- SIDEBAR (Sama seperti halaman lain) --- */}
+      {}
       <aside className="w-64 bg-white border-r border-gray-200 flex-col hidden md:flex sticky top-0 h-screen">
         <div className="p-6">
           <div className="flex items-center gap-3 mb-8">
@@ -182,7 +170,7 @@ export default function EditProperty() {
         </div>
       </aside>
 
-      {/* --- MAIN CONTENT --- */}
+      {}
       <main className="flex-1 p-8 md:p-12 overflow-y-auto bg-gray-50/50">
         <div className="mb-8">
            <h1 className="text-3xl font-extrabold text-gray-900">Edit Property</h1>
@@ -200,7 +188,7 @@ export default function EditProperty() {
         ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          {/* LEFT COLUMN: FORM */}
+          {}
           <div className="lg:col-span-2 bg-white p-8 rounded-xl border border-gray-200 shadow-sm h-fit">
             <h2 className="text-lg font-bold text-gray-900 mb-6 pb-2 border-b border-gray-100">Property Details</h2>
             
@@ -215,7 +203,7 @@ export default function EditProperty() {
                 <textarea name="description" rows="5" value={form.description} onChange={handleChange} className={inputClass}></textarea>
               </div>
 
-              {/* Listing Type */}
+              {}
               <div className="mb-4">
                 <label className={labelClass}>Listing Type</label>
                 <div className="flex gap-4">
@@ -293,13 +281,13 @@ export default function EditProperty() {
             </form>
           </div>
 
-          {/* RIGHT COLUMN: PHOTOS & ACTIONS */}
+          {}
           <div className="space-y-6">
-             {/* Photos Upload */}
+             {}
              <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                 <h2 className="text-lg font-bold text-gray-900 mb-4">Property Photos</h2>
                 
-                {/* Image Previews Grid */}
+                {}
                 {imagePreviews.length > 0 && (
                   <div className="grid grid-cols-2 gap-3 mb-4">
                     {imagePreviews.map((preview, index) => (
@@ -326,7 +314,7 @@ export default function EditProperty() {
                   </div>
                 )}
 
-                {/* Upload Area */}
+                {}
                 <input
                   type="file"
                   accept="image/*"
@@ -345,7 +333,7 @@ export default function EditProperty() {
                 </label>
              </div>
 
-             {/* Action Buttons */}
+             {}
              <div className="flex gap-3">
                <button 
                  type="button"
