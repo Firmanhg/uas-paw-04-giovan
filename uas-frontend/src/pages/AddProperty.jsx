@@ -9,7 +9,6 @@ export default function AddProperty() {
   const currentUser = getCurrentUser();
   const AGENT_ID = currentUser?.id;
 
-  // State form
   const [form, setForm] = useState({
     title: "",
     location: "",
@@ -27,7 +26,6 @@ export default function AddProperty() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Handle change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({
@@ -36,45 +34,37 @@ export default function AddProperty() {
     });
   };
 
-  // Handle multiple image upload
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     
     if (files.length === 0) return;
 
-    // Process each file
     files.forEach(file => {
-      // Check file type
       if (!file.type.startsWith('image/')) {
         alert(`${file.name} is not an image file`);
         return;
       }
 
-      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreviews(prev => [...prev, reader.result]);
       };
       reader.readAsDataURL(file);
     });
-    
-    // Reset input
+
     e.target.value = null;
   };
 
-  // Remove single image
   const handleRemoveImage = (index) => {
     setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
-  // Handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      // Prepare data for backend
       const propertyData = {
         title: form.title,
         description: form.description,
@@ -88,7 +78,6 @@ export default function AddProperty() {
         agent_id: AGENT_ID,
       };
 
-      // Add images if uploaded (as array of base64)
       if (imagePreviews.length > 0) {
         propertyData.images = imagePreviews;
       }
@@ -107,8 +96,6 @@ export default function AddProperty() {
     } catch (err) {
       console.error("Error adding property:", err);
       console.error("Error details:", err.response);
-      
-      // Tampilkan error detail dari backend
       const errorMessage = err.response?.data?.error || 
                           err.response?.data?.details || 
                           err.message || 
@@ -120,14 +107,13 @@ export default function AddProperty() {
     }
   };
 
-  // Style helper
   const inputClass =
     "w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none placeholder-gray-400 text-gray-700 bg-white transition";
   const labelClass = "block font-bold text-gray-700 mb-2 text-sm";
 
   return (
     <div className="flex min-h-screen bg-gray-50 font-sans text-gray-800">
-      {/* --- SIDEBAR --- */}
+      {}
       <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col">
         <div className="p-6 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">
@@ -151,13 +137,13 @@ export default function AddProperty() {
         </div>
       </aside>
 
-      {/* --- MAIN CONTENT --- */}
+      {}
       <main className="flex-1 p-8 overflow-y-auto">
         <h1 className="text-3xl font-extrabold text-gray-900 mb-8">Add New Property</h1>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
           
-          {/* SECTION 1: BASIC INFO */}
+          {}
           <div className="mb-10">
             <h2 className="text-lg font-bold text-gray-900 mb-6 border-b border-gray-100 pb-2">
               Basic Information
@@ -190,13 +176,13 @@ export default function AddProperty() {
             </div>
           </div>
 
-          {/* SECTION 2: PROPERTY PHOTOS */}
+          {}
           <div className="mb-10">
             <h2 className="text-lg font-bold text-gray-900 mb-6 border-b border-gray-100 pb-2">
               Property Photos
             </h2>
             
-            {/* Upload Area */}
+            {}
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-500 transition mb-4">
               <input
                 type="file"
@@ -220,7 +206,7 @@ export default function AddProperty() {
               </label>
             </div>
 
-            {/* Image Previews Grid */}
+            {}
             {imagePreviews.length > 0 && (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {imagePreviews.map((preview, index) => (
@@ -248,12 +234,12 @@ export default function AddProperty() {
             )}
           </div>
 
-          {/* SECTION 3: DETAILS */}
+          {}
           <div className="mb-10">
             <h2 className="text-lg font-bold text-gray-900 mb-6 border-b border-gray-100 pb-2">
               Property Details
             </h2>
-            {/* Listing Type - For Sale or For Rent */}
+            {}
             <div className="mb-6">
               <label className={labelClass}>Listing Type</label>
               <div className="flex gap-4">
@@ -372,14 +358,14 @@ export default function AddProperty() {
             </div>
           </div>
 
-          {/* ERROR MESSAGE */}
+          {}
           {error && (
             <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
               {error}
             </div>
           )}
 
-          {/* BUTTONS */}
+          {}
           <div className="flex justify-end gap-4 pt-6 border-t border-gray-100">
             <button
               type="button"
@@ -402,7 +388,6 @@ export default function AddProperty() {
   );
 }
 
-// --- Component NavItem & Icon sama persis dengan Dashboard ---
 function NavItem({ icon, label, active = false, to = "#" }) {
   return (
     <Link
@@ -419,7 +404,6 @@ function NavItem({ icon, label, active = false, to = "#" }) {
   );
 }
 
-// --- ICONS ---
 const DashboardIcon = () => (<svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>);
 const BuildingIcon = () => (<svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4 8 4v14M8 21v-4h4v4" /></svg>);
 const SettingsIcon = () => (<svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>);
