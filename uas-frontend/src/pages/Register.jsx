@@ -54,32 +54,32 @@ export default function Register() {
   return (
     <div className="w-full min-h-screen grid grid-cols-1 md:grid-cols-2 font-sans text-gray-800">
       
-      {/* LEFT SIDE - IMAGE */}
+      {}
       <div className="hidden md:block h-screen sticky top-0">
         <img 
-            // GAMBAR  Modern Architecture House 
+   
             src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop" 
             alt="Modern House Architecture"
             className="w-full h-full object-cover"
         />
-        {/* Overlay*/}
+        {}
         <div className="absolute inset-0 bg-black/10"></div>
       </div>
 
-      {/* RIGHT SIDE - FORM */}
+      {}
       <div className="flex flex-col justify-center p-8 md:p-16 bg-white min-h-screen overflow-y-auto">
         <div className="w-full max-w-md mx-auto">
           
-          {/* HEADER */}
+          {}
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2 text-gray-900">Create an Account</h1>
             <p className="text-gray-500">Carilah dan temukan rumah impianmu</p>
           </div>
 
-          {/* FORM */}
+          {}
           <form onSubmit={handleSubmit} className="space-y-5">
             
-            {/* ERROR MESSAGE */}
+            {}
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
                 {error}
@@ -100,7 +100,7 @@ export default function Register() {
               />
             </div>
 
-            {/* EMAIL INPUT */}
+            {}
             <div>
               <label className="block mb-1.5 font-semibold text-gray-700 text-sm">Email</label>
               <div className="relative">
@@ -119,7 +119,7 @@ export default function Register() {
               </div>
             </div>
 
-            {/* PASSWORD INPUT */}
+            {}
             <div>
               <label className="block mb-1.5 font-semibold text-gray-700 text-sm">Password</label>
               <div className="relative">
@@ -147,7 +147,7 @@ export default function Register() {
               </div>
             </div>
 
-            {/* PHONE INPUT */}
+            {}
             <div>
               <label className="block mb-1.5 font-semibold text-gray-700 text-sm">Phone</label>
               <input
@@ -160,7 +160,7 @@ export default function Register() {
               />
             </div>
 
-            {/* ROLE SELECTOR */}
+            {}
             <div>
                 <label className="block mb-2 font-semibold text-gray-700 text-sm">I am a:</label>
                 <div className="grid grid-cols-2 gap-4">
@@ -202,7 +202,7 @@ export default function Register() {
                 </div>
             </div>
 
-            {/* REGISTER BUTTON */}
+            {}
             <button
               type="submit"
               disabled={loading}
@@ -212,7 +212,7 @@ export default function Register() {
             </button>
           </form>
 
-          {/* LOGIN LINK */}
+          {}
           <p className="text-center mt-6 text-sm text-gray-500">
             Sudah punya akun?{" "}
             <Link to="/login" className="text-slate-800 font-bold hover:underline">
