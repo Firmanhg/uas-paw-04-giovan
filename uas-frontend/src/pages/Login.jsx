@@ -58,23 +58,23 @@ export default function Login({ setUserRole }) {
   return (
     <div className="w-full min-h-screen flex font-sans text-slate-800">
       
-      {/* --- LEFT IMAGE SECTION --- */}
-      {/* Menggunakan width 50% (w-1/2) pada layar besar agar seimbang */}
+      {}
+      {}
       <div className="hidden md:block w-1/2 relative bg-gray-100">
         <img
           src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2000&auto=format&fit=crop"
           alt="Interior Rumah"
           className="w-full h-full object-cover"
         />
-        {/* Overlay tipis agar gambar tidak terlalu kontras (opsional) */}
+        {}
         <div className="absolute inset-0 bg-black/10"></div>
       </div>
 
-      {/* --- RIGHT FORM SECTION --- */}
+      {}
       <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-8 bg-white">
         <div className="w-full max-w-md space-y-6">
           
-          {/* 1. Header & Logo */}
+          {}
           <div className="text-center mb-8">
             <div className="flex justify-center items-center gap-2 mb-2 text-slate-800">
               <Home size={28} strokeWidth={2.5} />
@@ -84,24 +84,24 @@ export default function Login({ setUserRole }) {
             <p className="text-slate-500 mt-2 text-sm">Silakan masuk ke akun Anda</p>
           </div>
 
-          {/* Success Message */}
+          {}
           {successMessage && (
             <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
               {successMessage}
             </div>
           )}
 
-          {/* Error Message */}
+          {}
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
               {error}
             </div>
           )}
 
-          {/* 2. Form Inputs */}
+          {}
           <form onSubmit={handleLogin} className="space-y-5">
             
-            {/* Email Field */}
+            {}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">Email</label>
               <input
@@ -113,7 +113,7 @@ export default function Login({ setUserRole }) {
               />
             </div>
 
-            {/* Password Field */}
+            {}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
               <div className="relative">
@@ -124,7 +124,7 @@ export default function Login({ setUserRole }) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                {/* Toggle Eye Icon */}
+                {}
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
@@ -135,14 +135,14 @@ export default function Login({ setUserRole }) {
               </div>
             </div>
 
-            {/* Forgot Password Link */}
+            {}
             <div className="flex justify-end">
               <Link to="/forgot-password" className="text-xs font-semibold text-slate-600 hover:text-slate-900">
                 Lupa password?
               </Link>
             </div>
 
-            {/* Submit Button */}
+            {}
             <button
               type="submit"
               disabled={loading}
@@ -152,7 +152,7 @@ export default function Login({ setUserRole }) {
             </button>
           </form>
 
-          {/* 4. Footer Link */}
+          {}
           <p className="text-sm text-center text-slate-500">
             Belum punya akun?{" "}
             <Link to="/register" className="font-bold text-slate-800 hover:underline">
