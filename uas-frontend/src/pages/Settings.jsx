@@ -6,9 +6,8 @@ import { getCurrentUser } from "../services/authService";
 export default function Settings({ user, onLogout }) {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(getCurrentUser());
-  const AGENT_ID = currentUser?.id; // Get from logged in user
-  
-  // State untuk data form
+  const AGENT_ID = currentUser?.id; 
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -25,8 +24,7 @@ export default function Settings({ user, onLogout }) {
 
   useEffect(() => {
     fetchAgentProfile();
-    
-    // Listen for user changes
+
     const handleUserChange = () => {
       setCurrentUser(getCurrentUser());
     };
@@ -77,7 +75,6 @@ export default function Settings({ user, onLogout }) {
 
       const response = await updateAgentProfile(AGENT_ID, formData);
       if (response.data.status === "success") {
-        // Update localStorage with new user data
         const updatedUser = {
           ...currentUser,
           name: formData.name,
@@ -85,8 +82,7 @@ export default function Settings({ user, onLogout }) {
           phone: formData.phone
         };
         localStorage.setItem('user', JSON.stringify(updatedUser));
-        
-        // Trigger event to update sidebar and other components
+
         window.dispatchEvent(new Event('userChanged'));
         
         setMessage({ type: "success", text: "Profile updated successfully!" });
@@ -112,9 +108,9 @@ export default function Settings({ user, onLogout }) {
 
   return (
     <div className="flex min-h-screen bg-gray-50 font-sans text-gray-800">
-      {/* --- SIDEBAR (Sama dengan Dashboard) --- */}
+      {}
       <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex md:flex-col">
-        {/* Profile / Brand Header */}
+        {}
         <div className="p-6 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">
             {currentUser?.name?.charAt(0).toUpperCase() || 'A'}
@@ -125,17 +121,17 @@ export default function Settings({ user, onLogout }) {
           </div>
         </div>
 
-        {/* Menu Items */}
+        {}
         <nav className="flex-1 px-4 space-y-2 mt-4">
           <NavItem to="/dashboard" icon={<DashboardIcon />} label="Dashboard" />
           
           <NavItem to="/my-properties" icon={<BuildingIcon />} label="My Properties" />
           
-          {/* Menu Settings Aktif */}
+          {}
           <NavItem to="/settings" icon={<SettingsIcon />} label="Settings" active />
         </nav>
 
-        {/* --- TOMBOL ADD PROPERTY (Sama dengan Dashboard) --- */}
+        {}
         <div className="px-4 mb-4">
            <Link 
              to="/add-property" 
@@ -145,7 +141,7 @@ export default function Settings({ user, onLogout }) {
            </Link>
         </div>
 
-        {/* Bottom Menu */}
+        {}
         <div className="p-4 space-y-2 border-t border-gray-100">
           <button 
             onClick={() => navigate('/help')}
@@ -164,11 +160,11 @@ export default function Settings({ user, onLogout }) {
         </div>
       </aside>
 
-      {/* --- MAIN CONTENT (Formulir) --- */}
+      {}
       <main className="flex-1 p-8 overflow-y-auto">
         <h1 className="text-3xl font-extrabold text-gray-900 mb-8">My Profile</h1>
 
-        {/* Message Alert */}
+        {}
         {message.text && (
           <div className={`mb-6 p-4 rounded-lg ${
             message.type === "success" ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"
@@ -177,14 +173,14 @@ export default function Settings({ user, onLogout }) {
           </div>
         )}
 
-        {/* Card Putih Pembungkus Form */}
+        {}
         <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
           
-          {/* SECTION 1: Personal Information */}
+          {}
           <h2 className="text-lg font-bold text-gray-900 mb-6">Personal Information</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            {/* Full Name */}
+            {}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-2">Full Name</label>
               <input
@@ -197,7 +193,7 @@ export default function Settings({ user, onLogout }) {
               />
             </div>
 
-            {/* Email Address */}
+            {}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-2">Email Address</label>
               <input
@@ -211,7 +207,7 @@ export default function Settings({ user, onLogout }) {
             </div>
           </div>
 
-          {/* Phone Number & Company */}
+          {}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-2">Phone Number</label>
@@ -238,7 +234,7 @@ export default function Settings({ user, onLogout }) {
             </div>
           </div>
 
-          {/* License Number */}
+          {}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-600 mb-2">License Number</label>
             <input
@@ -251,7 +247,7 @@ export default function Settings({ user, onLogout }) {
             />
           </div>
 
-          {/* Bio */}
+          {}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-600 mb-2">Bio</label>
             <textarea
@@ -264,7 +260,7 @@ export default function Settings({ user, onLogout }) {
             />
           </div>
 
-          {/* Avatar URL */}
+          {}
           <div className="mb-10">
             <label className="block text-sm font-medium text-gray-600 mb-2">Avatar URL</label>
             <input
@@ -280,7 +276,7 @@ export default function Settings({ user, onLogout }) {
             )}
           </div>
 
-          {/* BUTTON ACTIONS */}
+          {}
           <div className="flex justify-end pt-6 border-t border-gray-100">
             <button 
               type="submit"
@@ -296,14 +292,13 @@ export default function Settings({ user, onLogout }) {
   );
 }
 
-/* --- COMPONENTS KECIL (SIDEBAR ITEM) --- */
 function NavItem({ to, icon, label, active = false }) {
   return (
     <Link
       to={to}
       className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition ${
         active
-          ? "bg-blue-50 text-blue-500" // Style saat Aktif (Biru Muda)
+          ? "bg-blue-50 text-blue-500"
           : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
       }`}
     >
@@ -313,7 +308,6 @@ function NavItem({ to, icon, label, active = false }) {
   );
 }
 
-/* --- ICONS (SVG) --- */
 const DashboardIcon = () => (
   <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
 );
