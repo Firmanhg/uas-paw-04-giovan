@@ -5,7 +5,7 @@ import { getChatMessages, sendChatMessage } from '../services/api';
 import io from 'socket.io-client';
 
 export default function ChatAgent() {
-  const { buyerId } = useParams(); // inquiry id
+  const { buyerId } = useParams();
   const [inquiry, setInquiry] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -14,17 +14,12 @@ export default function ChatAgent() {
   const currentUser = getCurrentUser();
 
   useEffect(() => {
-    // Fetch inquiry details and chat messages
     fetchInquiryAndMessages();
-    
-    // Initialize Socket.IO connection
     const newSocket = io('http://localhost:6543');
     setSocket(newSocket);
-    
-    // Join inquiry room
+
     newSocket.emit('join_inquiry', buyerId);
     
-    // Listen for new messages
     newSocket.on('chat_message', (message) => {
       setMessages(prev => [...prev, message]);
     });
@@ -38,9 +33,6 @@ export default function ChatAgent() {
     try {
       setLoading(true);
       
-      // For now, we'll create a mock inquiry object
-      // In a real app, you'd fetch inquiry details by ID from an API endpoint
-      // For demo purposes, we'll set some placeholder data
       const mockInquiry = {
         id: buyerId,
         buyer: {
@@ -54,8 +46,7 @@ export default function ChatAgent() {
         }
       };
       setInquiry(mockInquiry);
-      
-      // Fetch chat messages
+
       const messagesResponse = await getChatMessages(buyerId);
       if (messagesResponse.data.success) {
         setMessages(messagesResponse.data.messages || []);
@@ -78,10 +69,8 @@ export default function ChatAgent() {
         sender_id: currentUser.id
       };
 
-      // Send via API
       await sendChatMessage(buyerId, { message: input.trim() });
-      
-      // Emit via Socket.IO
+  
       socket.emit('chat_message', messageData);
       
       setInput("");
@@ -110,7 +99,7 @@ export default function ChatAgent() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
 
-      {/* HEADER */}
+      {}
       <div className="bg-white border-b px-6 py-4 flex justify-between items-center">
         <div>
           <h2 className="font-bold text-lg text-gray-900">
@@ -129,7 +118,7 @@ export default function ChatAgent() {
         </Link>
       </div>
 
-      {/* CHAT BODY */}
+      {}
       <div className="flex-1 px-6 py-6 space-y-4 overflow-y-auto">
         {messages.length === 0 ? (
           <div className="text-center text-gray-500 py-8">
@@ -160,7 +149,7 @@ export default function ChatAgent() {
         )}
       </div>
 
-      {/* INPUT */}
+      {}
       <div className="bg-white border-t px-6 py-4 flex gap-3">
         <input
           type="text"
