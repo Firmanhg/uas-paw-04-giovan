@@ -6,7 +6,7 @@ Platform listing properti modern untuk jual/sewa dengan sistem inquiry dan favor
 
 ## 👥 Tim Pengembang
 
-**Nama Tim:** Kelompok 04 - RB
+**Nama Tim:** Propertiku (Kelompok 04 - RB)
 
 | Nama | NIM | Role | 
 |------|-----|------|
@@ -541,43 +541,49 @@ Semua endpoint dapat mengembalikan error responses berikut:
 
 ---
 
-## 📸 Screenshots Aplikasi
+## 📸 Screenshots
 
 ### 1. Landing Page
 
-*Halaman utama dengan hero section dan featured properties*
+<img width="1920" height="1080" alt="Screenshot (1014)" src="https://github.com/user-attachments/assets/298279ff-d248-4241-9920-d3cf2ee940ac" />
 
-### 2. Property Listings
+### 2. Chat Agent/Buyer
 
-*Daftar properti dengan filter dan search functionality*
+<img width="1920" height="1080" alt="Screenshot (1008)" src="https://github.com/user-attachments/assets/430290f9-b229-4265-87b6-452feb6792d3" />
+<img width="1920" height="1080" alt="Screenshot (1009)" src="https://github.com/user-attachments/assets/282651a2-724f-4884-9242-34acee6b689a" />
 
 ### 3. Property Details
 
-*Detail properti dengan gallery photos dan inquiry form*
+<img width="1920" height="1080" alt="Screenshot (1018)" src="https://github.com/user-attachments/assets/981f2b9b-e579-4075-b48d-387723edfc36" />
 
-### 4. Search & Filter
+### 4. Property Listings & Search/Filter
 
-*Advanced search dengan multiple filter options*
+<img width="1920" height="1080" alt="Screenshot (1016)" src="https://github.com/user-attachments/assets/8dc98fb3-10ec-4689-8c0e-f362c7beaf5f" />
+<img width="1920" height="1080" alt="Screenshot (1017)" src="https://github.com/user-attachments/assets/5828bcf6-2c67-4614-be78-22f92d16ffd5" />
 
-### 5. User Dashboard (Buyer)
+### 5. Favorites Page (Buyer)
 
-*Dashboard buyer dengan favorites dan inquiry history*
+<img width="1920" height="1080" alt="Screenshot (1026) (1)" src="https://github.com/user-attachments/assets/27297c98-fbd1-4496-993e-cf50760ba241" />
 
-### 6. Agent Dashboard
+### 6. Agent Dashboard & Setting
 
-*Dashboard agent dengan property management dan inquiries*
+<img width="1920" height="1080" alt="Copy of Screenshot (1029)" src="https://github.com/user-attachments/assets/1d63d936-f9e8-4ee3-89e5-bf2d50a94c35" />
+<img width="1920" height="1080" alt="Screenshot (1011)" src="https://github.com/user-attachments/assets/f01cec1f-c9d4-4be6-8313-4abb53849303" />
+<img width="1920" height="1080" alt="Screenshot (1025)" src="https://github.com/user-attachments/assets/262fbcf7-1388-4808-a58c-8af7ab309f8b" />
 
 ### 7. Property Form (Create/Edit)
 
-*Form untuk create/update property dengan image upload*
+<img width="1920" height="1080" alt="Copy of Screenshot (1024)" src="https://github.com/user-attachments/assets/e1debcb8-bb25-4476-b910-4ae86d4a6e2c" />
+<img width="1920" height="1080" alt="Screenshot (1022)" src="https://github.com/user-attachments/assets/0a20312e-63ad-4cfc-ad22-22e6c3bb751d" />
 
-### 8. Favorites Page
+### 8. Login & Register
 
-*Halaman favorites dengan saved properties*
+<img width="1920" height="1080" alt="Screenshot (1032)" src="https://github.com/user-attachments/assets/138dee5d-9013-48ee-86b1-78c41c21e32b" />
+<img width="1920" height="1080" alt="Screenshot (1033)" src="https://github.com/user-attachments/assets/502c96b1-98f0-431c-acd1-a8d5533240c9" />
 
-### 9. Login & Register
+### 9. Property comparison
 
-*Authentication pages dengan validation*
+<img width="1920" height="1080" alt="Screenshot (1028) (1)" src="https://github.com/user-attachments/assets/d5e6bb1b-17a6-42a0-ad21-df43675f1e37" />
 
 ---
 
