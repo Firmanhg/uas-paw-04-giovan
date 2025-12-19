@@ -96,19 +96,7 @@ export default function Chat() {
     e?.preventDefault?.();
     if (!message.trim() || !socket) return;
     // Kirim ke backend (simpan DB)
-    const res = await sendChatMessage(inquiryId, { message });
-    // Tambahkan ke state chat secara lokal (langsung tampil)
-    setChats(prev => [
-      ...prev,
-      {
-        id: Date.now(),
-        message,
-        sender_id: currentUser?.id,
-        timestamp: new Date().toISOString(),
-        // Untuk kompatibilitas alignment
-        sender: { id: currentUser?.id, name: currentUser?.name, role: currentUser?.role }
-      }
-    ]);
+    await sendChatMessage(inquiryId, { message });
     // Broadcast ke user lain via socket
     socket.emit("chat_message", {
       inquiry_id: inquiryId,
