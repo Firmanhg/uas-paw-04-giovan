@@ -5,7 +5,6 @@ import { getAgentInquiries } from "../services/api";
 
 export default function AgentDashboard() {
   const navigate = useNavigate();
-  // TODO: Get actual agent_id from session/auth
   const AGENT_ID = 1;
   
   const [properties, setProperties] = useState([]);
@@ -23,21 +22,18 @@ export default function AgentDashboard() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      
-      // Fetch all properties for this agent
+  
       const propertiesResponse = await getAllProperties({ agent_id: AGENT_ID });
       const agentProperties = propertiesResponse.data.data || propertiesResponse.data || [];
       setProperties(agentProperties);
       
-      // Fetch inquiries for this agent
       const inquiriesResponse = await getAgentInquiries();
       const agentInquiries = inquiriesResponse.data.success ? inquiriesResponse.data.inquiries : [];
       setInquiries(agentInquiries);
-      
-      // Calculate stats
+
       setStats({
         totalProperties: agentProperties.length,
-        // Get 4 most recent properties (sorted by ID descending)
+  
         recentProperties: agentProperties
           .sort((a, b) => b.id - a.id)
           .slice(0, 4)
@@ -58,21 +54,18 @@ export default function AgentDashboard() {
     }).format(value);
   };
 
-  // ==========================================
-  // FIX LOGOUT: Menggunakan window.location.href
-  // ==========================================
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("userRole");
-    // Paksa refresh halaman agar AppRouter mereset state dan bisa masuk ke Login
+   
     window.location.href = "/login";
   };
 
   return (
     <div className="flex min-h-screen bg-gray-50 font-sans text-gray-800">
-      {/* --- SIDEBAR --- */}
+      {}
       <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex md:flex-col">
-        {/* Profile / Brand Header */}
+        {}
         <div className="p-6 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center text-orange-600 font-bold">
             J
@@ -83,17 +76,17 @@ export default function AgentDashboard() {
           </div>
         </div>
 
-        {/* Menu Items */}
+        {}
         <nav className="flex-1 px-4 space-y-2 mt-4">
           <NavItem to="/dashboard" icon={<DashboardIcon />} label="Dashboard" active />
           
           <NavItem to="/my-properties" icon={<BuildingIcon />} label="My Properties" />
           
-          {/* 👇 INI YANG MENGHUBUNGKAN KE HALAMAN SETTINGS 👇 */}
+          {}
           <NavItem to="/settings" icon={<SettingsIcon />} label="Settings" />
         </nav>
 
-        {/* --- TOMBOL ADD PROPERTY --- */}
+        {}
         <div className="px-4 mb-4">
            <Link 
              to="/add-property" 
@@ -103,7 +96,7 @@ export default function AgentDashboard() {
            </Link>
         </div>
 
-        {/* Bottom Menu */}
+        {}
         <div className="p-4 space-y-2 border-t border-gray-100">
           <button 
             onClick={() => navigate('/help')}
@@ -112,10 +105,9 @@ export default function AgentDashboard() {
             <HelpIcon />
             <span>Help</span>
           </button>
-          
-          {/* ======================================================= */}
-          {/* LOGOUT BUTTON (TAMPILAN SAMA PERSIS NAVITEM)            */}
-          {/* ======================================================= */}
+          {}
+          {}
+          {}
           <button 
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-gray-600 hover:bg-gray-50 transition text-left cursor-pointer"
@@ -123,14 +115,13 @@ export default function AgentDashboard() {
             <span className="text-gray-400"><LogoutIcon /></span>
             Logout
           </button>
-          {/* ======================================================= */}
-
+          {}
         </div>
       </aside>
 
-      {/* --- MAIN CONTENT --- */}
+      {}
       <main className="flex-1 p-8 overflow-y-auto">
-        {/* HEADER SECTION */}
+        {}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-extrabold text-gray-900">
@@ -154,7 +145,7 @@ export default function AgentDashboard() {
           </div>
         ) : (
           <>
-            {/* STATS CARDS */}
+            {}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
               <StatCard
                 title="Total Properties Listed"
@@ -182,7 +173,7 @@ export default function AgentDashboard() {
               />
             </div>
 
-            {/* RECENT INQUIRIES SECTION */}
+            {}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-10">
               <div className="flex justify-between items-center p-6 border-b border-gray-100">
                 <h2 className="text-xl font-bold text-gray-800">Recent Inquiries</h2>
@@ -250,7 +241,7 @@ export default function AgentDashboard() {
               </div>
             </div>
 
-            {/* RECENT PROPERTIES TABLE */}
+            {}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="flex justify-between items-center p-6 border-b border-gray-100">
                     <h2 className="text-xl font-bold text-gray-800">Recent Properties</h2>
@@ -330,8 +321,6 @@ export default function AgentDashboard() {
   );
 }
 
-/* --- COMPONENTS KECIL --- */
-
 function NavItem({ icon, label, active = false, to = "#" }) {
   return (
     <Link
@@ -363,7 +352,6 @@ function StatCard({ title, value, trend, trendColor, icon, iconColor }) {
   );
 }
 
-/* --- ICONS (SVG) --- */
 const DashboardIcon = () => (
   <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
     <rect x="3" y="3" width="7" height="7"></rect>
