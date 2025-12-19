@@ -7,8 +7,6 @@ import {
 import { getPropertyById, addToFavorites as addToFavoritesAPI, getFavorites as getFavoritesAPI, removeFavorite as removeFavoriteAPI, getAllProperties } from "../services/api";
 import { getCurrentUser } from "../services/authService";
 
-// favorites are server-driven; no localStorage fallback
-
 export default function Detail() {
   const { id } = useParams();
   const [property, setProperty] = useState(null);
@@ -20,7 +18,6 @@ export default function Detail() {
 
   const navigate = useNavigate();
 
-  // Load favorites on mount
   useEffect(() => {
     const user = getCurrentUser();
     if (user) {
@@ -37,7 +34,6 @@ export default function Detail() {
     return () => window.removeEventListener('userChanged', onUserChanged);
   }, []);
 
-  // 🔁 Sinkronkan status favorit saat properti atau daftar favorit berubah
   useEffect(() => {
     if (property && favoriteList.length > 0) {
       const favorited = favoriteList.some(p => p.id === parseInt(property.id));
@@ -45,7 +41,7 @@ export default function Detail() {
     } else {
       setIsFavoritedLocal(false);
     }
-  }, [property, favoriteList]); // ✅ pantau perubahan property & favoriteList
+  }, [property, favoriteList]); 
 
   const fetchServerFavorites = async () => {
     try {
@@ -122,7 +118,6 @@ export default function Detail() {
     if (!property) return;
 
     const user = getCurrentUser();
-    // ✅ Gunakan isFavoritedLocal sebagai penentu
     const exists = isFavoritedLocal;
 
     if (!user) {
@@ -132,13 +127,10 @@ export default function Detail() {
     }
 
     setFavLoading(true);
-
-    // ✅ Optimistic update: perbarui UI segera
     setIsFavoritedLocal(!exists);
 
     try {
       if (exists) {
-        // Hapus dari server
         const resp = await getFavoritesAPI();
         if (resp.data && resp.data.success) {
           const serverFav = resp.data.favorites.find(f => f.property && f.property.id === parseInt(property.id));
@@ -148,16 +140,12 @@ export default function Detail() {
           }
         }
       } else {
-        // Tambah ke server
         await addToFavoritesAPI(parseInt(property.id));
         window.dispatchEvent(new Event('favoritesChanged'));
       }
-
-      // ✅ Pastikan state global juga sinkron
       await fetchServerFavorites();
     } catch (err) {
       console.error('Favorite toggle error', err);
-      // ✅ Rollback UI jika gagal
       setIsFavoritedLocal(exists);
       if (err.response && err.response.status === 401) {
         alert('Session expired. Please login again.');
@@ -295,7 +283,7 @@ export default function Detail() {
                 <h1 className="text-3xl font-bold text-slate-900">{property.title}</h1>
                 <div className="flex items-center gap-2 text-gray-500 mt-2"><MapPin size={18} /><span>{property.location}</span></div>
               </div>
-              {/* ✅ Gunakan isFavoritedLocal di sini */}
+              {}
               <button 
                 onClick={toggleFavorite}
                 disabled={favLoading}
