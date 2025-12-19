@@ -7,8 +7,7 @@ export default function Settings({ user, onLogout }) {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(getCurrentUser());
   const AGENT_ID = currentUser?.id; // Get from logged in user
-  
-  // State untuk data form
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
