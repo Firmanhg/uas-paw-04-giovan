@@ -16,7 +16,7 @@ export default function Compare() {
 
         <div className="grid grid-cols-[220px_1fr_1fr] border border-gray-200 rounded-xl overflow-hidden bg-white">
 
-          {/* === FOTO ROW === */}
+          {}
           <div className="bg-slate-700" />
           {[0, 1].map((i) => (
             <div key={i} className="p-5 border-l relative">
@@ -55,7 +55,7 @@ export default function Compare() {
             </div>
           ))}
 
-          {/* === ROWS === */}
+          {}
           {[
             ["Price", "price"],
             ["Bedrooms", "beds"],
@@ -78,7 +78,7 @@ export default function Compare() {
             </div>
           ))}
 
-          {/* === BUTTON ROW === */}
+          {}
           <div />
           {[0, 1].map((i) => (
             <div key={i} className="p-5 border-l">
