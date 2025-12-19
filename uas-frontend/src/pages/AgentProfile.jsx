@@ -15,14 +15,12 @@ export default function AgentProfile() {
   const fetchAgentData = async () => {
     try {
       setLoading(true);
-      
-      // Fetch agent profile
+
       const agentResponse = await getAgentProfile(id);
       if (agentResponse.data.status === "success") {
         setAgent(agentResponse.data.data);
       }
 
-      // Fetch agent's properties
       const propertiesResponse = await getAllProperties({ agent_id: id });
       if (propertiesResponse.data.status === "success") {
         setProperties(propertiesResponse.data.data);
@@ -52,23 +50,23 @@ export default function AgentProfile() {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
-      {/* BACK LINK */}
+      {}
       <div className="mb-6">
         <Link to="/listing" className="text-blue-600 hover:underline">
           ← Back to Listings
         </Link>
       </div>
 
-      {/* HEADER */}
+      {}
       <div className="flex flex-col md:flex-row gap-6 items-start">
-        {/* Agent Photo */}
+        {}
         <img
           src={agent.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80"}
           className="w-40 h-40 object-cover rounded-full shadow-lg"
           alt={agent.name}
         />
 
-        {/* Agent Info */}
+        {}
         <div className="flex-1">
           <h1 className="text-3xl font-bold">{agent.name}</h1>
           {agent.company && (
@@ -94,7 +92,7 @@ export default function AgentProfile() {
         </div>
       </div>
 
-      {/* AGENT LISTINGS */}
+      {}
       <div className="mt-14">
         <h2 className="text-2xl font-bold mb-6">Properties by {agent.name}</h2>
 

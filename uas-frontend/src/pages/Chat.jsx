@@ -20,27 +20,32 @@ export default function Chat() {
   useEffect(() => {
     setLoading(true);
     setError(null);
+<<<<<<< HEAD
     
     // Debug: Log current user
     console.log('Chat.jsx - Current User:', currentUser);
     console.log('Chat.jsx - Current User ID:', currentUser?.id);
     
     // Fetch chat history
+=======
+>>>>>>> fbdbe9ec12b15a1619fc2cc2ed7f425b8dc2c8d4
     getChatMessages(inquiryId).then(res => {
       if (res.data.success) setChats(res.data.messages);
     });
-    // Fetch inquiry detail (property_id & agent_id)
     getInquiryById(inquiryId)
       .then(res => {
         if (res.data.success && res.data.data) {
+<<<<<<< HEAD
           const { property_id, agent_id, buyer_id } = res.data.data;
           // Fetch property
+=======
+          const { property_id, agent_id } = res.data.data;
+>>>>>>> fbdbe9ec12b15a1619fc2cc2ed7f425b8dc2c8d4
           getPropertyById(property_id)
             .then(propRes => {
               if (propRes.data.data) setProperty(propRes.data.data);
             })
             .catch(() => setProperty(null));
-          // Fetch agent
           getAgentProfile(agent_id)
             .then(agentRes => {
               if (agentRes.data.data) setAgent(agentRes.data.data);
@@ -58,7 +63,6 @@ export default function Chat() {
         }
       })
       .catch(() => setError("Gagal memuat detail inquiry"));
-    // Connect to Socket.IO
     const newSocket = io("http://localhost:6543");
     setSocket(newSocket);
     newSocket.emit("join_inquiry", { inquiry_id: inquiryId });
@@ -99,9 +103,9 @@ export default function Chat() {
         <h1 className="text-2xl font-bold text-slate-500 mb-6">Chat Agent</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* --- KOLOM KIRI: CHAT AREA --- */}
+          {}
           <div className="lg:col-span-2 flex flex-col h-[700px] border border-gray-200 rounded-xl shadow-sm bg-white overflow-hidden">
-            {/* 1. Chat Header */}
+            {}
             <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-white">
               <div className="flex items-center gap-3">
                 <div className="relative">
@@ -114,7 +118,7 @@ export default function Chat() {
                     className="w-10 h-10 rounded-full object-cover"
                     alt="User"
                   />
-                  {/* Status Indicator */}
+                  {}
                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
                 </div>
                 <div>
@@ -129,9 +133,15 @@ export default function Chat() {
               </button>
             </div>
 
+<<<<<<< HEAD
             {/* 2. Chat Messages List */}
             <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50 flex flex-col gap-4">
               {/* Date Separator */}
+=======
+            {}
+            <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50 space-y-6">
+              {}
+>>>>>>> fbdbe9ec12b15a1619fc2cc2ed7f425b8dc2c8d4
               <div className="flex justify-center">
                 <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">Hari ini</span>
               </div>
@@ -179,7 +189,7 @@ export default function Chat() {
               )}
             </div>
 
-            {/* 3. Input Area */}
+            {}
             <form onSubmit={handleSend} className="p-4 bg-white border-t border-gray-100">
               <div className="flex items-center gap-3">
                 <button type="button" className="text-gray-400 hover:text-slate-800 transition">
@@ -203,9 +213,9 @@ export default function Chat() {
             </form>
           </div>
 
-          {/* --- KOLOM KANAN: SIDEBAR INFO --- */}
+          {}
           <div className="lg:col-span-1 space-y-6">
-            {/* 1. Detail Properti Card */}
+            {}
             <div className="border border-gray-200 rounded-xl p-5 shadow-sm bg-white">
               <h3 className="font-bold text-slate-900 mb-4">Detail Properti</h3>
               {loading ? (
@@ -234,7 +244,7 @@ export default function Chat() {
                 <div className="text-gray-400">Properti tidak ditemukan</div>
               )}
             </div>
-            {/* 2. Informasi Agen Card */}
+            {}
             <div className="border border-gray-200 rounded-xl p-5 shadow-sm bg-white text-center">
               <h3 className="font-bold text-slate-900 mb-4 text-left">Informasi Agen</h3>
               <div className="flex flex-col items-center">

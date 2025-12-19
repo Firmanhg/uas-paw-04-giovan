@@ -1,10 +1,9 @@
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getCurrentUser, logout as logoutAPI } from "../services/authService";
 
 /* ================= PUBLIC ================= */
 import Home from "../pages/Home";
-import Listing from "../pages/Listing"; // Kita pakai ini untuk halaman Properties
+import Listing from "../pages/Listing";
 import Detail from "../pages/Detail";
 import Favorite from "../pages/Favorite";
 
@@ -34,27 +33,29 @@ export default function AppRouter() {
   /* ================= AUTH STATE ================= */
   const [userRole, setUserRole] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
+  
+  const [currentUser, setCurrentUser] = useState({
+    name: "John Appleseed",
+    email: "j.appleseed@realty.com",
+    phone: "+1 (555) 123-4567",
+    role: "admin"
+  });
 
   /* ================= LOAD SESSION ================= */
   useEffect(() => {
-    const user = getCurrentUser();
-    if (user) {
-      setUserRole(user.role);
-      setCurrentUser(user);
+    const savedRole = localStorage.getItem("userRole");
+    if (savedRole) {
+      setUserRole(savedRole);
     }
     setAuthChecked(true);
   }, []);
 
   /* ================= LOGOUT ================= */
-  const handleLogout = async () => {
-    try {
-      await logoutAPI();
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("user");
     setUserRole(null);
-    setCurrentUser(null);
+    alert("You have logged out!");
     navigate("/login");
   };
 
@@ -70,25 +71,33 @@ export default function AppRouter() {
   return (
     <Routes>
       {/* ================= PUBLIC ================= */}
-      <Route path="/" element={<Home />} />
       
-      {/* --- PERUBAHAN DI SINI --- */}
-      {/* Ubah path="/listing" menjadi "/properties" agar sesuai Navbar */}
+      {/* --- PERUBAHAN UTAMA DI SINI --- */}
+      {/* Jika User adalah AGENT, lempar ke Dashboard. Jika bukan, buka Home */}
+      <Route 
+        path="/" 
+        element={
+          userRole === "agent" ? <Navigate to="/dashboard" replace /> : <Home />
+        } 
+      />
+      
       <Route path="/properties" element={<Listing />} /> 
-      
       <Route path="/property/:id" element={<Detail />} />
-      
-      {/* Ubah path="/favorite" menjadi "/favorites" agar sesuai Navbar */}
       <Route path="/favorites" element={<Favorite />} />
-      
       <Route path="/compare" element={<Compare />} />
 
       {/* ================= AUTH ================= */}
-      <Route path="/login" element={<Login setUserRole={setUserRole} />} />
+      {/* Opsional: Jika Agent sudah login, jangan boleh buka halaman Login lagi */}
+      <Route 
+        path="/login" 
+        element={
+          userRole === "agent" ? <Navigate to="/dashboard" replace /> : <Login setUserRole={setUserRole} />
+        } 
+      />
       <Route path="/register" element={<Register />} />
 
       {/* ================= BUYER CHAT ================= */}
-      <Route path="/chat/:id" element={<Chat />} />
+      <Route path="/chat/:agentId" element={<Chat />} />
 
       {/* ================= AGENT CHAT ================= */}
       <Route path="/agent/chat/:buyerId" element={<ChatAgent />} />
@@ -116,7 +125,11 @@ export default function AppRouter() {
       <Route path="/help" element={<Help />} />
 
       {/* ================= FALLBACK ================= */}
-      <Route path="*" element={<Navigate to="/" />} />
+      {/* Fallback juga bisa diarahkan pintar: Agent ke Dashboard, Tamu ke Home */}
+      <Route 
+        path="*" 
+        element={<Navigate to={userRole === "agent" ? "/dashboard" : "/"} />} 
+      />
     </Routes>
   );
 }

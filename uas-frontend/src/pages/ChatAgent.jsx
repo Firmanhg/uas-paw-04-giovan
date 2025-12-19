@@ -5,7 +5,7 @@ import { getChatMessages, sendChatMessage } from '../services/api';
 import io from 'socket.io-client';
 
 export default function ChatAgent() {
-  const { buyerId } = useParams(); // inquiry id
+  const { buyerId } = useParams();
   const [inquiry, setInquiry] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -14,17 +14,18 @@ export default function ChatAgent() {
   const currentUser = getCurrentUser();
 
   useEffect(() => {
-    // Fetch inquiry details and chat messages
     fetchInquiryAndMessages();
-    
-    // Initialize Socket.IO connection
     const newSocket = io('http://localhost:6543');
     setSocket(newSocket);
+<<<<<<< HEAD
     
     // Join inquiry room
     newSocket.emit('join_inquiry', { inquiry_id: buyerId });
+=======
+
+    newSocket.emit('join_inquiry', buyerId);
+>>>>>>> fbdbe9ec12b15a1619fc2cc2ed7f425b8dc2c8d4
     
-    // Listen for new messages
     newSocket.on('chat_message', (message) => {
       setMessages(prev => [...prev, message]);
     });
@@ -38,9 +39,6 @@ export default function ChatAgent() {
     try {
       setLoading(true);
       
-      // For now, we'll create a mock inquiry object
-      // In a real app, you'd fetch inquiry details by ID from an API endpoint
-      // For demo purposes, we'll set some placeholder data
       const mockInquiry = {
         id: buyerId,
         buyer: {
@@ -54,8 +52,7 @@ export default function ChatAgent() {
         }
       };
       setInquiry(mockInquiry);
-      
-      // Fetch chat messages
+
       const messagesResponse = await getChatMessages(buyerId);
       if (messagesResponse.data.success) {
         setMessages(messagesResponse.data.messages || []);
@@ -82,8 +79,8 @@ export default function ChatAgent() {
         sender_id: currentUser.id
       };
 
-      // Send via API
       await sendChatMessage(buyerId, { message: input.trim() });
+<<<<<<< HEAD
 
       // Tambahkan ke state messages secara lokal (langsung tampil)
       setMessages(prev => [
@@ -98,6 +95,9 @@ export default function ChatAgent() {
       ]);
 
       // Emit via Socket.IO
+=======
+  
+>>>>>>> fbdbe9ec12b15a1619fc2cc2ed7f425b8dc2c8d4
       socket.emit('chat_message', messageData);
 
       setInput("");
@@ -126,7 +126,7 @@ export default function ChatAgent() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
 
-      {/* HEADER */}
+      {}
       <div className="bg-white border-b px-6 py-4 flex justify-between items-center">
         <div>
           <h2 className="font-bold text-lg text-gray-900">
@@ -145,8 +145,13 @@ export default function ChatAgent() {
         </Link>
       </div>
 
+<<<<<<< HEAD
       {/* CHAT BODY */}
       <div className="flex-1 px-6 py-6 flex flex-col gap-4 overflow-y-auto">
+=======
+      {}
+      <div className="flex-1 px-6 py-6 space-y-4 overflow-y-auto">
+>>>>>>> fbdbe9ec12b15a1619fc2cc2ed7f425b8dc2c8d4
         {messages.length === 0 ? (
           <div className="text-center text-gray-500 py-8">
             <p>No messages yet. Start the conversation!</p>
@@ -194,7 +199,7 @@ export default function ChatAgent() {
         )}
       </div>
 
-      {/* INPUT */}
+      {}
       <div className="bg-white border-t px-6 py-4 flex gap-3">
         <input
           type="text"
